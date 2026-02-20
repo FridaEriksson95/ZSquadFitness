@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:zsquadfitness/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:zsquadfitness/pages/signup.dart';
+import 'package:zsquadfitness/services/auth_wrapper.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(const MyApp());
 }
 
@@ -9,15 +17,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Z Squad Fitness'),
-        ),
-        body: Center(
-          child: Text('Welcome to Z Squad Fitness'),
-        ),
-      ),
-    );
+    return MaterialApp(debugShowCheckedModeBanner: false, home: AuthWrapper());
   }
 }

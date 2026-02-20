@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>20849895416-691eivuhcljmicu3dave6kkmepu5lbp3.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.20849895416-691eivuhcljmicu3dave6kkmepu5lbp3</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>20849895416-difo5n3sg6tbd4rkkc32c8nqkk3q0i2c.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCfuNnCqJDvadVBFBoJ0Ofy__BXVHqe_QM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>20849895416</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.zsquadfitness</string>
+	<key>PROJECT_ID</key>
+	<string>zsquadfitness</string>
+	<key>STORAGE_BUCKET</key>
+	<string>zsquadfitness.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:20849895416:ios:203b6e63682eb3d19a580d</string>
+	<key>DATABASE_URL</key>
+	<string>https://zsquadfitness-default-rtdb.europe-west1.firebasedatabase.app</string>
+</dict>
+</plist>

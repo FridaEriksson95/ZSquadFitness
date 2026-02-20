@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "20849895416",
+    "firebase_url": "https://zsquadfitness-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "zsquadfitness",
+    "storage_bucket": "zsquadfitness.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20849895416:android:491b70bf811b0f3b9a580d",
+        "android_client_info": {
+          "package_name": "com.example.zsquadfitness"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "20849895416-difo5n3sg6tbd4rkkc32c8nqkk3q0i2c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.zsquadfitness",
+            "certificate_hash": "65a2ac57f8ed38c795356fda05ff4ac22506318f"
+          }
+        },
+        {
+          "client_id": "20849895416-bp0vgdbp32hb5db2hehr57p4rcv56uhk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-JN6J-8CDVZUgU8URLkyWnWk208-vX2E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "20849895416-bp0vgdbp32hb5db2hehr57p4rcv56uhk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "20849895416-691eivuhcljmicu3dave6kkmepu5lbp3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.zsquadfitness"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
