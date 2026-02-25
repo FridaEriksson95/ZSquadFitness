@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:zsquadfitness/pages/home.dart';
-import 'package:zsquadfitness/pages/signup.dart';
+import 'package:zsquadfitness/pages/signin.dart';
+import 'package:zsquadfitness/ui/components/bottom_nav.dart';
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
@@ -16,10 +16,10 @@ class AuthWrapper extends StatelessWidget {
         }
 
         if (snapshot.hasData) {
-          return const HomePage();
+          return const BottomNav();
         }
 
-        return const SignUpPage();
+        return const SignInPage();
       },
     );
   }
