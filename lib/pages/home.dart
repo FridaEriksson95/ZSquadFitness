@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/ui/components/custom_appbar.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
-import 'package:zsquadfitness/ui/constants/gaps.dart';
-import 'package:zsquadfitness/ui/theme/app_colors.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

@@ -35,7 +35,7 @@ class AuthService {
       await DatabaseService().addUserData(userInfoMap, userDetails.uid);
 
       return userDetails;
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       return null;
     }
   }

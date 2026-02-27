@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/pages/signin.dart';
 import 'package:zsquadfitness/services/auth.dart';
-import 'package:zsquadfitness/ui/components/bottom_nav.dart';
+import 'package:zsquadfitness/services/auth_wrapper.dart';
 import 'package:zsquadfitness/ui/components/custom_textfield.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
@@ -92,12 +92,14 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                       color: AppColors.lightGrey,
                                     ),
                                     validator: (value) {
-                                      if (value == null || value.isEmpty)
+                                      if (value == null || value.isEmpty) {
                                         return 'Ange e-post';
+                                      }
                                       if (!RegExp(
                                         r'^[^@]+@[^@]+\.[^@]+',
-                                      ).hasMatch(value))
+                                      ).hasMatch(value)) {
                                         return 'Ogiltig e-post';
+                                      }
                                       return null;
                                     },
                                   ),
@@ -127,10 +129,12 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                     ),
                                     restrictToDigits: true,
                                     validator: (value) {
-                                      if (value == null || value.isEmpty)
+                                      if (value == null || value.isEmpty) {
                                         return 'Ange nummer';
-                                      if (value.length < 8)
+                                      }
+                                      if (value.length < 8) {
                                         return 'Ogiltigt nummer';
+                                      }
                                       return null;
                                     },
                                   ),
@@ -157,8 +161,9 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                       ),
                                     ),
                                     validator: (value) {
-                                      if (value == null || value.length < 8)
+                                      if (value == null || value.length < 8) {
                                         return 'Minst 8 tecken';
+                                      }
                                       return null;
                                     },
                                   ),
@@ -185,8 +190,9 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                       ),
                                     ),
                                     validator: (value) {
-                                      if (value != _passwordController.text)
+                                      if (value != _passwordController.text) {
                                         return 'Lösenorden matchar inte';
+                                      }
                                       return null;
                                     },
                                   ),
@@ -259,7 +265,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                           gapH10,
                           GestureDetector(
                             onTap: () {
-                              AuthService().signInWithGoogle(context);
+                              _googleSingIn();
                             },
                             child: Container(
                               height: 60,
@@ -334,11 +340,10 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
         name: _nameController.text.trim(),
         phone: _phoneController.text.trim(),
       );
-
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const BottomNav()),
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const AuthWrapper()),
+          (route) => false,
         );
       }
     } catch (e) {
@@ -350,6 +355,25 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _googleSingIn() async {
+    try {
+      final user = await AuthService().signInWithGoogle(context);
+
+      if (user != null && mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const AuthWrapper()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gick inte att logga in med Google: $e')),
+        );
       }
     }
   }

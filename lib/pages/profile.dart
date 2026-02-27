@@ -19,6 +19,5 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: const CustomAppbar(showLogout: true),
       body: const Center(child: Text("Profile Page!", style: AppTextStyles.h1)),
     );
-    ;
   }
 }

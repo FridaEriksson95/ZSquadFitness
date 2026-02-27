@@ -16,6 +16,7 @@ class AuthWrapper extends StatelessWidget {
         }
 
         if (snapshot.hasData) {
+          print("AUTH WRAPPER: USER FOUND");
           return const BottomNav();
         }
 

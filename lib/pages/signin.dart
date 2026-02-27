@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/pages/register.dart';
 import 'package:zsquadfitness/services/auth.dart';
@@ -197,7 +198,7 @@ class _SignInPageState extends State<SignInPage> {
                               Text('Ny här?', style: AppTextStyles.bodySmall),
                               TextButton(
                                 onPressed: () {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
@@ -251,15 +252,9 @@ class _SignInPageState extends State<SignInPage> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const BottomNav()),
-        );
-      }
     } catch (e) {
       if (mounted) {
+        print("ERROR: $e");
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Inloggning misslyckades: $e')));

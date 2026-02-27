@@ -35,7 +35,6 @@ class AppTheme {
       surface: AppColors.surface,
       onSurface: AppColors.white,
       onPrimary: AppColors.lightBlack,
-      background: AppColors.background,
     ),
   );
 }

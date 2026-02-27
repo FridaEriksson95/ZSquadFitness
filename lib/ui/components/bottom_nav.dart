@@ -19,6 +19,7 @@ class _BottomNavState extends State<BottomNav> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       body: IndexedStack(
         index: currentTabIndex,
         children: const [BookingsPage(), HomePage(), ProfilePage()],
