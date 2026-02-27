@@ -14,71 +14,63 @@ class BottomNav extends StatefulWidget {
 }
 
 class _BottomNavState extends State<BottomNav> {
-  late List<Widget> pages;
-  late BookingsPage bookings;
-  late HomePage home;
-  late ProfilePage profile;
   int currentTabIndex = 1;
-
-  @override
-  void initState() {
-    bookings = BookingsPage();
-    home = HomePage();
-    profile = ProfilePage();
-
-    pages = [bookings, home, profile];
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: CurvedNavigationBar(
-        height: 65,
-        backgroundColor: Colors.transparent,
-        color: AppColors.lightBlack,
-        buttonBackgroundColor: const Color.fromRGBO(157, 255, 0, 0.18),
-        animationDuration: const Duration(milliseconds: 500),
+      body: IndexedStack(
         index: currentTabIndex,
-        onTap: (int index) {
-          setState(() {
-            currentTabIndex = index;
-          });
-        },
-        items: [
-          Padding(
-            padding: paddingOnlyTB,
-            child: Icon(
-              Icons.calendar_month_rounded,
-              size: 40,
-              color: currentTabIndex == 0
-                  ? AppColors.neonGreen
-                  : AppColors.lightGrey,
-            ),
-          ),
-          Padding(
-            padding: paddingOnlyTB,
-            child: Icon(
-              Icons.home_rounded,
-              size: 40,
-              color: currentTabIndex == 1
-                  ? AppColors.neonGreen
-                  : AppColors.lightGrey,
-            ),
-          ),
-          Padding(
-            padding: paddingOnlyTB,
-            child: Icon(
-              Icons.person_rounded,
-              size: 40,
-              color: currentTabIndex == 2
-                  ? AppColors.neonGreen
-                  : AppColors.lightGrey,
-            ),
-          ),
-        ],
+        children: const [BookingsPage(), HomePage(), ProfilePage()],
       ),
-      body: pages[currentTabIndex],
+      bottomNavigationBar: Padding(
+        padding: paddingOnlyBm,
+        child: CurvedNavigationBar(
+          height: 65,
+          backgroundColor: Colors.transparent,
+          color: AppColors.lightBlack,
+          buttonBackgroundColor: const Color.fromRGBO(157, 255, 0, 0.18),
+          animationDuration: const Duration(milliseconds: 500),
+          index: currentTabIndex,
+          onTap: (int index) {
+            setState(() {
+              currentTabIndex = index;
+            });
+          },
+          items: [
+            Padding(
+              padding: paddingOnlyTB,
+              child: Icon(
+                Icons.calendar_month_rounded,
+                size: 40,
+                color: currentTabIndex == 0
+                    ? AppColors.neonGreen
+                    : AppColors.lightGrey,
+              ),
+            ),
+            Padding(
+              padding: paddingOnlyTB,
+              child: Icon(
+                Icons.home_rounded,
+                size: 40,
+                color: currentTabIndex == 1
+                    ? AppColors.neonGreen
+                    : AppColors.lightGrey,
+              ),
+            ),
+            Padding(
+              padding: paddingOnlyTB,
+              child: Icon(
+                Icons.person_rounded,
+                size: 40,
+                color: currentTabIndex == 2
+                    ? AppColors.neonGreen
+                    : AppColors.lightGrey,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

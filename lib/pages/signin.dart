@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/pages/register.dart';
 import 'package:zsquadfitness/services/auth.dart';
+import 'package:zsquadfitness/ui/components/bottom_nav.dart';
+import 'package:zsquadfitness/ui/components/custom_textfield.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
@@ -15,6 +17,11 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,64 +36,138 @@ class _SignInPageState extends State<SignInPage> {
             alignment: Alignment.center,
           ),
         ),
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 380),
-          margin: marginHorizon,
-          padding: paddingAll8,
-          decoration: BoxDecoration(
-            color: AppColors.lightBlack,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.neonGreen, width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.neonGreen,
-                blurRadius: 20,
-                spreadRadius: 2,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                flex: 3,
-                child: SafeArea(
-                  child: Center(
-                    child: SingleChildScrollView(
-                      padding: paddingH16,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Column(
+          children: [
+            Expanded(
+              flex: 3,
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  padding: paddingV40,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            "Z SQUAD FITNESS",
-                            style: AppTextStyles.h2,
-                            textAlign: TextAlign.center,
+                          Container(
+                            constraints: const BoxConstraints(maxWidth: 380),
+                            margin: marginHorizon,
+                            padding: paddingAll15,
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: borderRadiusBig,
+                              border: Border.all(
+                                color: AppColors.greenish,
+                                width: 1.5,
+                              ),
+                              boxShadow: [shadow],
+                            ),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  gapH20,
+                                  CustomTextfield(
+                                    labelText: 'Epost',
+                                    keyboardType: TextInputType.emailAddress,
+                                    textInputAction: TextInputAction.next,
+                                    controller: _emailController,
+                                    prefixIcon: const Icon(
+                                      Icons.email_outlined,
+                                      color: AppColors.lightGrey,
+                                    ),
+                                  ),
+                                  gapH20,
+                                  CustomTextfield(
+                                    labelText: 'Lösenord',
+                                    obscureText: true,
+                                    textInputAction: TextInputAction.done,
+                                    controller: _passwordController,
+                                    prefixIcon: const Icon(
+                                      Icons.lock_outline,
+                                      color: AppColors.lightGrey,
+                                    ),
+                                  ),
+
+                                  gapH20,
+
+                                  PrimaryButton(
+                                    text: _isLoading
+                                        ? 'Loggar in...'
+                                        : 'LOGGA IN',
+                                    onPressed: _isLoading
+                                        ? null
+                                        : () {
+                                            if (_formKey.currentState!
+                                                .validate()) {
+                                              setState(() => _isLoading = true);
+                                              _signin();
+                                            }
+                                          },
+                                    color: AppColors.turquise,
+                                  ),
+
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: TextButton(
+                                      onPressed: () {
+                                        //TODO glömt lösenord funktion
+                                      },
+                                      style: TextButton.styleFrom(
+                                        padding: EdgeInsets.only(left: 10),
+                                      ),
+                                      child: Text(
+                                        'Glömt Lösenord?',
+                                        style: AppTextStyles.bodySmall.copyWith(
+                                          color: AppColors.neonGreen,
+                                          decoration: TextDecoration.underline,
+                                          decorationColor: AppColors.neonGreen,
+                                          decorationThickness: 1,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                          gapH10,
-                          PrimaryButton(
-                            text: 'LOGGA IN',
-                            onPressed: () {},
-                            color: AppColors.turquise,
+                        ],
+                      ),
+                      gapH15,
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 250,
+                            child: Divider(color: AppColors.greenish),
                           ),
-                          gapH30,
+                          gapH15,
                           GestureDetector(
                             onTap: () {
                               AuthService().signInWithGoogle(context);
                             },
                             child: Container(
-                              height: 55,
+                              height: 60,
                               margin: marginOnlyRL,
                               decoration: BoxDecoration(
-                                color: AppColors.neonGreen,
-                                borderRadius: BorderRadius.circular(22),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  stops: const [0.0, 0.45, 1.0],
+                                  colors: [
+                                    AppColors.neonGreen,
+                                    AppColors.neonGreen.withValues(alpha: 8.0),
+                                    AppColors.neonGreen.withValues(alpha: 0.5),
+                                  ],
+                                ),
+                                borderRadius: borderRadiusBig,
+                                border: buttonGlassBorder,
                                 boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withAlpha(3),
-                                    blurRadius: 5,
-                                    offset: const Offset(3, 4),
-                                  ),
+                                  shadowGlass1,
+                                  shadowGlass2,
+                                  shadowGlass3,
                                 ],
                               ),
                               child: Row(
@@ -134,30 +215,59 @@ class _SignInPageState extends State<SignInPage> {
                                   'Skapa konto!',
                                   style: AppTextStyles.bodyMedium.copyWith(
                                     color: AppColors.neonGreen,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: AppColors.neonGreen,
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          gapH30,
+                          gapH20,
                           Padding(
-                            padding: paddingOnlyTB,
+                            padding: EdgeInsets.zero,
                             child: Image.asset(
                               'assets/images/LogoBlack.PNG',
-                              height: 250,
+                              height: 300,
+                              width: 300,
                               fit: BoxFit.contain,
                             ),
                           ),
                         ],
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  Future<void> _signin() async {
+    try {
+      await AuthService().signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const BottomNav()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Inloggning misslyckades: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 }

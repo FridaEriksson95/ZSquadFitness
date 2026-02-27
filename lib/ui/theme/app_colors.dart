@@ -11,7 +11,7 @@ class AppColors {
   static const Color neonPink = Color(0xFFFF25B0);
   static const Color yellowish = Color(0xFFC7F07F);
   static const Color turquise = Color(0xFF08FAB1);
-  static const Color lightGrey = Color(0xFFCFCFCF);
+  static const Color lightGrey = Color.fromARGB(255, 195, 194, 194);
   static const Color mediumGrey = Color(0xFF7A7A7A);
   static const Color darkGrey = Color(0xFF222222);
 

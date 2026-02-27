@@ -53,7 +53,7 @@ class AppTextStyles {
 
   static const TextStyle buttonText = TextStyle(
     fontFamily: 'Geist',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: FontWeight.bold,
     color: AppColors.lightBlack,
   );
