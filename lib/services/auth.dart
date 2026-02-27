@@ -126,4 +126,25 @@ class AuthService {
     await auth.signOut();
     await GoogleSignIn().signOut();
   }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await auth.sendPasswordResetEmail(email: email.trim());
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'Ingen användare med denna epost registrerad.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Ogiltig epost';
+          break;
+        default:
+          errorMessage = 'Kunde inte skicka återställningslänk: ${e.message}';
+      }
+      throw Exception(errorMessage);
+    } catch (e) {
+      throw Exception('Okänt fel: $e');
+    }
+  }
 }

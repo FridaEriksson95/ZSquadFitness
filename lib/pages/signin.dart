@@ -114,9 +114,7 @@ class _SignInPageState extends State<SignInPage> {
                                   Align(
                                     alignment: Alignment.centerLeft,
                                     child: TextButton(
-                                      onPressed: () {
-                                        //TODO glömt lösenord funktion
-                                      },
+                                      onPressed: _resetPassword,
                                       style: TextButton.styleFrom(
                                         padding: EdgeInsets.only(left: 10),
                                       ),
@@ -256,5 +254,128 @@ class _SignInPageState extends State<SignInPage> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  Future<void> _resetPassword() async {
+    final TextEditingController resetEmailController = TextEditingController();
+    bool isLoading = false;
+    String? errorMessage;
+    bool emailSent = false;
+
+    await showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: borderRadiusBig),
+              contentPadding: paddingAll24,
+              backgroundColor: AppColors.background.withValues(alpha: 0.9),
+              titlePadding: paddingOnlyLRT,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    emailSent ? 'Mejl skickat!' : 'Glömt lösenord?',
+                    style: AppTextStyles.h3.copyWith(
+                      color: AppColors.neonGreen,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    icon: const Icon(Icons.close, color: AppColors.darkRed),
+                    padding: paddingOnlyL,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+              content: emailSent
+                  ? Padding(
+                      padding: paddingOnlyBs,
+                      child: Text(
+                        'Kontrollera din inkorg (och skräppost) för återställningslänk',
+                        style: AppTextStyles.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Ange din epost så skickas en återställningslänk till din inkorg.',
+                          style: AppTextStyles.bodySmall,
+                        ),
+                        gapH15,
+                        CustomTextfield(
+                          labelText: 'Epost',
+                          keyboardType: TextInputType.emailAddress,
+                          controller: resetEmailController,
+                          prefixIcon: const Icon(
+                            Icons.email_outlined,
+                            color: AppColors.lightGrey,
+                          ),
+                        ),
+                        if (errorMessage != null) ...[
+                          gapH10,
+                          Text(
+                            errorMessage!,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.darkRed,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+              actionsPadding: paddingOnlyLRT,
+              actions: [
+                PrimaryButton(
+                  text: emailSent
+                      ? (isLoading ? 'Skickar igen..' : 'Skicka igen')
+                      : (isLoading ? 'Skickar..' : 'Skicka länk'),
+                  color: AppColors.turquise,
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          final email = resetEmailController.text.trim();
+
+                          if (email.isEmpty) {
+                            setDialogState(() {
+                              errorMessage = 'Ange en giltig epost';
+                            });
+                            return;
+                          }
+
+                          setDialogState(() {
+                            isLoading = true;
+                            errorMessage = null;
+                          });
+
+                          try {
+                            await AuthService().sendPasswordResetEmail(email);
+                            setDialogState(() {
+                              emailSent = true;
+                              isLoading = false;
+                            });
+                          } catch (e) {
+                            setDialogState(() {
+                              errorMessage = e.toString().replaceFirst(
+                                'Exception: ',
+                                '',
+                              );
+                              isLoading = false;
+                            });
+                          }
+                        },
+                ),
+
+                gapH20,
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 }
