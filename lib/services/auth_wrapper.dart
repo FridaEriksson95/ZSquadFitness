@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:zsquadfitness/pages/auth_page.dart';
 import 'package:zsquadfitness/pages/signin.dart';
 import 'package:zsquadfitness/ui/components/bottom_nav.dart';
 
@@ -12,15 +13,14 @@ class AuthWrapper extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
         }
 
         if (snapshot.hasData) {
-          print("AUTH WRAPPER: USER FOUND");
           return const BottomNav();
         }
 
-        return const SignInPage();
+        return const AuthPage();
       },
     );
   }

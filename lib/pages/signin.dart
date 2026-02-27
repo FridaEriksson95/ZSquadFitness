@@ -11,7 +11,8 @@ import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
 import 'package:zsquadfitness/ui/extensions/context_extensions.dart';
 
 class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+  final VoidCallback onToggle;
+  const SignInPage({super.key, required this.onToggle});
 
   @override
   State<SignInPage> createState() => _SignInPageState();
@@ -197,15 +198,7 @@ class _SignInPageState extends State<SignInPage> {
                             children: [
                               Text('Ny här?', style: AppTextStyles.bodySmall),
                               TextButton(
-                                onPressed: () {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          RegisterAccountPage(),
-                                    ),
-                                  );
-                                },
+                                onPressed: widget.onToggle,
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.only(left: 5),
                                   minimumSize: Size.zero,
@@ -254,7 +247,6 @@ class _SignInPageState extends State<SignInPage> {
       );
     } catch (e) {
       if (mounted) {
-        print("ERROR: $e");
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Inloggning misslyckades: $e')));

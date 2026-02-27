@@ -10,7 +10,8 @@ import 'package:zsquadfitness/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
 
 class RegisterAccountPage extends StatefulWidget {
-  const RegisterAccountPage({super.key});
+  final VoidCallback onToggle;
+  const RegisterAccountPage({super.key, required this.onToggle});
 
   @override
   State<RegisterAccountPage> createState() => _RegisterAccountPageState();
@@ -226,14 +227,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                 style: AppTextStyles.bodySmall,
                               ),
                               TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => SignInPage(),
-                                    ),
-                                  );
-                                },
+                                onPressed: widget.onToggle,
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.only(left: 5),
                                   minimumSize: Size.zero,
@@ -341,10 +335,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
         phone: _phoneController.text.trim(),
       );
       if (mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const AuthWrapper()),
-          (route) => false,
-        );
+        widget.onToggle;
       }
     } catch (e) {
       if (mounted) {
@@ -364,15 +355,12 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
       final user = await AuthService().signInWithGoogle(context);
 
       if (user != null && mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const AuthWrapper()),
-          (route) => false,
-        );
+        widget.onToggle;
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gick inte att logga in med Google: $e')),
+          SnackBar(content: Text('Det gick inte att logga in med Google: $e')),
         );
       }
     }
