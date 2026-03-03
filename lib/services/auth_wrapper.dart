@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:zsquadfitness/pages/auth_page.dart';
-import 'package:zsquadfitness/pages/signin.dart';
 import 'package:zsquadfitness/ui/components/bottom_nav.dart';
 
 class AuthWrapper extends StatelessWidget {

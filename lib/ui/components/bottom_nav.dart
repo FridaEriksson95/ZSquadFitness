@@ -29,7 +29,7 @@ class _BottomNavState extends State<BottomNav> {
         child: CurvedNavigationBar(
           height: 65,
           backgroundColor: Colors.transparent,
-          color: AppColors.lightBlack,
+          color: AppColors.lightBg,
           buttonBackgroundColor: const Color.fromRGBO(157, 255, 0, 0.18),
           animationDuration: const Duration(milliseconds: 500),
           index: currentTabIndex,

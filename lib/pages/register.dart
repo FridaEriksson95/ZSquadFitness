@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:zsquadfitness/pages/signin.dart';
 import 'package:zsquadfitness/services/auth.dart';
-import 'package:zsquadfitness/services/auth_wrapper.dart';
 import 'package:zsquadfitness/ui/components/custom_textfield.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/extensions/context_extensions.dart';
+import 'package:zsquadfitness/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
 
@@ -47,7 +46,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
         height: context.screenHeight,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/bg.png'),
+            image: AssetImage(AppAssets.background),
             fit: BoxFit.cover,
             alignment: Alignment.center,
           ),
@@ -287,7 +286,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Image.asset(
-                                    'assets/images/google.png',
+                                    AppAssets.googleLogo,
                                     height: 30,
                                     width: 30,
                                     fit: BoxFit.fitHeight,
@@ -307,7 +306,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                           Padding(
                             padding: EdgeInsets.zero,
                             child: Image.asset(
-                              'assets/images/LogoBlack.PNG',
+                              AppAssets.logoBlack,
                               height: 120,
                               width: 120,
                               fit: BoxFit.contain,
@@ -335,7 +334,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
         phone: _phoneController.text.trim(),
       );
       if (mounted) {
-        widget.onToggle;
+        widget.onToggle();
       }
     } catch (e) {
       if (mounted) {
@@ -355,7 +354,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
       final user = await AuthService().signInWithGoogle(context);
 
       if (user != null && mounted) {
-        widget.onToggle;
+        widget.onToggle();
       }
     } catch (e) {
       if (mounted) {

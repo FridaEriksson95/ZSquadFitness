@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:zsquadfitness/pages/home.dart';
 import 'package:zsquadfitness/services/database.dart';
 
 class AuthService {
@@ -56,9 +55,10 @@ class AuthService {
       await userDetails.updateDisplayName(name.trim());
 
       final userInfoMap = {
-        "Name": userDetails.displayName ?? 'Användare',
+        "Name": name.trim(),
         "Email": userDetails.email,
         "Id": userDetails.uid,
+        "Phone": phone.trim(),
         'createdAt': DateTime.now().toIso8601String(),
       };
       await DatabaseService().addUserData(userInfoMap, userDetails.uid);

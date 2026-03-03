@@ -7,4 +7,8 @@ class DatabaseService {
         .doc(id)
         .set(userInfoMap);
   }
+
+  Stream<DocumentSnapshot> getUserData(String id) {
+    return FirebaseFirestore.instance.collection("users").doc(id).snapshots();
+  }
 }

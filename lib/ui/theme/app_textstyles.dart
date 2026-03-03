@@ -30,8 +30,22 @@ class AppTextStyles {
     color: AppColors.turquise,
   );
 
+  static TextStyle vT = TextStyle(
+    fontFamily: 'VidaLoka',
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: AppColors.turquise,
+  );
+
   static const TextStyle hG = TextStyle(
     fontFamily: 'Geist',
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+    color: AppColors.lightGrey,
+  );
+
+  static const TextStyle vG = TextStyle(
+    fontFamily: 'VidaLoka',
     fontSize: 20,
     fontWeight: FontWeight.bold,
     color: AppColors.lightGrey,
@@ -69,11 +83,5 @@ class AppTextStyles {
     fontFamily: 'VidaLoka',
     fontSize: 14,
     color: AppColors.white,
-  );
-
-  static const BoxShadow shadow = BoxShadow(
-    color: Colors.black38,
-    blurRadius: 10,
-    offset: Offset(0, 4),
   );
 }

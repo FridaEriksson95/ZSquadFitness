@@ -1,11 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:zsquadfitness/pages/register.dart';
 import 'package:zsquadfitness/services/auth.dart';
-import 'package:zsquadfitness/ui/components/bottom_nav.dart';
 import 'package:zsquadfitness/ui/components/custom_textfield.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
+import 'package:zsquadfitness/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
 import 'package:zsquadfitness/ui/extensions/context_extensions.dart';
@@ -33,7 +31,7 @@ class _SignInPageState extends State<SignInPage> {
         height: context.screenHeight,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/bg.png'),
+            image: AssetImage(AppAssets.background),
             fit: BoxFit.cover,
             alignment: Alignment.center,
           ),
@@ -174,7 +172,7 @@ class _SignInPageState extends State<SignInPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Image.asset(
-                                    'assets/images/google.png',
+                                    AppAssets.googleLogo,
                                     height: 30,
                                     width: 30,
                                     fit: BoxFit.fitHeight,
@@ -218,7 +216,7 @@ class _SignInPageState extends State<SignInPage> {
                           Padding(
                             padding: EdgeInsets.zero,
                             child: Image.asset(
-                              'assets/images/LogoBlack.PNG',
+                              AppAssets.logoBlack,
                               height: 300,
                               width: 300,
                               fit: BoxFit.contain,

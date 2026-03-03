@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/services/auth.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
+import 'package:zsquadfitness/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
+import 'package:zsquadfitness/utils/email_launcher.dart';
 
 class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   final bool showLogout;
@@ -13,17 +15,36 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
       toolbarHeight: 153,
       titleSpacing: 0,
       centerTitle: true,
       title: Image.asset(
-        'assets/images/LogoText.png',
+        AppAssets.logoText,
         height: 350,
         width: 300,
         fit: BoxFit.contain,
       ),
-      actions: showLogout
-          ? [
+
+      actions: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Padding(
+              padding: paddingAll8,
+              child: IconButton(
+                icon: Icon(
+                  Icons.email_rounded,
+                  color: AppColors.neonGreen.withValues(alpha: 0.8),
+                ),
+                onPressed: () => openEmail(context),
+                tooltip: 'Kontakta oss',
+                iconSize: 32,
+              ),
+            ),
+
+            if (showLogout)
               Padding(
                 padding: paddingAll8,
                 child: IconButton(
@@ -33,8 +54,9 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
                   },
                 ),
               ),
-            ]
-          : null,
+          ],
+        ),
+      ],
     );
   }
 
