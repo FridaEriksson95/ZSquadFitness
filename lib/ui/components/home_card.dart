@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zsquadfitness/ui/components/booking_dialog.dart';
 import 'package:zsquadfitness/ui/components/class_card.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
@@ -60,14 +61,19 @@ class _HomeCardState extends State<HomeCard> {
                       time: '17.40 - 18. 40',
                       spotsLeft: 20,
                       isBooked: false,
-                      onBookTap: () {},
+                      onBookTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const BookingDialog(),
+                        );
+                      },
                     ),
 
                     ClassCard(
                       date: 'Söndag 22 februari',
                       time: '17.30 - 18. 30',
                       spotsLeft: 20,
-                      isBooked: false,
+                      isBooked: true,
                       onBookTap: () {},
                     ),
                   ],

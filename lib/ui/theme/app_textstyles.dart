@@ -52,7 +52,7 @@ class AppTextStyles {
   );
 
   static const TextStyle bodyMedium = TextStyle(
-    fontFamily: 'VidaLoka',
+    fontFamily: 'Geist',
     fontSize: 16,
     fontWeight: FontWeight.bold,
     color: AppColors.lightGrey,

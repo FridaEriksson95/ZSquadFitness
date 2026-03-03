@@ -30,7 +30,7 @@ class ClassCard extends StatelessWidget {
         gapH15,
 
         Container(
-          padding: paddingAll15,
+          padding: paddingAll8,
           decoration: BoxDecoration(
             color: AppColors.lightBlack.withValues(alpha: 0.45),
             borderRadius: borderRadiusBig,
@@ -41,16 +41,10 @@ class ClassCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 64,
-                height: 64,
-
+                width: 82,
+                height: 75,
                 child: Center(
-                  child: Image.asset(
-                    AppAssets.logoBlack,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.contain,
-                  ),
+                  child: Image.asset(AppAssets.logoBlack, fit: BoxFit.contain),
                 ),
               ),
               gapW12,

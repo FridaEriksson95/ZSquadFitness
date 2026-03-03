@@ -6,12 +6,14 @@ const gapH10 = SizedBox(height: 10.0);
 const gapH15 = SizedBox(height: 15.0);
 const gapH20 = SizedBox(height: 20.0);
 const gapH30 = SizedBox(height: 30.0);
+const gapBottom = SizedBox(height: 120);
 
 const gapW5 = SizedBox(width: 5.0);
 const gapW10 = SizedBox(width: 10.0);
 const gapW12 = SizedBox(width: 12.0);
+const gapW35 = SizedBox(width: 35.0);
 const gapW48 = SizedBox(width: 48.0);
-const gapBottom = SizedBox(height: 120);
+const gapW70 = SizedBox(width: 70.0);
 
 const paddingH16 = EdgeInsets.symmetric(horizontal: 16.0);
 const paddingH20 = EdgeInsets.symmetric(horizontal: 20.0);
@@ -29,6 +31,7 @@ const paddingOnlyL = EdgeInsets.only(left: 40);
 const paddingOnlyLRT = EdgeInsets.only(left: 20, right: 20, top: 7.0);
 const paddingOnlyLR = EdgeInsets.only(left: 13, right: 13);
 const paddingOnlyT = EdgeInsets.only(top: 30);
+const paddingOnlyTSmall = EdgeInsets.only(top: 4);
 
 const marginAll5 = EdgeInsets.all(5.0);
 const marginOnlyRL = EdgeInsets.only(left: 10, right: 10);
