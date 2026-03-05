@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/ui/components/booking_dialog.dart';
+import 'package:zsquadfitness/ui/components/border_card.dart';
 import 'package:zsquadfitness/ui/components/class_card.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
@@ -29,15 +30,7 @@ class _HomeCardState extends State<HomeCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: marginAll5,
-      padding: paddingAll15,
-      decoration: BoxDecoration(
-        color: AppColors.dark.withValues(alpha: 0.50),
-        borderRadius: borderRadiusBig,
-        border: borderCard,
-        boxShadow: [shadow],
-      ),
+    return BorderCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

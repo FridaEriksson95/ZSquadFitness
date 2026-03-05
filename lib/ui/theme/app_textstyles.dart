@@ -84,4 +84,11 @@ class AppTextStyles {
     fontSize: 14,
     color: AppColors.white,
   );
+
+  static const TextStyle bodyWhiteDialog = TextStyle(
+    fontFamily: 'Geist',
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+    color: AppColors.white,
+  );
 }

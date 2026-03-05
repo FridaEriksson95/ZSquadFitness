@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:zsquadfitness/ui/components/border_card.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
@@ -44,12 +45,11 @@ class _WeekCalendarState extends State<WeekCalendar> {
   Widget build(BuildContext context) {
     return Padding(
       padding: paddingOnlyLR,
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.dark.withValues(alpha: 1.5),
-          borderRadius: borderRadiusBig,
-          border: borderCard,
-        ),
+      child: BorderCard(
+        padding: EdgeInsets.zero,
+        margin: EdgeInsets.zero,
+        alpha: 1.5,
+        boxShadow: [shadowGlass3],
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [

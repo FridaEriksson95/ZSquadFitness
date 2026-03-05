@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
                   ),
 
                   gapH5,
-                  Text('Boka ditt nästa Zumbapass💃', style: AppTextStyles.h2),
+                  Text('Boka ditt nästa Zumbapass🕺', style: AppTextStyles.h2),
                 ],
               ),
             ),
