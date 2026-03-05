@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:zsquadfitness/pages/bookings.dart';
+import 'package:zsquadfitness/ui/components/border_card.dart';
+import 'package:zsquadfitness/ui/components/bottom_nav.dart';
+import 'package:zsquadfitness/ui/components/confirmation_dialog.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_assets.dart';
@@ -15,8 +19,8 @@ class BookingDialog extends StatefulWidget {
 class _BookingDialogState extends State<BookingDialog> {
   bool _sendConfirmation = false;
   bool _repeatBooking = false;
-  String _repeatDay = 'Varje onsdag';
-  String _repeatWeeks = '3 veckor fram';
+  String _repeatDay = 'Onsdagar';
+  String _repeatWeeks = '2 veckor fram';
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +28,11 @@ class _BookingDialogState extends State<BookingDialog> {
       shape: RoundedRectangleBorder(borderRadius: borderRadiusBig),
       backgroundColor: Colors.transparent,
       insetPadding: paddingVH,
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.dark.withValues(alpha: 0.62),
-          borderRadius: borderRadiusBig,
-          border: borderCard,
-          boxShadow: [shadowGlass1, shadowGlass2, shadowGlass3],
-        ),
+      child: BorderCard(
+        padding: EdgeInsets.zero,
+        margin: EdgeInsets.zero,
+        alpha: 0.62,
+        boxShadow: [shadowGlass1, shadowGlass2, shadowGlass3],
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -49,7 +51,9 @@ class _BookingDialogState extends State<BookingDialog> {
                     alignment: Alignment.centerRight,
                     child: IconButton(
                       icon: Icon(Icons.close, color: AppColors.darkRed),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                     ),
                   ),
                 ],
@@ -90,22 +94,20 @@ class _BookingDialogState extends State<BookingDialog> {
                               Text('Zumba', style: AppTextStyles.hT),
                               gapH5,
                               Text('Onsdag 18 februari'),
-                              gapH5,
                               Text('17.40 - 18.40'),
+                              Text('Sal 2', style: TextStyle(fontSize: 12)),
                             ],
                           ),
                         ),
                       ),
                       gapW12,
 
-                      Container(
+                      BorderCard(
                         padding: paddingAll8,
-                        decoration: BoxDecoration(
-                          color: AppColors.turquise.withValues(alpha: 0.2),
-                          borderRadius: borderRadiusBig,
-                          border: buttonGlassBorder,
-                          boxShadow: [shadow, shadowGlass2, shadowGlass3],
-                        ),
+                        margin: EdgeInsets.zero,
+                        color: AppColors.turquise.withValues(alpha: 0.2),
+                        border: buttonGlassBorder,
+                        boxShadow: [shadow, shadowGlass2, shadowGlass3],
                         child: Column(
                           children: [
                             Text(
@@ -240,7 +242,7 @@ class _BookingDialogState extends State<BookingDialog> {
                         value: _sendConfirmation,
                         onChanged: (choice) =>
                             setState(() => _sendConfirmation = choice),
-                        activeColor: AppColors.neonGreen,
+                        activeThumbColor: AppColors.neonGreen,
                         inactiveThumbColor: AppColors.lightGrey,
                         inactiveTrackColor: AppColors.lightBlack,
                       ),
@@ -260,7 +262,7 @@ class _BookingDialogState extends State<BookingDialog> {
                         value: _repeatBooking,
                         onChanged: (choice) =>
                             setState(() => _repeatBooking = choice),
-                        activeColor: AppColors.neonGreen,
+                        activeThumbColor: AppColors.neonGreen,
                         inactiveThumbColor: AppColors.lightGrey,
                         inactiveTrackColor: AppColors.lightBlack,
                       ),
@@ -272,7 +274,7 @@ class _BookingDialogState extends State<BookingDialog> {
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: _repeatDay,
+                            initialValue: _repeatDay,
                             isExpanded: true,
                             decoration: InputDecoration(
                               filled: true,
@@ -285,7 +287,7 @@ class _BookingDialogState extends State<BookingDialog> {
                               ),
                               contentPadding: paddingVH,
                             ),
-                            items: ['Varje onsdag', 'Varje söndag']
+                            items: ['Onsdagar', 'Söndagar']
                                 .map(
                                   (day) => DropdownMenuItem(
                                     value: day,
@@ -300,7 +302,7 @@ class _BookingDialogState extends State<BookingDialog> {
                         gapW10,
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: _repeatWeeks,
+                            initialValue: _repeatWeeks,
                             isExpanded: true,
                             decoration: InputDecoration(
                               filled: true,
@@ -347,6 +349,18 @@ class _BookingDialogState extends State<BookingDialog> {
                   onPressed: () {
                     //TODO bokningslogik
                     Navigator.pop(context);
+
+                    showDialog(
+                      context: context,
+                      builder: (context) => ConfirmationDialog(
+                        type: ConfirmationType.bookingSuccess,
+                        onConfirm: () {
+                          Navigator.pop(context);
+                          BottomNav.globalKey.currentState?.switchToBookings();
+                        },
+                        onCancel: () => Navigator.pop(context),
+                      ),
+                    );
                   },
                 ),
               ),

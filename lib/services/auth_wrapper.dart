@@ -16,7 +16,7 @@ class AuthWrapper extends StatelessWidget {
         }
 
         if (snapshot.hasData) {
-          return const BottomNav();
+          return BottomNav(key: BottomNav.globalKey);
         }
 
         return const AuthPage();

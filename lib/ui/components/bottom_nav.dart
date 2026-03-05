@@ -7,14 +7,22 @@ import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
 
 class BottomNav extends StatefulWidget {
+  static final GlobalKey<BottomNavState> globalKey = GlobalKey();
+
   const BottomNav({super.key});
 
   @override
-  State<BottomNav> createState() => _BottomNavState();
+  State<BottomNav> createState() => BottomNavState();
 }
 
-class _BottomNavState extends State<BottomNav> {
+class BottomNavState extends State<BottomNav> {
   int currentTabIndex = 1;
+
+  void switchToBookings() {
+    setState(() {
+      currentTabIndex = 0;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +30,11 @@ class _BottomNavState extends State<BottomNav> {
       extendBody: true,
       body: IndexedStack(
         index: currentTabIndex,
-        children: const [BookingsPage(), HomePage(), ProfilePage()],
+        children: const [
+          BookingsPage(key: PageStorageKey('bookings')),
+          HomePage(key: PageStorageKey('home')),
+          ProfilePage(key: PageStorageKey('profile')),
+        ],
       ),
       bottomNavigationBar: Padding(
         padding: paddingOnlyBm,

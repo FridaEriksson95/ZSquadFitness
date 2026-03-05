@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zsquadfitness/ui/components/border_card.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_assets.dart';
@@ -29,14 +30,10 @@ class ClassCard extends StatelessWidget {
         Text(date.toUpperCase(), style: AppTextStyles.vG),
         gapH15,
 
-        Container(
+        BorderCard(
           padding: paddingAll8,
-          decoration: BoxDecoration(
-            color: AppColors.lightBlack.withValues(alpha: 0.45),
-            borderRadius: borderRadiusBig,
-            border: borderCard,
-            boxShadow: [textFieldShadow],
-          ),
+          alpha: 0.07,
+          boxShadow: [textFieldShadow],
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
