@@ -1,5 +1,5 @@
 name: zsquadfitness
-description: "A new Flutter project."
+description: 'A new Flutter project.'
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
@@ -10,33 +10,33 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations: # lägg till om det saknas
+    sdk: flutter
 
   cupertino_icons: ^1.0.8
   curved_navigation_bar:
-  firebase_core: ^3.15.2 
-  firebase_auth: ^5.7.0 
-  cloud_firestore: ^5.6.12 
-  firebase_storage: ^12.4.10 
-  google_sign_in: ^6.2.1 
+  firebase_core: ^3.15.2
+  firebase_auth: ^5.7.0
+  cloud_firestore: ^5.6.12
+  firebase_storage: ^12.4.10
+  google_sign_in: ^6.2.1
   intl: ^0.20.2
   url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.14.4  
+  flutter_launcher_icons: ^0.14.4
 
   flutter_lints: ^6.0.0
-
 
 flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
   assets:
-  - assets/images/
-  - assets/icon/icon.png
-
+    - assets/images/
+    - assets/icon/icon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -66,7 +66,6 @@ flutter:
         - asset: assets/fonts/Geist-Regular.ttf
         - asset: assets/fonts/Geist-Bold.ttf
           weight: 700
-       
-  
+
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

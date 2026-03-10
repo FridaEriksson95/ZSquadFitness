@@ -144,7 +144,7 @@ class _SignInPageState extends State<SignInPage> {
                           gapH15,
                           GestureDetector(
                             onTap: () {
-                              AuthService().signInWithGoogle(context);
+                               AuthService().signInWithGoogle(context);
                             },
                             child: Container(
                               height: 60,
@@ -179,7 +179,7 @@ class _SignInPageState extends State<SignInPage> {
                                   ),
                                   gapW12,
                                   Text(
-                                    'Logga in med Google',
+                                    _isLoading ? 'Loggar in...' : 'Logga in med Google',
                                     textAlign: TextAlign.center,
                                     style: AppTextStyles.buttonText,
                                   ),

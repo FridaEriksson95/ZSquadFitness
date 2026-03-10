@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "20849895416-3333a5tpftomj8l2kp2oerk9fg6srtrm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.zsquadfitness",
+            "certificate_hash": "07d5a37d15cd7b9ec566313d4c4518dc0dce313b"
+          }
+        },
+        {
           "client_id": "20849895416-difo5n3sg6tbd4rkkc32c8nqkk3q0i2c.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -13,7 +13,7 @@ class _BookingsPageState extends State<BookingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppbar(showLogout: false),
+      appBar: const CustomAppbar(),
       body: const Center(
         child: Text("Bookings Page!", style: AppTextStyles.h1),
       ),

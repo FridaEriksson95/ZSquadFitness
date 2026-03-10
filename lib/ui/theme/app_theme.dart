@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'app_colors.dart';
 import 'app_textstyles.dart';
 
@@ -36,5 +37,6 @@ class AppTheme {
       onSurface: AppColors.white,
       onPrimary: AppColors.lightBlack,
     ),
+
   );
 }
