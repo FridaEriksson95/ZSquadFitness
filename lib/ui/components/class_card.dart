@@ -28,7 +28,7 @@ class ClassCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(date.toUpperCase(), style: AppTextStyles.vG),
-        gapH15,
+        gapH10,
 
         BorderCard(
           padding: paddingAll8,
@@ -37,7 +37,7 @@ class ClassCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
+              SizedBox(
                 width: 82,
                 height: 75,
                 child: Center(
@@ -86,7 +86,7 @@ class ClassCard extends StatelessWidget {
             ],
           ),
         ),
-        gapH10,
+        gapH5,
       ],
     );
   }

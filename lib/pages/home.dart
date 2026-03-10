@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/services/database.dart';
@@ -20,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppbar(showLogout: false),
+      appBar: const CustomAppbar(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,11 +61,32 @@ class _HomePageState extends State<HomePage> {
             ),
             gapH20,
 
-            const WeekCalendar(),
-            gapH10,
-
-            HomeCard(),
-
+            Padding(
+              padding: paddingH20,
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('classes')
+                    .orderBy('dateRaw')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Center(
+                      child: Padding(
+                        padding: paddingAll24,
+                        child: Text(
+                          'Inga pass upplagda',
+                          style: AppTextStyles.bodyWhiteDialog,
+                        ),
+                      ),
+                    );
+                  }
+                  return HomeCard(classes: snapshot.data!.docs);
+                },
+              ),
+            ),
             gapBottom,
           ],
         ),

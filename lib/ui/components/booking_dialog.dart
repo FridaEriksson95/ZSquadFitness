@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zsquadfitness/pages/bookings.dart';
 import 'package:zsquadfitness/ui/components/border_card.dart';
 import 'package:zsquadfitness/ui/components/bottom_nav.dart';
 import 'package:zsquadfitness/ui/components/confirmation_dialog.dart';
@@ -42,7 +41,7 @@ class _BookingDialogState extends State<BookingDialog> {
                 alignment: Alignment.center,
                 children: [
                   Text(
-                    'BOKA ZUMBA PASS',
+                    'BOKA PASS',
                     style: AppTextStyles.h1,
                     textAlign: TextAlign.center,
                   ),
@@ -72,7 +71,7 @@ class _BookingDialogState extends State<BookingDialog> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
+                      SizedBox(
                         width: 60,
                         height: 90,
                         child: Center(

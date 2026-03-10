@@ -23,20 +23,20 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppbar(showLogout: true),
+      appBar: const CustomAppbar(),
       body: SingleChildScrollView(
         child: Column(
           children: [
+            gapH15,
             Text('PROFIL', style: AppTextStyles.h1),
             SizedBox(
               width: 300,
               child: Divider(color: AppColors.neonGreen.withValues(alpha: 0.4)),
             ),
-            gapH30,
+            gapH15,
 
             BorderCard(
               padding: EdgeInsets.zero,
-
               alpha: 0.1,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
+                                  SizedBox(
                                     width: 150,
                                     height: 150,
                                     child: Image.asset(
@@ -110,7 +110,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         padding: paddingAll8,
                         child: IconButton(
                           icon: const Icon(
-                            Icons.edit,
+                            Icons.edit_square,
                             color: AppColors.lightGrey,
                           ),
                           onPressed: () {
@@ -120,7 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   ),
-                  gapH10,
+                
 
                   Align(
                     alignment: Alignment.bottomRight,
@@ -141,7 +141,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
 
-            gapH20,
+            gapH15,
             BorderCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,6 +162,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   (choice) => DropdownMenuItem(
                                     value: choice,
                                     child: Text(choice),
+                                    
                                   ),
                                 )
                                 .toList(),
@@ -182,6 +183,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
+            gapBottom,
           ],
         ),
       ),
