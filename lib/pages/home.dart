@@ -61,33 +61,40 @@ class _HomePageState extends State<HomePage> {
             ),
             gapH20,
 
-            Padding(
-              padding: paddingH20,
-              child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('classes')
-                    .orderBy('dateRaw')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(
-                      child: Padding(
-                        padding: paddingAll24,
-                        child: Text(
-                          'Inga pass upplagda',
-                          style: AppTextStyles.bodyWhiteDialog,
-                        ),
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('classes')
+                  .orderBy('dateRaw')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: paddingAll24,
+                      child: Text(
+                        'Inga pass upplagda',
+                        style: AppTextStyles.bodyWhiteDialog,
                       ),
-                    );
-                  }
-                  return HomeCard(classes: snapshot.data!.docs);
-                },
-              ),
+                    ),
+                  );
+                }
+                return Column(
+                  children: [
+                    WeekCalendar(
+                      key: const PageStorageKey('week_calendar'),
+                      classes: snapshot.data!.docs,
+                    ),
+                    gapH10,
+                    HomeCard(classes: snapshot.data!.docs),
+                  ],
+                );
+              },
             ),
             gapBottom,
+            gapH5,
           ],
         ),
       ),

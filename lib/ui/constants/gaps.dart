@@ -25,6 +25,7 @@ const paddingAll8 = EdgeInsets.all(8.0);
 const paddingAll15 = EdgeInsets.all(15.0);
 const paddingAll24 = EdgeInsets.all(24.0);
 const paddingOnlyTB = EdgeInsets.only(top: 13.0, bottom: 8.0);
+const paddingOnlyBxs = EdgeInsets.only(bottom: 5.0);
 const paddingOnlyBs = EdgeInsets.only(bottom: 10.0);
 const paddingOnlyBm = EdgeInsets.only(bottom: 16.0);
 const paddingOnlyL = EdgeInsets.only(left: 40.0);

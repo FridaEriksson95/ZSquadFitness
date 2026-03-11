@@ -91,4 +91,10 @@ class AppTextStyles {
     fontWeight: FontWeight.bold,
     color: AppColors.white,
   );
+
+  static const TextStyle bodyNeongreen = TextStyle(
+    fontFamily: 'VidaLoka',
+    fontSize: 11,
+    color: AppColors.neonGreen,
+  );
 }
