@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/services/auth.dart';
 import 'package:zsquadfitness/services/database.dart';
 import 'package:zsquadfitness/ui/components/border_card.dart';
 import 'package:zsquadfitness/ui/components/custom_appbar.dart';
+import 'package:zsquadfitness/ui/components/edit_profile_dialog.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
@@ -28,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           children: [
             gapH15,
-            Text('PROFIL', style: AppTextStyles.h1),
+            Text(AppStrings.profileTitle, style: AppTextStyles.h1),
             SizedBox(
               width: 300,
               child: Divider(color: AppColors.neonGreen.withValues(alpha: 0.4)),
@@ -41,28 +44,40 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: StreamBuilder(
-                          stream: DatabaseService().getUserData(user!.uid),
-                          builder: (context, snapshot) {
-                            String welcomeName = 'ZSquader';
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Text('ZSquader', style: AppTextStyles.hT);
-                            }
-                            if (snapshot.hasData && snapshot.data!.exists) {
-                              final data =
-                                  snapshot.data!.data()
-                                      as Map<String, dynamic>?;
-                              welcomeName =
-                                  data?['Name'] as String? ?? 'ZSquader';
-                            }
-                            return Padding(
-                              padding: paddingOnlyTsmall,
+                  StreamBuilder<DocumentSnapshot>(
+                    stream: DatabaseService().getUserData(user!.uid),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Text(
+                          AppStrings.zsquader,
+                          style: AppTextStyles.hT,
+                        );
+                      }
+                      if (snapshot.hasError) {
+                        return Text(
+                          AppStrings.noProfileData,
+                          style: AppTextStyles.hT.copyWith(
+                            color: AppColors.neonPink,
+                          ),
+                        );
+                      }
+
+                      String welcomeName = AppStrings.zsquader;
+                      Map<String, dynamic>? data;
+
+                      if (snapshot.hasData && snapshot.data!.exists) {
+                        data = snapshot.data!.data() as Map<String, dynamic>?;
+                        welcomeName =
+                            data?['Name'] as String? ?? AppStrings.zsquader;
+                      }
+
+                      return Padding(
+                        padding: paddingOnlyTsmall,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -71,7 +86,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                     height: 150,
                                     child: Image.asset(
                                       AppAssets.logoBlack,
-
                                       fit: BoxFit.fill,
                                     ),
                                   ),
@@ -88,12 +102,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                             style: AppTextStyles.hT,
                                           ),
                                           Text(
-                                            user!.email ?? '',
-                                            style: AppTextStyles.bodyMedium,
+                                            data?['Phone'] as String? ?? '',
+                                            style: AppTextStyles.bodyWhiteSmall,
                                           ),
                                           Text(
-                                            user!.phoneNumber ?? '',
-                                            style: AppTextStyles.bodyMedium,
+                                            user!.email ?? '',
+                                            style: AppTextStyles.bodyWhiteSmall,
                                           ),
                                         ],
                                       ),
@@ -101,26 +115,45 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ],
                               ),
-                            );
-                          },
-                        ),
-                      ),
+                            ),
 
-                      Padding(
-                        padding: paddingAll8,
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.edit_square,
-                            color: AppColors.lightGrey,
-                          ),
-                          onPressed: () {
-                            //TODO Redigeringslogik
-                          },
+                            Padding(
+                              padding: paddingAll8,
+                              child: IconButton(
+                                icon: const Icon(
+                                  Icons.edit_square,
+                                  color: AppColors.lightGrey,
+                                ),
+                                onPressed: () async {
+                                  final currentUser =
+                                      FirebaseAuth.instance.currentUser;
+                                  if (currentUser == null) return;
+
+                                  final updated = await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => EditProfileDialog(
+                                      user: currentUser,
+                                      userData: data,
+                                    ),
+                                  );
+
+                                  if (updated == true && mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          AppStrings.profileUpdated,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
-                
 
                   Align(
                     alignment: Alignment.bottomRight,
@@ -128,7 +161,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Padding(
                         padding: paddingOnlyRB,
                         child: PrimaryButton(
-                          text: 'Logga ut',
+                          text: AppStrings.logoutBtn,
                           color: AppColors.neonPink,
                           onPressed: () async {
                             await AuthService().signOut();
@@ -149,20 +182,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Statistik', style: AppTextStyles.h3),
+                      Text(AppStrings.statistics, style: AppTextStyles.h3),
                       DropdownButton(
-                        value: 'Senaste 4 veckorna',
+                        value: AppStrings.latest4,
                         items:
                             [
-                                  'Senaste 4 veckorna',
-                                  'Senaste 3 månaderna',
-                                  '6 månader',
+                                  AppStrings.latest4,
+                                  AppStrings.latest3,
+                                  AppStrings.latest6,
                                 ]
                                 .map(
                                   (choice) => DropdownMenuItem(
                                     value: choice,
                                     child: Text(choice),
-                                    
                                   ),
                                 )
                                 .toList(),
@@ -173,7 +205,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                   gapH10,
-                  Text('Utförda pass: ', style: AppTextStyles.bodyWhiteDialog),
+                  Text(
+                    AppStrings.completedClasses,
+                    style: AppTextStyles.bodyWhiteDialog,
+                  ),
                   gapH10,
                   Container(
                     height: 150,

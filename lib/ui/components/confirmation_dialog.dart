@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/ui/components/border_card.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
@@ -23,12 +24,16 @@ class ConfirmationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isCancel = type == ConfirmationType.cancelBooking;
 
-    final String title = isCancel ? 'Avboka pass?' : 'Bokning lyckades!';
+    final String title = isCancel
+        ? AppStrings.confirmCancelBooking
+        : AppStrings.bookingSuccess;
     final String message = isCancel
-        ? 'Vänligen bekräfta din avbokning nedan.'
-        : 'Vi ses på dansgolvet🕺';
+        ? AppStrings.confirmCancelBelow
+        : AppStrings.seeYou;
 
-    final String buttonText = isCancel ? 'Avboka' : 'Mina bokningar';
+    final String buttonText = isCancel
+        ? AppStrings.cancelBooking
+        : AppStrings.yourBooking;
     final Color buttonColor = isCancel
         ? AppColors.neonPink
         : AppColors.neonGreen;
@@ -87,7 +92,6 @@ class ConfirmationDialog extends StatelessWidget {
                   onPressed:
                       onConfirm ??
                       () {
-                        //TODO Avbokningslogik
                         Navigator.pop(context);
                       },
                 ),

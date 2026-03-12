@@ -1,15 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/ui/components/border_card.dart';
 import 'package:zsquadfitness/ui/components/bottom_nav.dart';
 import 'package:zsquadfitness/ui/components/confirmation_dialog.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
 
 class BookingDialog extends StatefulWidget {
-  const BookingDialog({super.key});
+  final String classId;
+  final Map<String, dynamic> classData;
+
+  const BookingDialog({
+    super.key,
+    required this.classId,
+    required this.classData,
+  });
 
   @override
   State<BookingDialog> createState() => _BookingDialogState();
@@ -18,8 +28,83 @@ class BookingDialog extends StatefulWidget {
 class _BookingDialogState extends State<BookingDialog> {
   bool _sendConfirmation = false;
   bool _repeatBooking = false;
-  String _repeatDay = 'Onsdagar';
-  String _repeatWeeks = '2 veckor fram';
+  String _repeatDay = AppStrings.wednesdays;
+  String _repeatWeeks = AppStrings.weeksAhead2;
+  bool _isBooking = false;
+
+  int get spotsLeft =>
+      (widget.classData['spotsTotal'] ?? 0) -
+      (widget.classData['spotsBooked'] ?? 0);
+  String get bookedText =>
+      '${widget.classData['spotsBooked'] ?? 0}/${widget.classData['spotsTotal'] ?? 25}';
+
+  Future<void> _bookClass() async {
+    setState(() => _isBooking = true);
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(AppStrings.loginRequired)));
+      setState(() => _isBooking = false);
+      return;
+    }
+
+    final classRef = FirebaseFirestore.instance
+        .collection('classes')
+        .doc(widget.classId);
+
+    try {
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final classSnapshot = await transaction.get(classRef);
+
+        if (!classSnapshot.exists) {
+          throw AppStrings.classRemoved;
+        }
+        final currentBooked = classSnapshot.data()?['spotsBooked'] ?? 0;
+        final total = classSnapshot.data()?['spotsTotal'] ?? 0;
+
+        if (currentBooked >= total) {
+          throw AppStrings.classFull;
+        }
+
+        transaction.update(classRef, {'spotsBooked': currentBooked + 1});
+
+        final bookingRef = FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('bookings')
+            .doc(widget.classId);
+
+        transaction.set(bookingRef, {
+          'classId': widget.classId,
+          'date': widget.classData['date'],
+          'time': widget.classData['time'],
+          'bookedAt': FieldValue.serverTimestamp(),
+        });
+      });
+
+      Navigator.pop(context);
+
+      showDialog(
+        context: context,
+        builder: (context) => ConfirmationDialog(
+          type: ConfirmationType.bookingSuccess,
+          onConfirm: () {
+            Navigator.pop(context);
+            BottomNav.globalKey.currentState?.switchToBookings();
+          },
+          onCancel: () => Navigator.pop(context),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${AppStrings.bookingFailed} $e')));
+    } finally {
+      setState(() => _isBooking = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +126,7 @@ class _BookingDialogState extends State<BookingDialog> {
                 alignment: Alignment.center,
                 children: [
                   Text(
-                    'BOKA PASS',
+                    AppStrings.bookClass,
                     style: AppTextStyles.h1,
                     textAlign: TextAlign.center,
                   ),
@@ -90,11 +175,17 @@ class _BookingDialogState extends State<BookingDialog> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               gapH10,
-                              Text('Zumba', style: AppTextStyles.hT),
+                              Text(
+                                widget.classData['title'] ?? AppStrings.zumba,
+                                style: AppTextStyles.hT,
+                              ),
                               gapH5,
-                              Text('Onsdag 18 februari'),
-                              Text('17.40 - 18.40'),
-                              Text('Sal 2', style: TextStyle(fontSize: 12)),
+                              Text(
+                                widget.classData['date'] ?? AppStrings.noDate,
+                              ),
+                              Text(
+                                widget.classData['time'] ?? AppStrings.noTime,
+                              ),
                             ],
                           ),
                         ),
@@ -110,7 +201,7 @@ class _BookingDialogState extends State<BookingDialog> {
                         child: Column(
                           children: [
                             Text(
-                              '13/20',
+                              bookedText,
                               style: TextStyle(
                                 color: Colors.white.withValues(alpha: 0.6),
                                 fontWeight: FontWeight.bold,
@@ -118,7 +209,7 @@ class _BookingDialogState extends State<BookingDialog> {
                               ),
                             ),
                             Text(
-                              '7 lediga',
+                              '$spotsLeft ${AppStrings.available}',
                               style: AppTextStyles.hT.copyWith(
                                 color: AppColors.neonGreen.withValues(
                                   alpha: 0.7,
@@ -153,14 +244,16 @@ class _BookingDialogState extends State<BookingDialog> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'POP Studios, K7 Stenby',
+                                  widget.classData['locationName'] ??
+                                      AppStrings.noLocation,
                                   style: AppTextStyles.hT.copyWith(
                                     color: Colors.white,
                                   ),
                                 ),
                                 gapH5,
                                 Text(
-                                  'Kraftlinjegatan 4, Västerås',
+                                  widget.classData['locationAddress'] ??
+                                      AppStrings.noAddress,
                                   style: TextStyle(fontWeight: FontWeight.w200),
                                 ),
                               ],
@@ -180,7 +273,7 @@ class _BookingDialogState extends State<BookingDialog> {
                             ),
                             gapW5,
                             Text(
-                              '65:- /Pass  |  585:- /10 kort',
+                              '${widget.classData['priceSingle'] ?? AppStrings.priceSingle} ${AppStrings.perClass}  |  ${widget.classData['price10Card'] ?? AppStrings.tenCard} ${AppStrings.perTenCard} ',
                               style: AppTextStyles.hT.copyWith(
                                 color: Colors.white,
                               ),
@@ -202,16 +295,7 @@ class _BookingDialogState extends State<BookingDialog> {
 
                   if (!_repeatBooking) ...[
                     Text(
-                      '60 minuter glädjefylld dansträningspass med rytmer från hela världen. Här utlovas svett, kondition, koordination, styrka och energi!',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w200,
-                        fontSize: 13,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    gapH10,
-                    Text(
-                      'Inga förkunskaper krävs, du kör efter egen förmåga. Första gången alltid gratis prova på.',
+                      widget.classData['description'] ?? AppStrings.noDesc,
                       style: TextStyle(
                         fontWeight: FontWeight.w200,
                         fontSize: 13,
@@ -232,7 +316,7 @@ class _BookingDialogState extends State<BookingDialog> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Bokningsbekräftelse',
+                        AppStrings.bookingConfirmation,
                         style: AppTextStyles.hT.copyWith(color: Colors.white),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -252,7 +336,7 @@ class _BookingDialogState extends State<BookingDialog> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Upprepa bokning',
+                        AppStrings.repeatBooking,
                         style: AppTextStyles.hT.copyWith(color: Colors.white),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -286,7 +370,7 @@ class _BookingDialogState extends State<BookingDialog> {
                               ),
                               contentPadding: paddingVH,
                             ),
-                            items: ['Onsdagar', 'Söndagar']
+                            items: [AppStrings.wednesdays, AppStrings.sundays]
                                 .map(
                                   (day) => DropdownMenuItem(
                                     value: day,
@@ -316,9 +400,9 @@ class _BookingDialogState extends State<BookingDialog> {
                             ),
                             items:
                                 [
-                                      '2 veckor fram',
-                                      '3 veckor fram',
-                                      '5 veckor fram',
+                                      AppStrings.weeksAhead2,
+                                      AppStrings.weeksAhead3,
+                                      AppStrings.weeksAhead5,
                                     ]
                                     .map(
                                       (w) => DropdownMenuItem(
@@ -343,24 +427,9 @@ class _BookingDialogState extends State<BookingDialog> {
               child: SizedBox(
                 width: 180,
                 child: PrimaryButton(
-                  text: 'BOKA',
+                  text: _isBooking ? AppStrings.bookingLoad : AppStrings.book,
                   color: AppColors.neonGreen,
-                  onPressed: () {
-                    //TODO bokningslogik
-                    Navigator.pop(context);
-
-                    showDialog(
-                      context: context,
-                      builder: (context) => ConfirmationDialog(
-                        type: ConfirmationType.bookingSuccess,
-                        onConfirm: () {
-                          Navigator.pop(context);
-                          BottomNav.globalKey.currentState?.switchToBookings();
-                        },
-                        onCancel: () => Navigator.pop(context),
-                      ),
-                    );
-                  },
+                  onPressed: _isBooking ? null : _bookClass,
                 ),
               ),
             ),

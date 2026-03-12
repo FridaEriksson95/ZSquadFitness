@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
 
@@ -18,6 +19,7 @@ class UploadClass extends StatefulWidget {
 class _UploadClassState extends State<UploadClass> {
   final _formKey = GlobalKey<FormState>();
 
+  late TextEditingController _titleController;
   late TextEditingController _dateController;
   late TextEditingController _timeController;
   late TextEditingController _spotsTotalController;
@@ -27,24 +29,12 @@ class _UploadClassState extends State<UploadClass> {
   late TextEditingController _price10CardController;
   late TextEditingController _descriptionController;
 
-  final List<String> _locationNames = [
-    'POP Studios, K7, Stenby',
-    'Irsta Bygdegård',
-    'Utomhus',
-  ];
-
-  final List<String> _locationAddresses = [
-    'Kraftlinjegatan 4, Västerås',
-    'Irsta kyrkväg 16, Västerås',
-  ];
-
-  final List<String> _descriptions = [
-    '60 minuter glädjefylld dansträningspass med rytmer från hela världen. Här utlovas svett, kondition, koordination, styrka och energi!\n\nInga förkunskaper krävs, du kör efter egen förmåga. Första gången alltid gratis prova på.',
-  ];
-
   @override
   void initState() {
     super.initState();
+    _titleController = TextEditingController(
+      text: widget.initialData?['title'] ?? AppStrings.zumba,
+    );
     _dateController = TextEditingController(
       text: widget.initialData?['date'] ?? '',
     );
@@ -52,27 +42,28 @@ class _UploadClassState extends State<UploadClass> {
       text: widget.initialData?['time'] ?? '',
     );
     _spotsTotalController = TextEditingController(
-      text: widget.initialData?['spotsTotal']?.toString() ?? '25',
+      text: widget.initialData?['spotsTotal']?.toString() ?? AppStrings.amount,
     );
     _locationNameController = TextEditingController(
-      text: widget.initialData?['locationName'] ?? _locationNames.first,
+      text: widget.initialData?['locationName'] ?? AppStrings.stenbyLocation,
     );
     _locationAddressController = TextEditingController(
-      text: widget.initialData?['locationAddress'] ?? _locationAddresses.first,
+      text: widget.initialData?['locationAddress'] ?? AppStrings.stenbyAddress,
     );
     _priceSingleController = TextEditingController(
-      text: widget.initialData?['priceSingle'] ?? '65:-',
+      text: widget.initialData?['priceSingle'] ?? AppStrings.priceSingle,
     );
     _price10CardController = TextEditingController(
-      text: widget.initialData?['price10Card'] ?? '585:-',
+      text: widget.initialData?['price10Card'] ?? AppStrings.tenCard,
     );
     _descriptionController = TextEditingController(
-      text: widget.initialData?['description'] ?? _descriptions.first,
+      text: widget.initialData?['description'] ?? AppStrings.descZumba,
     );
   }
 
   @override
   void dispose() {
+    _titleController.dispose();
     _dateController.dispose();
     _timeController.dispose();
     _spotsTotalController.dispose();
@@ -119,7 +110,7 @@ class _UploadClassState extends State<UploadClass> {
     final TimeOfDay? from = await showTimePicker(
       context: context,
       initialTime: const TimeOfDay(hour: 17, minute: 0),
-      helpText: 'Välj starttid',
+      helpText: AppStrings.startTime,
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
@@ -143,7 +134,7 @@ class _UploadClassState extends State<UploadClass> {
     final TimeOfDay? to = await showTimePicker(
       context: context,
       initialTime: from.replacing(hour: from.hour + 1, minute: from.minute),
-      helpText: 'Välj sluttid',
+      helpText: AppStrings.endTime,
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
@@ -224,9 +215,7 @@ class _UploadClassState extends State<UploadClass> {
     if (parsedDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Ogiltigt datum – skriv t.ex. "11 mars" eller "Ons 11 mars"',
-          ),
+          content: Text(AppStrings.errorDate),
           duration: Duration(seconds: 5),
         ),
       );
@@ -243,6 +232,7 @@ class _UploadClassState extends State<UploadClass> {
     }
 
     final data = {
+      'title': _titleController.text.trim(),
       'dateRaw': Timestamp.fromDate(parsedDate),
       'date': _dateController.text.trim(),
       'time': _timeController.text.trim(),
@@ -269,20 +259,23 @@ class _UploadClassState extends State<UploadClass> {
       Navigator.pop(context);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Pass sparat!')));
+      ).showSnackBar(const SnackBar(content: Text(AppStrings.saveClass)));
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Fel vid sparande: $e')));
+      ).showSnackBar(SnackBar(content: Text('${AppStrings.errorSave} $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(
-          widget.classId == null ? 'Ladda upp nytt pass' : 'Redigera pass',
+          widget.classId == null
+              ? AppStrings.createNewClass
+              : AppStrings.editClass,
         ),
       ),
       body: SingleChildScrollView(
@@ -293,120 +286,99 @@ class _UploadClassState extends State<UploadClass> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(
+                  labelText: AppStrings.nameClass,
+                ),
+                validator: (choice) => choice!.isEmpty ? AppStrings.req : null,
+              ),
+              gapH10,
+              TextFormField(
                 controller: _dateController,
                 decoration: InputDecoration(
-                  labelText: 'Datum',
+                  labelText: AppStrings.date,
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.calendar_today),
                     onPressed: _selectDate,
                   ),
                 ),
                 readOnly: true,
-                validator: (choice) => choice!.isEmpty ? 'Välj datum' : null,
+                validator: (choice) =>
+                    choice!.isEmpty ? AppStrings.pickDate : null,
               ),
               gapH10,
               TextFormField(
                 controller: _timeController,
                 decoration: InputDecoration(
-                  labelText: 'Tid',
+                  labelText: AppStrings.time,
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.access_time),
                     onPressed: _selectTime,
                   ),
                 ),
                 readOnly: true,
-                validator: (choice) => choice!.isEmpty ? 'Välj tid' : null,
+                validator: (choice) =>
+                    choice!.isEmpty ? AppStrings.pickTime : null,
               ),
               gapH10,
               TextFormField(
                 controller: _spotsTotalController,
                 decoration: const InputDecoration(
-                  labelText: 'Totalt antal platser',
+                  labelText: AppStrings.spotsAmount,
                 ),
                 keyboardType: TextInputType.number,
-                validator: (choice) => choice!.isEmpty ? 'Obligatoriskt' : null,
+                validator: (choice) => choice!.isEmpty ? AppStrings.req : null,
               ),
               gapH10,
-              DropdownButtonFormField<String>(
-                initialValue: _locationNameController.text.isEmpty
-                    ? null
-                    : _locationNameController.text,
-                decoration: const InputDecoration(labelText: 'Platsnamn'),
-                isExpanded: true,
-                items: _locationNames
-                    .map(
-                      (name) =>
-                          DropdownMenuItem(value: name, child: Text(name)),
-                    )
-                    .toList(),
-                onChanged: (choice) {
-                  setState(() {
-                    _locationNameController.text = choice ?? '';
-                  });
-                },
+              TextFormField(
+                controller: _locationNameController,
+                decoration: const InputDecoration(
+                  labelText: AppStrings.location,
+                ),
+                validator: (choice) => choice!.isEmpty ? AppStrings.req : null,
               ),
 
               gapH10,
-              DropdownButtonFormField<String>(
-                initialValue: _locationAddressController.text.isEmpty
-                    ? null
-                    : _locationAddressController.text,
-                decoration: const InputDecoration(labelText: 'Adress'),
-                isExpanded: true,
-                items: _locationAddresses
-                    .map(
-                      (name) =>
-                          DropdownMenuItem(value: name, child: Text(name)),
-                    )
-                    .toList(),
-                onChanged: (choice) {
-                  setState(() {
-                    _locationAddressController.text = choice ?? '';
-                  });
-                },
+              TextFormField(
+                controller: _locationAddressController,
+                decoration: const InputDecoration(
+                  labelText: AppStrings.address,
+                ),
+                validator: (choice) => choice!.isEmpty ? AppStrings.req : null,
               ),
               gapH10,
               TextFormField(
                 controller: _priceSingleController,
-                decoration: const InputDecoration(labelText: 'Pris per pass'),
-                validator: (choice) => choice!.isEmpty ? 'Obligatoriskt' : null,
+                decoration: const InputDecoration(
+                  labelText: AppStrings.priceClass,
+                ),
+                validator: (choice) => choice!.isEmpty ? AppStrings.req : null,
               ),
               gapH10,
               TextFormField(
                 controller: _price10CardController,
                 decoration: const InputDecoration(
-                  labelText: 'Pris för 10-kort',
+                  labelText: AppStrings.price10Card,
                 ),
               ),
               gapH10,
-              DropdownButtonFormField<String>(
-                initialValue: _descriptionController.text.isEmpty
-                    ? null
-                    : _descriptionController.text,
-                decoration: const InputDecoration(labelText: 'Beskrivning'),
-                isExpanded: true,
-                items: _descriptions
-                    .map(
-                      (desc) => DropdownMenuItem(
-                        value: desc,
-                        child: Text(desc, overflow: TextOverflow.ellipsis),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (choice) {
-                  setState(() {
-                    _descriptionController.text = choice ?? '';
-                  });
-                },
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  labelText: AppStrings.desc,
+                  hintMaxLines: 7,
+                ),
+                maxLines: 7,
               ),
               gapH20,
               PrimaryButton(
                 text: widget.classId == null
-                    ? 'Ladda upp pass'
-                    : 'Spara ändringar',
+                    ? AppStrings.uploadClass
+                    : AppStrings.saveChanges,
                 color: AppColors.neonGreen,
                 onPressed: _saveClass,
               ),
+              gapBottom,
             ],
           ),
         ),

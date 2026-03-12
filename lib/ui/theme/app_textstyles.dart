@@ -91,4 +91,17 @@ class AppTextStyles {
     fontWeight: FontWeight.bold,
     color: AppColors.white,
   );
+
+  static const TextStyle bodyWhiteSmall = TextStyle(
+    fontFamily: 'Geist',
+    fontSize: 14,
+    fontWeight: FontWeight.bold,
+    color: AppColors.white,
+  );
+
+  static const TextStyle bodyNeongreen = TextStyle(
+    fontFamily: 'VidaLoka',
+    fontSize: 11,
+    color: AppColors.neonGreen,
+  );
 }

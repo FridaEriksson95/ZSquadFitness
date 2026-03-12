@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zsquadfitness/services/auth.dart';
 import 'package:zsquadfitness/ui/components/custom_textfield.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
@@ -25,6 +26,7 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       extendBodyBehindAppBar: true,
       body: Container(
         width: context.screenWidth,
@@ -70,7 +72,7 @@ class _SignInPageState extends State<SignInPage> {
                                 children: [
                                   gapH20,
                                   CustomTextfield(
-                                    labelText: 'Epost',
+                                    labelText: AppStrings.email,
                                     keyboardType: TextInputType.emailAddress,
                                     textInputAction: TextInputAction.next,
                                     controller: _emailController,
@@ -81,7 +83,7 @@ class _SignInPageState extends State<SignInPage> {
                                   ),
                                   gapH20,
                                   CustomTextfield(
-                                    labelText: 'Lösenord',
+                                    labelText: AppStrings.password,
                                     obscureText: true,
                                     textInputAction: TextInputAction.done,
                                     controller: _passwordController,
@@ -95,8 +97,8 @@ class _SignInPageState extends State<SignInPage> {
 
                                   PrimaryButton(
                                     text: _isLoading
-                                        ? 'Loggar in...'
-                                        : 'LOGGA IN',
+                                        ? AppStrings.loginLoad
+                                        : AppStrings.loginBtn,
                                     onPressed: _isLoading
                                         ? null
                                         : () {
@@ -117,7 +119,7 @@ class _SignInPageState extends State<SignInPage> {
                                         padding: EdgeInsets.only(left: 10),
                                       ),
                                       child: Text(
-                                        'Glömt Lösenord?',
+                                        AppStrings.forgotPW,
                                         style: AppTextStyles.bodySmall.copyWith(
                                           color: AppColors.neonGreen,
                                           decoration: TextDecoration.underline,
@@ -144,7 +146,7 @@ class _SignInPageState extends State<SignInPage> {
                           gapH15,
                           GestureDetector(
                             onTap: () {
-                               AuthService().signInWithGoogle(context);
+                              AuthService().signInWithGoogle(context);
                             },
                             child: Container(
                               height: 60,
@@ -179,7 +181,9 @@ class _SignInPageState extends State<SignInPage> {
                                   ),
                                   gapW12,
                                   Text(
-                                    _isLoading ? 'Loggar in...' : 'Logga in med Google',
+                                    _isLoading
+                                        ? AppStrings.loginLoad
+                                        : AppStrings.signInGoogle,
                                     textAlign: TextAlign.center,
                                     style: AppTextStyles.buttonText,
                                   ),
@@ -192,7 +196,10 @@ class _SignInPageState extends State<SignInPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('Ny här?', style: AppTextStyles.bodySmall),
+                              Text(
+                                AppStrings.newUser,
+                                style: AppTextStyles.bodySmall,
+                              ),
                               TextButton(
                                 onPressed: widget.onToggle,
                                 style: TextButton.styleFrom(
@@ -202,7 +209,7 @@ class _SignInPageState extends State<SignInPage> {
                                       MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 child: Text(
-                                  'Skapa konto!',
+                                  AppStrings.createAccount,
                                   style: AppTextStyles.bodyMedium.copyWith(
                                     color: AppColors.neonGreen,
                                     decoration: TextDecoration.underline,
@@ -245,7 +252,7 @@ class _SignInPageState extends State<SignInPage> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Inloggning misslyckades: $e')));
+        ).showSnackBar(SnackBar(content: Text('${AppStrings.signinFail} $e')));
       }
     } finally {
       if (mounted) {
@@ -275,7 +282,7 @@ class _SignInPageState extends State<SignInPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    emailSent ? 'Mejl skickat!' : 'Glömt lösenord?',
+                    emailSent ? AppStrings.emailSent : AppStrings.forgotPW,
                     style: AppTextStyles.h3.copyWith(
                       color: AppColors.neonGreen,
                     ),
@@ -292,7 +299,7 @@ class _SignInPageState extends State<SignInPage> {
                   ? Padding(
                       padding: paddingOnlyBs,
                       child: Text(
-                        'Kontrollera din inkorg (och skräppost) för återställningslänk',
+                        AppStrings.checkEmail,
                         style: AppTextStyles.bodyMedium,
                         textAlign: TextAlign.center,
                       ),
@@ -302,12 +309,12 @@ class _SignInPageState extends State<SignInPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Ange din epost så skickas en återställningslänk till din inkorg.',
+                          AppStrings.submitEmailLink,
                           style: AppTextStyles.bodySmall,
                         ),
                         gapH15,
                         CustomTextfield(
-                          labelText: 'Epost',
+                          labelText: AppStrings.email,
                           keyboardType: TextInputType.emailAddress,
                           controller: resetEmailController,
                           prefixIcon: const Icon(
@@ -330,8 +337,12 @@ class _SignInPageState extends State<SignInPage> {
               actions: [
                 PrimaryButton(
                   text: emailSent
-                      ? (isLoading ? 'Skickar igen..' : 'Skicka igen')
-                      : (isLoading ? 'Skickar..' : 'Skicka länk'),
+                      ? (isLoading
+                            ? AppStrings.sendingAgainLoad
+                            : AppStrings.sendAgain)
+                      : (isLoading
+                            ? AppStrings.sendingLoad
+                            : AppStrings.sendLink),
                   color: AppColors.turquise,
                   onPressed: isLoading
                       ? null
@@ -340,7 +351,7 @@ class _SignInPageState extends State<SignInPage> {
 
                           if (email.isEmpty) {
                             setDialogState(() {
-                              errorMessage = 'Ange en giltig epost';
+                              errorMessage = AppStrings.errorSubmitEmail;
                             });
                             return;
                           }
@@ -359,7 +370,7 @@ class _SignInPageState extends State<SignInPage> {
                           } catch (e) {
                             setDialogState(() {
                               errorMessage = e.toString().replaceFirst(
-                                'Exception: ',
+                                AppStrings.exception,
                                 '',
                               );
                               isLoading = false;

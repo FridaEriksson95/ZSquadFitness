@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:zsquadfitness/services/database.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 
 class AuthService {
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -26,7 +27,7 @@ class AuthService {
 
       final User userDetails = result.user!;
       final userInfoMap = {
-        "Name": userDetails.displayName ?? 'Användare',
+        "Name": userDetails.displayName ?? AppStrings.zsquader,
         "Email": userDetails.email,
         "Id": userDetails.uid,
         'createdAt': DateTime.now().toIso8601String(),
@@ -68,20 +69,20 @@ class AuthService {
       String errorMessage;
       switch (e.code) {
         case 'email-already-in-use':
-          errorMessage = 'Eposten används redan.';
+          errorMessage = AppStrings.emailInUse;
           break;
         case 'weak-password':
-          errorMessage = 'Lösenordet är för svagt (minst 8 tecken)';
+          errorMessage = AppStrings.weakPW;
           break;
         case 'invalid-email':
-          errorMessage = 'Ogiltig epost.';
+          errorMessage = AppStrings.errorEmail;
           break;
         default:
-          errorMessage = 'Registrering misslyckades: ${e.message}';
+          errorMessage = '${AppStrings.registerFail}  ${e.message}';
       }
       throw Exception(errorMessage);
     } catch (e) {
-      throw Exception('Okänt fel vid registrering: $e');
+      throw Exception('${AppStrings.unknownError} $e');
     }
   }
 
@@ -102,23 +103,23 @@ class AuthService {
       String errorMessage;
       switch (e.code) {
         case 'user-not-found':
-          errorMessage = 'Ingen användare med denna epost.';
+          errorMessage = AppStrings.noUser;
           break;
         case 'wrong-password':
-          errorMessage = 'Fel lösenord.';
+          errorMessage = AppStrings.wrongPW;
           break;
         case 'invalid-email':
-          errorMessage = 'Ogiltig epost.';
+          errorMessage = AppStrings.errorEmail;
           break;
         case 'user-disabled':
-          errorMessage = 'Kontot är avstängt.';
+          errorMessage = AppStrings.accountClosed;
           break;
         default:
-          errorMessage = 'Inloggning misslyckades: ${e.message}';
+          errorMessage = '${AppStrings.signinFail}  ${e.message}';
       }
       throw Exception(errorMessage);
     } catch (e) {
-      throw Exception('Okänt fel vid inloggning: $e');
+      throw Exception('${AppStrings.unknownError} $e');
     }
   }
 
@@ -134,17 +135,17 @@ class AuthService {
       String errorMessage;
       switch (e.code) {
         case 'user-not-found':
-          errorMessage = 'Ingen användare med denna epost registrerad.';
+          errorMessage = AppStrings.noUser;
           break;
         case 'invalid-email':
-          errorMessage = 'Ogiltig epost';
+          errorMessage = AppStrings.errorEmail;
           break;
         default:
-          errorMessage = 'Kunde inte skicka återställningslänk: ${e.message}';
+          errorMessage = '${AppStrings.failResetLink} ${e.message}';
       }
       throw Exception(errorMessage);
     } catch (e) {
-      throw Exception('Okänt fel: $e');
+      throw Exception('${AppStrings.unknownError} $e');
     }
   }
 }

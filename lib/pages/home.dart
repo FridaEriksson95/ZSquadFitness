@@ -5,6 +5,7 @@ import 'package:zsquadfitness/services/database.dart';
 import 'package:zsquadfitness/ui/components/custom_appbar.dart';
 import 'package:zsquadfitness/ui/components/home_card.dart';
 import 'package:zsquadfitness/ui/components/week_calendar.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
 
@@ -35,59 +36,67 @@ class _HomePageState extends State<HomePage> {
                   StreamBuilder(
                     stream: DatabaseService().getUserData(user!.uid),
                     builder: (context, snapshot) {
-                      String welcomeName = 'ZSquader';
+                      String welcomeName = AppStrings.zsquader;
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Text(
-                          'VÄLKOMMEN...',
+                          AppStrings.welcomeDots,
                           style: AppTextStyles.h1,
                         );
                       }
                       if (snapshot.hasData && snapshot.data!.exists) {
                         final data =
                             snapshot.data!.data() as Map<String, dynamic>?;
-                        welcomeName = data?['Name'] as String? ?? 'ZSquader';
+                        welcomeName =
+                            data?['Name'] as String? ?? AppStrings.zsquader;
                       }
                       return Text(
-                        'VÄLKOMMEN, $welcomeName!',
+                        '${AppStrings.welcome}, $welcomeName!',
                         style: AppTextStyles.h1,
                       );
                     },
                   ),
 
                   gapH5,
-                  Text('Boka ditt nästa Zumbapass🕺', style: AppTextStyles.h2),
+                  Text(AppStrings.bookClassText, style: AppTextStyles.h2),
                 ],
               ),
             ),
             gapH20,
 
-            Padding(
-              padding: paddingH20,
-              child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('classes')
-                    .orderBy('dateRaw')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(
-                      child: Padding(
-                        padding: paddingAll24,
-                        child: Text(
-                          'Inga pass upplagda',
-                          style: AppTextStyles.bodyWhiteDialog,
-                        ),
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('classes')
+                  .orderBy('dateRaw')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: paddingAll24,
+                      child: Text(
+                        AppStrings.noClasses,
+                        style: AppTextStyles.bodyWhiteDialog,
                       ),
-                    );
-                  }
-                  return HomeCard(classes: snapshot.data!.docs);
-                },
-              ),
+                    ),
+                  );
+                }
+                return Column(
+                  children: [
+                    WeekCalendar(
+                      key: const PageStorageKey('week_calendar'),
+                      classes: snapshot.data!.docs,
+                    ),
+                    gapH10,
+                    HomeCard(classes: snapshot.data!.docs),
+                  ],
+                );
+              },
             ),
             gapBottom,
+            gapH5,
           ],
         ),
       ),

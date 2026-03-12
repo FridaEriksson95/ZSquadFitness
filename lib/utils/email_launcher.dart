@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
 
 Future<void> openEmail(BuildContext context) async {
   final Uri emailUri = Uri(
-    scheme: 'mailto',
-    path: 'info.zsquadfitness@gmail.com',
-    queryParameters: {'subject': 'ZSquadAppen'},
+    scheme: AppStrings.mailTo,
+    path: AppStrings.zSquadMail,
+    queryParameters: {AppStrings.subject: AppStrings.zSquadApp},
   );
 
   try {
@@ -17,21 +18,19 @@ Future<void> openEmail(BuildContext context) async {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppColors.neonPink.withValues(alpha: 0.5),
-            content: Text(
-              'Kunde inte öppna mejlappen. Skriv manuellt till info.zsquadfitness@gmail.com',
-            ),
+            content: Text(AppStrings.cantOpenEmail),
             duration: Duration(seconds: 5),
           ),
         );
       }
     }
   } catch (e) {
-    debugPrint('Fel vid öppning av mejl: $e');
+    debugPrint('${AppStrings.errorOpeningEmail} $e');
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: AppColors.neonPink.withValues(alpha: 0.5),
-          content: Text('Kunde inte öppna mejl. Kontrollera din mejl app.'),
+          content: Text(AppStrings.errorOpeningEmailMessage),
         ),
       );
     }
