@@ -198,9 +198,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
                                     style: AppTextStyles.bodySmall.copyWith(
                                       color: hasClass
                                           ? AppColors.neonGreen
-                                          : (isToday
-                                                ? AppColors.white
-                                                : AppColors.turquise),
+                                          : AppColors.turquise,
                                       fontWeight: fontWeight,
                                       shadows: isToday
                                           ? [

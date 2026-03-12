@@ -2,13 +2,15 @@ class AppStrings {
   //AdminDashboard
   static const String adminTitle = 'ADMIN - Hantera pass';
   static const String createNewClass = 'Ladda upp nytt pass';
-  static const String allClasses = 'Alla pass';
   static const String spots = 'platser';
   static const String deleteClass = 'Ta bort pass';
   static const String confirmDelete =
       'Är du säker på att du vill ta bort detta pass?';
   static const String deleteBtn = 'Ta bort';
   static const String deleteConfirmation = 'Passet har tagits bort';
+  static const String allClasses = 'Alla pass';
+  static const String upcoming = 'Kommande';
+  static const String passed = 'Utförda';
 
   //UploadClass
   static const String amount = '25';

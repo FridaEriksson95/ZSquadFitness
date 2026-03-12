@@ -19,6 +19,16 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser;
 
+  List<QueryDocumentSnapshot> _upcomingClasses(QuerySnapshot snapshot) {
+    final now = DateTime.now();
+    return snapshot.docs.where((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      final ts = data['dateRaw'] as Timestamp?;
+      if (ts == null) return false;
+      return !ts.toDate().isBefore(now);
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,14 +93,16 @@ class _HomePageState extends State<HomePage> {
                     ),
                   );
                 }
+                final upcoming = _upcomingClasses(snapshot.data!);
+
                 return Column(
                   children: [
                     WeekCalendar(
                       key: const PageStorageKey('week_calendar'),
-                      classes: snapshot.data!.docs,
+                      classes: upcoming,
                     ),
                     gapH10,
-                    HomeCard(classes: snapshot.data!.docs),
+                    HomeCard(classes: upcoming),
                   ],
                 );
               },

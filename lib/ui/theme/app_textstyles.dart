@@ -37,6 +37,13 @@ class AppTextStyles {
     color: AppColors.turquise,
   );
 
+  static TextStyle vNG = TextStyle(
+    fontFamily: 'VidaLoka',
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+    color: AppColors.turquise,
+  );
+
   static const TextStyle hG = TextStyle(
     fontFamily: 'Geist',
     fontSize: 20,
@@ -61,6 +68,13 @@ class AppTextStyles {
   static const TextStyle bodySmall = TextStyle(
     fontFamily: 'VidaLoka',
     fontSize: 14,
+    fontWeight: FontWeight.bold,
+    color: AppColors.lightGrey,
+  );
+
+  static const TextStyle bodyGrey = TextStyle(
+    fontFamily: 'VidaLoka',
+    fontSize: 16,
     fontWeight: FontWeight.bold,
     color: AppColors.lightGrey,
   );
@@ -95,6 +109,13 @@ class AppTextStyles {
   static const TextStyle bodyWhiteSmall = TextStyle(
     fontFamily: 'Geist',
     fontSize: 14,
+    fontWeight: FontWeight.bold,
+    color: AppColors.white,
+  );
+
+  static const TextStyle bodyWhiteMedium = TextStyle(
+    fontFamily: 'Geist',
+    fontSize: 16,
     fontWeight: FontWeight.bold,
     color: AppColors.white,
   );
