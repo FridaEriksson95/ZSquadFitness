@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
 
@@ -32,7 +33,7 @@ class _UploadClassState extends State<UploadClass> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(
-      text: widget.initialData?['title'] ?? 'Zumba',
+      text: widget.initialData?['title'] ?? AppStrings.zumba,
     );
     _dateController = TextEditingController(
       text: widget.initialData?['date'] ?? '',
@@ -41,26 +42,22 @@ class _UploadClassState extends State<UploadClass> {
       text: widget.initialData?['time'] ?? '',
     );
     _spotsTotalController = TextEditingController(
-      text: widget.initialData?['spotsTotal']?.toString() ?? '25',
+      text: widget.initialData?['spotsTotal']?.toString() ?? AppStrings.amount,
     );
     _locationNameController = TextEditingController(
-      text: widget.initialData?['locationName'] ?? 'POP Studios, K7 Stenby',
+      text: widget.initialData?['locationName'] ?? AppStrings.stenbyLocation,
     );
     _locationAddressController = TextEditingController(
-      text:
-          widget.initialData?['locationAddress'] ??
-          'Kraftlinjegatan 4, Västerås',
+      text: widget.initialData?['locationAddress'] ?? AppStrings.stenbyAddress,
     );
     _priceSingleController = TextEditingController(
-      text: widget.initialData?['priceSingle'] ?? '65:-',
+      text: widget.initialData?['priceSingle'] ?? AppStrings.priceSingle,
     );
     _price10CardController = TextEditingController(
-      text: widget.initialData?['price10Card'] ?? '585:-',
+      text: widget.initialData?['price10Card'] ?? AppStrings.tenCard,
     );
     _descriptionController = TextEditingController(
-      text:
-          widget.initialData?['description'] ??
-          '60 minuter glädjefylld dansträningspass med rytmer från hela världen. Här utlovas svett, kondition, koordination, styrka och energi!\n\nInga förkunskaper krävs, du kör efter egen förmåga. Första gången alltid gratis prova på.',
+      text: widget.initialData?['description'] ?? AppStrings.descZumba,
     );
   }
 
@@ -113,7 +110,7 @@ class _UploadClassState extends State<UploadClass> {
     final TimeOfDay? from = await showTimePicker(
       context: context,
       initialTime: const TimeOfDay(hour: 17, minute: 0),
-      helpText: 'Välj starttid',
+      helpText: AppStrings.startTime,
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
@@ -137,7 +134,7 @@ class _UploadClassState extends State<UploadClass> {
     final TimeOfDay? to = await showTimePicker(
       context: context,
       initialTime: from.replacing(hour: from.hour + 1, minute: from.minute),
-      helpText: 'Välj sluttid',
+      helpText: AppStrings.endTime,
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
@@ -218,9 +215,7 @@ class _UploadClassState extends State<UploadClass> {
     if (parsedDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Ogiltigt datum – skriv t.ex. "11 mars" eller "Ons 11 mars"',
-          ),
+          content: Text(AppStrings.errorDate),
           duration: Duration(seconds: 5),
         ),
       );
@@ -264,11 +259,11 @@ class _UploadClassState extends State<UploadClass> {
       Navigator.pop(context);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Pass sparat!')));
+      ).showSnackBar(const SnackBar(content: Text(AppStrings.saveClass)));
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Fel vid sparande: $e')));
+      ).showSnackBar(SnackBar(content: Text('${AppStrings.errorSave} $e')));
     }
   }
 
@@ -278,7 +273,9 @@ class _UploadClassState extends State<UploadClass> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(
-          widget.classId == null ? 'Ladda upp nytt pass' : 'Redigera pass',
+          widget.classId == null
+              ? AppStrings.createNewClass
+              : AppStrings.editClass,
         ),
       ),
       body: SingleChildScrollView(
@@ -290,75 +287,85 @@ class _UploadClassState extends State<UploadClass> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Namn på pass'),
-                validator: (choice) => choice!.isEmpty ? 'Obligatoriskt' : null,
+                decoration: const InputDecoration(
+                  labelText: AppStrings.nameClass,
+                ),
+                validator: (choice) => choice!.isEmpty ? AppStrings.req : null,
               ),
               gapH10,
               TextFormField(
                 controller: _dateController,
                 decoration: InputDecoration(
-                  labelText: 'Datum',
+                  labelText: AppStrings.date,
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.calendar_today),
                     onPressed: _selectDate,
                   ),
                 ),
                 readOnly: true,
-                validator: (choice) => choice!.isEmpty ? 'Välj datum' : null,
+                validator: (choice) =>
+                    choice!.isEmpty ? AppStrings.pickDate : null,
               ),
               gapH10,
               TextFormField(
                 controller: _timeController,
                 decoration: InputDecoration(
-                  labelText: 'Tid',
+                  labelText: AppStrings.time,
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.access_time),
                     onPressed: _selectTime,
                   ),
                 ),
                 readOnly: true,
-                validator: (choice) => choice!.isEmpty ? 'Välj tid' : null,
+                validator: (choice) =>
+                    choice!.isEmpty ? AppStrings.pickTime : null,
               ),
               gapH10,
               TextFormField(
                 controller: _spotsTotalController,
                 decoration: const InputDecoration(
-                  labelText: 'Totalt antal platser',
+                  labelText: AppStrings.spotsAmount,
                 ),
                 keyboardType: TextInputType.number,
-                validator: (choice) => choice!.isEmpty ? 'Obligatoriskt' : null,
+                validator: (choice) => choice!.isEmpty ? AppStrings.req : null,
               ),
               gapH10,
               TextFormField(
                 controller: _locationNameController,
-                decoration: const InputDecoration(labelText: 'Plats'),
-                validator: (choice) => choice!.isEmpty ? 'Obligatoriskt' : null,
+                decoration: const InputDecoration(
+                  labelText: AppStrings.location,
+                ),
+                validator: (choice) => choice!.isEmpty ? AppStrings.req : null,
               ),
 
               gapH10,
               TextFormField(
                 controller: _locationAddressController,
-                decoration: const InputDecoration(labelText: 'Adress'),
-                validator: (choice) => choice!.isEmpty ? 'Obligatoriskt' : null,
+                decoration: const InputDecoration(
+                  labelText: AppStrings.address,
+                ),
+                validator: (choice) => choice!.isEmpty ? AppStrings.req : null,
               ),
               gapH10,
               TextFormField(
                 controller: _priceSingleController,
-                decoration: const InputDecoration(labelText: 'Pris per pass'),
-                validator: (choice) => choice!.isEmpty ? 'Obligatoriskt' : null,
+                decoration: const InputDecoration(
+                  labelText: AppStrings.priceClass,
+                ),
+                validator: (choice) => choice!.isEmpty ? AppStrings.req : null,
               ),
               gapH10,
               TextFormField(
                 controller: _price10CardController,
                 decoration: const InputDecoration(
-                  labelText: 'Pris för 10-kort',
+                  labelText: AppStrings.price10Card,
                 ),
               ),
               gapH10,
               TextFormField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(
-                  labelText: 'Beskrivning',
+                  labelText: AppStrings.desc,
                   hintMaxLines: 7,
                 ),
                 maxLines: 7,
@@ -366,8 +373,8 @@ class _UploadClassState extends State<UploadClass> {
               gapH20,
               PrimaryButton(
                 text: widget.classId == null
-                    ? 'Ladda upp pass'
-                    : 'Spara ändringar',
+                    ? AppStrings.uploadClass
+                    : AppStrings.saveChanges,
                 color: AppColors.neonGreen,
                 onPressed: _saveClass,
               ),

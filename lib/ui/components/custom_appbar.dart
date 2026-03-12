@@ -1,7 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:zsquadfitness/admin/admin_dashboard.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
@@ -39,7 +37,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
                   color: AppColors.neonGreen.withValues(alpha: 0.8),
                 ),
                 onPressed: () => openEmail(context),
-                tooltip: 'Kontakta oss',
+                tooltip: AppStrings.contactUs,
                 iconSize: 32,
               ),
             ),

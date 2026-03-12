@@ -151,12 +151,6 @@ class _WeekCalendarState extends State<WeekCalendar> {
                             onTap: () {
                               if (!hasClass) return;
 
-                              final normalizedDay = DateTime(
-                                day.year,
-                                day.month,
-                                day.day,
-                              );
-
                               final classForDay = widget.classes.where((doc) {
                                 final data = doc.data() as Map<String, dynamic>;
                                 final classDateRaw =

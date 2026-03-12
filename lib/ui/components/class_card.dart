@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:zsquadfitness/ui/components/booking_dialog.dart';
 import 'package:zsquadfitness/ui/components/border_card.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
@@ -32,7 +33,7 @@ class _ClassCardState extends State<ClassCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          (widget.classData['date'] ?? 'Datum saknas').toUpperCase(),
+          (widget.classData['date'] ?? AppStrings.noDate).toUpperCase(),
           style: AppTextStyles.vG,
         ),
         gapH10,
@@ -58,12 +59,12 @@ class _ClassCardState extends State<ClassCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.classData['title'] ?? 'Zumba',
+                      widget.classData['title'] ?? AppStrings.zumba,
                       style: AppTextStyles.vT,
                     ),
                     gapH5,
                     Text(
-                      widget.classData['time'] ?? 'Tid saknas',
+                      widget.classData['time'] ?? AppStrings.noTime,
                       style: AppTextStyles.bodyWhiteBold,
                     ),
                     gapH5,
@@ -76,7 +77,7 @@ class _ClassCardState extends State<ClassCard> {
                           ),
                         ),
                         Text(
-                          ' platser kvar',
+                          AppStrings.spotsLeft,
                           style: AppTextStyles.bodyWhiteThin,
                         ),
                       ],
@@ -105,7 +106,7 @@ class _ClassCardState extends State<ClassCard> {
                     child: Padding(
                       padding: paddingOnlyTB,
                       child: PrimaryButton(
-                        text: booked ? 'BOKAD' : 'BOKA',
+                        text: booked ? AppStrings.booked : AppStrings.book,
                         onPressed: booked
                             ? null
                             : () {

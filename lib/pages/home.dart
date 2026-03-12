@@ -5,6 +5,7 @@ import 'package:zsquadfitness/services/database.dart';
 import 'package:zsquadfitness/ui/components/custom_appbar.dart';
 import 'package:zsquadfitness/ui/components/home_card.dart';
 import 'package:zsquadfitness/ui/components/week_calendar.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
 
@@ -35,27 +36,28 @@ class _HomePageState extends State<HomePage> {
                   StreamBuilder(
                     stream: DatabaseService().getUserData(user!.uid),
                     builder: (context, snapshot) {
-                      String welcomeName = 'ZSquader';
+                      String welcomeName = AppStrings.zsquader;
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Text(
-                          'VÄLKOMMEN...',
+                          AppStrings.welcomeDots,
                           style: AppTextStyles.h1,
                         );
                       }
                       if (snapshot.hasData && snapshot.data!.exists) {
                         final data =
                             snapshot.data!.data() as Map<String, dynamic>?;
-                        welcomeName = data?['Name'] as String? ?? 'ZSquader';
+                        welcomeName =
+                            data?['Name'] as String? ?? AppStrings.zsquader;
                       }
                       return Text(
-                        'VÄLKOMMEN, $welcomeName!',
+                        '${AppStrings.welcome}, $welcomeName!',
                         style: AppTextStyles.h1,
                       );
                     },
                   ),
 
                   gapH5,
-                  Text('Boka ditt nästa Zumbapass🕺', style: AppTextStyles.h2),
+                  Text(AppStrings.bookClassText, style: AppTextStyles.h2),
                 ],
               ),
             ),
@@ -75,7 +77,7 @@ class _HomePageState extends State<HomePage> {
                     child: Padding(
                       padding: paddingAll24,
                       child: Text(
-                        'Inga pass upplagda',
+                        AppStrings.noClasses,
                         style: AppTextStyles.bodyWhiteDialog,
                       ),
                     ),

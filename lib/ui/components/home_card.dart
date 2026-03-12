@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:zsquadfitness/ui/components/booking_dialog.dart';
 import 'package:zsquadfitness/ui/components/border_card.dart';
 import 'package:zsquadfitness/ui/components/class_card.dart';
-import 'package:zsquadfitness/ui/components/week_calendar.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
@@ -60,7 +59,7 @@ class _HomeCardState extends State<HomeCard> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            'KOMMANDE PASS',
+            AppStrings.upcomingClasses,
             style: AppTextStyles.h3,
             textAlign: TextAlign.center,
           ),

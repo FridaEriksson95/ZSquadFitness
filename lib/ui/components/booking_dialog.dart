@@ -5,6 +5,7 @@ import 'package:zsquadfitness/ui/components/border_card.dart';
 import 'package:zsquadfitness/ui/components/bottom_nav.dart';
 import 'package:zsquadfitness/ui/components/confirmation_dialog.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
@@ -27,8 +28,8 @@ class BookingDialog extends StatefulWidget {
 class _BookingDialogState extends State<BookingDialog> {
   bool _sendConfirmation = false;
   bool _repeatBooking = false;
-  String _repeatDay = 'Onsdagar';
-  String _repeatWeeks = '2 veckor fram';
+  String _repeatDay = AppStrings.wednesdays;
+  String _repeatWeeks = AppStrings.weeksAhead2;
   bool _isBooking = false;
 
   int get spotsLeft =>
@@ -44,7 +45,7 @@ class _BookingDialogState extends State<BookingDialog> {
     if (user == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Du måste vara inloggad.')));
+      ).showSnackBar(SnackBar(content: Text(AppStrings.loginRequired)));
       setState(() => _isBooking = false);
       return;
     }
@@ -58,13 +59,13 @@ class _BookingDialogState extends State<BookingDialog> {
         final classSnapshot = await transaction.get(classRef);
 
         if (!classSnapshot.exists) {
-          throw 'Passet finns inte längre';
+          throw AppStrings.classRemoved;
         }
         final currentBooked = classSnapshot.data()?['spotsBooked'] ?? 0;
         final total = classSnapshot.data()?['spotsTotal'] ?? 0;
 
         if (currentBooked >= total) {
-          throw 'Passet är fullbokat';
+          throw AppStrings.classFull;
         }
 
         transaction.update(classRef, {'spotsBooked': currentBooked + 1});
@@ -99,7 +100,7 @@ class _BookingDialogState extends State<BookingDialog> {
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Bokning misslyckades: $e')));
+      ).showSnackBar(SnackBar(content: Text('${AppStrings.bookingFailed} $e')));
     } finally {
       setState(() => _isBooking = false);
     }
@@ -125,7 +126,7 @@ class _BookingDialogState extends State<BookingDialog> {
                 alignment: Alignment.center,
                 children: [
                   Text(
-                    'BOKA PASS',
+                    AppStrings.bookClass,
                     style: AppTextStyles.h1,
                     textAlign: TextAlign.center,
                   ),
@@ -175,12 +176,16 @@ class _BookingDialogState extends State<BookingDialog> {
                             children: [
                               gapH10,
                               Text(
-                                widget.classData['title'] ?? 'Zumba',
+                                widget.classData['title'] ?? AppStrings.zumba,
                                 style: AppTextStyles.hT,
                               ),
                               gapH5,
-                              Text(widget.classData['date'] ?? 'Datum saknas'),
-                              Text(widget.classData['time'] ?? 'Tid saknas'),
+                              Text(
+                                widget.classData['date'] ?? AppStrings.noDate,
+                              ),
+                              Text(
+                                widget.classData['time'] ?? AppStrings.noTime,
+                              ),
                             ],
                           ),
                         ),
@@ -204,7 +209,7 @@ class _BookingDialogState extends State<BookingDialog> {
                               ),
                             ),
                             Text(
-                              '$spotsLeft lediga',
+                              '$spotsLeft ${AppStrings.available}',
                               style: AppTextStyles.hT.copyWith(
                                 color: AppColors.neonGreen.withValues(
                                   alpha: 0.7,
@@ -240,7 +245,7 @@ class _BookingDialogState extends State<BookingDialog> {
                               children: [
                                 Text(
                                   widget.classData['locationName'] ??
-                                      'Plats saknas',
+                                      AppStrings.noLocation,
                                   style: AppTextStyles.hT.copyWith(
                                     color: Colors.white,
                                   ),
@@ -248,7 +253,7 @@ class _BookingDialogState extends State<BookingDialog> {
                                 gapH5,
                                 Text(
                                   widget.classData['locationAddress'] ??
-                                      'Adress saknas',
+                                      AppStrings.noAddress,
                                   style: TextStyle(fontWeight: FontWeight.w200),
                                 ),
                               ],
@@ -268,7 +273,7 @@ class _BookingDialogState extends State<BookingDialog> {
                             ),
                             gapW5,
                             Text(
-                              '${widget.classData['priceSingle'] ?? '65:-'} /Pass  |  ${widget.classData['price10Card'] ?? '585:-'} /10-kort',
+                              '${widget.classData['priceSingle'] ?? AppStrings.priceSingle} ${AppStrings.perClass}  |  ${widget.classData['price10Card'] ?? AppStrings.tenCard} ${AppStrings.perTenCard} ',
                               style: AppTextStyles.hT.copyWith(
                                 color: Colors.white,
                               ),
@@ -290,7 +295,7 @@ class _BookingDialogState extends State<BookingDialog> {
 
                   if (!_repeatBooking) ...[
                     Text(
-                      widget.classData['description'] ?? 'Beskrivning saknas',
+                      widget.classData['description'] ?? AppStrings.noDesc,
                       style: TextStyle(
                         fontWeight: FontWeight.w200,
                         fontSize: 13,
@@ -311,7 +316,7 @@ class _BookingDialogState extends State<BookingDialog> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Bokningsbekräftelse',
+                        AppStrings.bookingConfirmation,
                         style: AppTextStyles.hT.copyWith(color: Colors.white),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -331,7 +336,7 @@ class _BookingDialogState extends State<BookingDialog> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Upprepa bokning',
+                        AppStrings.repeatBooking,
                         style: AppTextStyles.hT.copyWith(color: Colors.white),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -365,7 +370,7 @@ class _BookingDialogState extends State<BookingDialog> {
                               ),
                               contentPadding: paddingVH,
                             ),
-                            items: ['Onsdagar', 'Söndagar']
+                            items: [AppStrings.wednesdays, AppStrings.sundays]
                                 .map(
                                   (day) => DropdownMenuItem(
                                     value: day,
@@ -395,9 +400,9 @@ class _BookingDialogState extends State<BookingDialog> {
                             ),
                             items:
                                 [
-                                      '2 veckor fram',
-                                      '3 veckor fram',
-                                      '5 veckor fram',
+                                      AppStrings.weeksAhead2,
+                                      AppStrings.weeksAhead3,
+                                      AppStrings.weeksAhead5,
                                     ]
                                     .map(
                                       (w) => DropdownMenuItem(
@@ -422,7 +427,7 @@ class _BookingDialogState extends State<BookingDialog> {
               child: SizedBox(
                 width: 180,
                 child: PrimaryButton(
-                  text: _isBooking ? 'Bokar..' : 'BOKA',
+                  text: _isBooking ? AppStrings.bookingLoad : AppStrings.book,
                   color: AppColors.neonGreen,
                   onPressed: _isBooking ? null : _bookClass,
                 ),

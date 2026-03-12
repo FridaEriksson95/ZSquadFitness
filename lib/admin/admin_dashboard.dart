@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/admin/upload_class.dart';
 import 'package:zsquadfitness/ui/components/border_card.dart';
 import 'package:zsquadfitness/ui/components/custom_appbar.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
@@ -14,15 +14,13 @@ class AdminDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-
     return Scaffold(
       appBar: const CustomAppbar(),
       body: SingleChildScrollView(
         child: Column(
           children: [
             gapH15,
-            Text('ADMIN - Hantera pass', style: AppTextStyles.h1),
+            Text(AppStrings.adminTitle, style: AppTextStyles.h1),
             SizedBox(
               width: 300,
               child: Divider(color: AppColors.neonGreen.withValues(alpha: 0.4)),
@@ -31,7 +29,7 @@ class AdminDashboard extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: PrimaryButton(
-                text: 'Ladda upp nytt pass',
+                text: AppStrings.createNewClass,
                 color: AppColors.neonGreen,
                 onPressed: () {
                   Navigator.push(
@@ -44,7 +42,7 @@ class AdminDashboard extends StatelessWidget {
               ),
             ),
             gapH20,
-            Text('Alla pass', style: AppTextStyles.h3),
+            Text(AppStrings.allClasses, style: AppTextStyles.h3),
             gapH10,
             StreamBuilder(
               stream: FirebaseFirestore.instance
@@ -57,7 +55,7 @@ class AdminDashboard extends StatelessWidget {
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return const Text(
-                    'Inga pass upplagda',
+                    AppStrings.noClasses,
                     style: AppTextStyles.bodyMedium,
                   );
                 }
@@ -78,16 +76,16 @@ class AdminDashboard extends StatelessWidget {
                             alpha: 0.3,
                           ),
                           child: Text(
-                            data['time']?.substring(0, 2) ?? 'Z',
+                            data['time']?.substring(0, 2) ?? '',
                             style: AppTextStyles.bodyWhiteDialog,
                           ),
                         ),
                         title: Text(
-                          '${data['date'] ?? 'Okänt datum'} ${data['time'] ?? ''}',
+                          '${data['date'] ?? AppStrings.cantFindDate} ${data['time'] ?? ''}',
                           style: AppTextStyles.hT,
                         ),
                         subtitle: Text(
-                          '${data['locationName'] ?? ''} - ${data['spotsTotal'] ?? 0} platser',
+                          '${data['locationName'] ?? ''} - ${data['spotsTotal'] ?? 0} ${AppStrings.spots}',
                           style: AppTextStyles.bodyMedium,
                         ),
                         trailing: Row(
@@ -119,21 +117,23 @@ class AdminDashboard extends StatelessWidget {
                                 final confirm = await showDialog<bool>(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    title: const Text('Ta bort pass?'),
-                                    content: const Text('Är du säker?'),
+                                    title: const Text(AppStrings.deleteClass),
+                                    content: const Text(
+                                      AppStrings.confirmDelete,
+                                    ),
                                     actions: [
                                       TextButton(
                                         onPressed: () =>
                                             Navigator.pop(context, false),
-                                        child: const Text('Avbryt'),
+                                        child: const Text(AppStrings.cancel),
                                       ),
                                       TextButton(
                                         onPressed: () =>
                                             Navigator.pop(context, true),
                                         child: const Text(
-                                          'Ta bort',
+                                          AppStrings.deleteBtn,
                                           style: TextStyle(
-                                            color: AppColors.darkRed,
+                                            color: AppColors.neonPink,
                                           ),
                                         ),
                                       ),
@@ -145,6 +145,15 @@ class AdminDashboard extends StatelessWidget {
                                       .collection('classes')
                                       .doc(doc.id)
                                       .delete();
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          AppStrings.deleteConfirmation,
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 }
                               },
                             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zsquadfitness/services/auth.dart';
 import 'package:zsquadfitness/ui/components/custom_textfield.dart';
 import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/extensions/context_extensions.dart';
 import 'package:zsquadfitness/ui/theme/app_assets.dart';
@@ -84,7 +85,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                 children: [
                                   gapH20,
                                   CustomTextfield(
-                                    labelText: 'Epost',
+                                    labelText: AppStrings.email,
                                     keyboardType: TextInputType.emailAddress,
                                     textInputAction: TextInputAction.next,
                                     controller: _emailController,
@@ -94,19 +95,19 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Ange e-post';
+                                        return AppStrings.submitEmail;
                                       }
                                       if (!RegExp(
                                         r'^[^@]+@[^@]+\.[^@]+',
                                       ).hasMatch(value)) {
-                                        return 'Ogiltig e-post';
+                                        return AppStrings.errorEmail;
                                       }
                                       return null;
                                     },
                                   ),
                                   gapH20,
                                   CustomTextfield(
-                                    labelText: 'Namn',
+                                    labelText: AppStrings.name,
                                     keyboardType: TextInputType.name,
                                     textInputAction: TextInputAction.next,
                                     controller: _nameController,
@@ -115,12 +116,12 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                       color: AppColors.lightGrey,
                                     ),
                                     validator: (value) => value?.isEmpty ?? true
-                                        ? 'Ange namn'
+                                        ? AppStrings.submitName
                                         : null,
                                   ),
                                   gapH20,
                                   CustomTextfield(
-                                    labelText: 'Telefonnummer',
+                                    labelText: AppStrings.phone,
                                     keyboardType: TextInputType.phone,
                                     textInputAction: TextInputAction.next,
                                     controller: _phoneController,
@@ -131,17 +132,17 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                     restrictToDigits: true,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Ange nummer';
+                                        return AppStrings.submitPhone;
                                       }
                                       if (value.length < 8) {
-                                        return 'Ogiltigt nummer';
+                                        return AppStrings.errorPhone;
                                       }
                                       return null;
                                     },
                                   ),
                                   gapH20,
                                   CustomTextfield(
-                                    labelText: 'Lösenord',
+                                    labelText: AppStrings.password,
                                     obscureText: _obscurePassword,
                                     textInputAction: TextInputAction.next,
                                     controller: _passwordController,
@@ -163,14 +164,14 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                     ),
                                     validator: (value) {
                                       if (value == null || value.length < 8) {
-                                        return 'Minst 8 tecken';
+                                        return AppStrings.minimunPW;
                                       }
                                       return null;
                                     },
                                   ),
                                   gapH20,
                                   CustomTextfield(
-                                    labelText: 'Upprepa Lösenord',
+                                    labelText: AppStrings.repeatPassword,
                                     obscureText: _obscureConfirmPassword,
                                     textInputAction: TextInputAction.done,
                                     controller: _confirmPasswordController,
@@ -192,7 +193,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                     ),
                                     validator: (value) {
                                       if (value != _passwordController.text) {
-                                        return 'Lösenorden matchar inte';
+                                        return AppStrings.noMatchPW;
                                       }
                                       return null;
                                     },
@@ -200,8 +201,8 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                   gapH20,
                                   PrimaryButton(
                                     text: _isLoading
-                                        ? 'Registrerar...'
-                                        : 'REGISTRERA',
+                                        ? AppStrings.registerLoad
+                                        : AppStrings.register,
                                     onPressed: _isLoading
                                         ? null
                                         : () {
@@ -223,7 +224,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'Har du redan ett konto?',
+                                AppStrings.accountCheck,
                                 style: AppTextStyles.bodySmall,
                               ),
                               TextButton(
@@ -235,7 +236,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                       MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 child: Text(
-                                  'Logga in!',
+                                  AppStrings.signIn,
                                   style: AppTextStyles.bodyMedium.copyWith(
                                     color: AppColors.neonGreen,
                                     decoration: TextDecoration.underline,
@@ -251,7 +252,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                           ),
 
                           Text(
-                            'eller',
+                            AppStrings.or,
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.lightGrey,
                             ),
@@ -294,7 +295,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                   ),
                                   gapW12,
                                   Text(
-                                    'Logga in med Google',
+                                    AppStrings.signInGoogle,
                                     textAlign: TextAlign.center,
                                     style: AppTextStyles.buttonText,
                                   ),
@@ -340,7 +341,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registrering misslyckades: $e')),
+          SnackBar(content: Text('${AppStrings.registerFail} $e')),
         );
       }
     } finally {
@@ -360,7 +361,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Det gick inte att logga in med Google: $e')),
+          SnackBar(content: Text('${AppStrings.registerFailGoogle} $e')),
         );
       }
     }
