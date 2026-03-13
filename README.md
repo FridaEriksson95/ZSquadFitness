@@ -1,16 +1,60 @@
-# zsquadfitness
+![Logga](assets/images/LogoBlack.PNG)
 
-A new Flutter project.
+En Flutter-app för att boka Zumba- och träningspass. Byggd med ❤️ för Z Squad fitness i Västerås.
 
-## Getting Started
+## 📋 Projektplanering
+Projektets uppgifter, roadmap och planering finns på Trello:
 
-This project is a starting point for a Flutter application.
+**[→ Öppna ZSquad Fitness på Trello](https://trello.com/b/tYig1N1V/zsquadfitness)**
 
-A few resources to get you started if this is your first Flutter project:
+## ✨ Funktioner
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Boka och avboka Zumba- och andra träningspass
+- Veckokalender med tydlig överblick över kommande pass
+- Personlig profil med namn, telefon, e-post + bokningsstatistik
+- Inloggning med e-post/lösenord eller Google
+- Realtidsuppdateringar via **Firebase Firestore**
+- Mörkt neon-tema (grönt/pink/turkos)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- ![App Mockup](assets/images/screenshot.png)
+
+## 🛠 Teknikstack
+
+- **Flutter** (Dart)
+- **Firebase**  
+  - Authentication (Email + Google Sign-In)
+  - Firestore (pass, bokningar, användardata)
+- intl för svensk datumformatering
+- PageView + GestureDetector för smidig kalender
+
+## 🚀 Kom igång
+
+### Förutsättningar
+
+- [Flutter SDK](https://flutter.dev) (3.24+ rekommenderas 2025/2026)
+- Dart SDK (ingår i Flutter)
+- Android Studio / Xcode / VS Code
+- Firebase-projekt (med Authentication och Firestore aktiverat)
+
+### Steg-för-steg
+
+1. Klona repot
+
+   ```bash
+   git clone https://github.com/din-användare/zsquad-fitness.git
+   cd zsquad-fitness
+   flutter pub get
+   dart pub global activate flutterfire_cli
+   flutterfire configure --project=(projekt namn)
+   flutter run
+
+### Konfigurera Firebase
+- Gå till Firebase Console
+- Skapa nytt projekt (eller använd befintligt)
+- Lägg till Android- och/eller iOS-app
+- Ladda ner google-services.json (Android) → placera i android/app/
+- Ladda ner GoogleService-Info.plist (iOS) → placera i ios/Runner/
+- Aktivera Email/Password och Google i Authentication
+- Skapa Firestore-databas (startläge: testläge under utveckling)
+
+ ## ZSquad Fitness – Boka pass, svettas loss, ha kul! 💃🔥🕺
