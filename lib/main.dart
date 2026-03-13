@@ -4,10 +4,10 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:zsquadfitness/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:zsquadfitness/services/auth_wrapper.dart';
-import 'package:zsquadfitness/ui/constants/gaps.dart';
-import 'package:zsquadfitness/ui/theme/app_colors.dart';
-import 'package:zsquadfitness/ui/theme/app_theme.dart';
+import 'package:zsquadfitness/core/services/auth_wrapper.dart';
+import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
+import 'package:zsquadfitness/shared/ui/theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
