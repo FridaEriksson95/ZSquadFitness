@@ -6,6 +6,7 @@ import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
+import 'package:zsquadfitness/utils/phone_validator.dart';
 
 class EditProfileDialog extends StatefulWidget {
   final User user;
@@ -70,6 +71,39 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final phone = _phoneController.text.trim();
+
+    if (email.isEmpty) {
+      setState(() {
+        _isSaving = false;
+        _error = AppStrings.submitEmail;
+      });
+      return;
+    }
+
+    if (phone.isEmpty) {
+      setState(() {
+        _isSaving = false;
+        _error = AppStrings.phoneReq;
+      });
+      return;
+    }
+
+    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
+      setState(() {
+        _isSaving = false;
+        _error = AppStrings.errorEmail;
+      });
+      return;
+    }
+
+    final phoneError = validatePhone(phone);
+    if (phoneError != null) {
+      setState(() {
+        _isSaving = false;
+        _error = phoneError;
+      });
+      return;
+    }
 
     try {
       if (name.isNotEmpty && name != (user.displayName ?? '')) {

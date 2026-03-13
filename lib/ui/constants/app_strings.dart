@@ -115,6 +115,7 @@ class AppStrings {
   static const String errorSubmitEmail = 'Ange en giltig epost';
   static const String exception = 'Exception: ';
   static const String needPhoneNr = 'Telefonnummer krävs för inloggning';
+  static const String phoneReq = 'Telefonnummer krävs';
 
   //Phonevalidator
   static const String phoneLength =
