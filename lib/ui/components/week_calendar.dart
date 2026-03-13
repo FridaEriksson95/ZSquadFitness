@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:zsquadfitness/ui/components/booking_dialog.dart';
-import 'package:zsquadfitness/ui/components/border_card.dart';
+import 'package:zsquadfitness/utils/components/border_card.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';

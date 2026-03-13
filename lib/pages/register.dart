@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/services/auth.dart';
-import 'package:zsquadfitness/ui/components/custom_textfield.dart';
-import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/utils/components/custom_textfield.dart';
+import 'package:zsquadfitness/utils/components/primary_button.dart';
 import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/extensions/context_extensions.dart';
 import 'package:zsquadfitness/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/ui/theme/app_textstyles.dart';
+import 'package:zsquadfitness/utils/phone_validator.dart';
 
 class RegisterAccountPage extends StatefulWidget {
   final VoidCallback onToggle;
@@ -130,15 +131,6 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                       color: AppColors.lightGrey,
                                     ),
                                     restrictToDigits: true,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return AppStrings.submitPhone;
-                                      }
-                                      if (value.length < 8) {
-                                        return AppStrings.errorPhone;
-                                      }
-                                      return null;
-                                    },
                                   ),
                                   gapH20,
                                   CustomTextfield(
@@ -328,6 +320,17 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
   }
 
   Future<void> _register() async {
+    final phoneError = validatePhone(_phoneController.text.trim());
+    if (phoneError != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(phoneError)));
+      }
+      setState(() => _isLoading = false);
+      return;
+    }
+
     try {
       await AuthService().registerWithEmailAndPassword(
         email: _emailController.text.trim(),

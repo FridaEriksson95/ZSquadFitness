@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/services/auth.dart';
-import 'package:zsquadfitness/ui/components/custom_textfield.dart';
-import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/utils/components/custom_textfield.dart';
+import 'package:zsquadfitness/utils/components/primary_button.dart';
 import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_assets.dart';

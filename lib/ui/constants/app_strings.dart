@@ -64,7 +64,7 @@ class AppStrings {
   static const String logoutBtn = 'Logga ut';
   static const String statistics = 'Statistik';
   static const String latest4 = 'Senaste 4 veckorna';
-  static const String latest3 = 'Senaste 3 månaderna';
+  static const String latest3 = '3 månader';
   static const String latest6 = '6 månader';
   static const String completedClasses = 'Utförda pass: ';
   static const String noProfileData = 'Kunde inte hämta profilinformation ';
@@ -114,6 +114,11 @@ class AppStrings {
   static const String sendLink = 'Skicka länk';
   static const String errorSubmitEmail = 'Ange en giltig epost';
   static const String exception = 'Exception: ';
+  static const String needPhoneNr = 'Telefonnummer krävs för inloggning';
+
+  //Phonevalidator
+  static const String phoneLength =
+      'Ange ett giltigt mobilnummer (tex 0701234567)';
 
   //Auth
   static const String emailInUse = 'Eposten används redan';
@@ -154,6 +159,13 @@ class AppStrings {
   static const String errorOpeningEmailMessage =
       'Kunde inte öppna epost. Kontrollera din mejlapp';
 
+  //ClassInfoPage
+  static const String classInfoTitle = 'Pass Info';
+  static const String couldntLoadBookings =
+      'Kunde inte ladda bokningar. Kontrollera Firestore.';
+  static const String noOneBooked = 'Ingen inbokad på passet ännu';
+  static const String bookedInClass = 'BOKADE';
+
   //All
   static const String zumba = 'Zumba';
   static const String noPlace = 'Plats saknas';
@@ -175,4 +187,5 @@ class AppStrings {
   static const String spotsLeft = ' platser kvar';
   static const String contactUs = 'Kontakta oss';
   static const String upcomingClasses = 'KOMMANDE PASS';
+  static const String unknown = 'Okänd';
 }

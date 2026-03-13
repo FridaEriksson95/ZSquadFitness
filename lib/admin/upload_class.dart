@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/utils/components/primary_button.dart';
 import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';

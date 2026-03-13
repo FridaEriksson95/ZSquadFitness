@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:zsquadfitness/admin/class_info.dart';
 import 'package:zsquadfitness/admin/upload_class.dart';
-import 'package:zsquadfitness/ui/components/border_card.dart';
-import 'package:zsquadfitness/ui/components/custom_appbar.dart';
-import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/utils/components/border_card.dart';
+import 'package:zsquadfitness/utils/components/custom_appbar.dart';
+import 'package:zsquadfitness/utils/components/primary_button.dart';
 import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_colors.dart';
@@ -347,7 +348,15 @@ Widget _buildClassCard(BuildContext context, QueryDocumentSnapshot doc) {
               Icons.info_outline_rounded,
               color: AppColors.turquise,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ClassInfoPage(classId: doc.id, classData: data),
+                ),
+              );
+            },
           ),
         ),
       ],

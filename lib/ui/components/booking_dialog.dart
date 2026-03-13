@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:zsquadfitness/ui/components/border_card.dart';
+import 'package:zsquadfitness/utils/components/border_card.dart';
 import 'package:zsquadfitness/ui/components/bottom_nav.dart';
 import 'package:zsquadfitness/ui/components/confirmation_dialog.dart';
-import 'package:zsquadfitness/ui/components/primary_button.dart';
+import 'package:zsquadfitness/utils/components/primary_button.dart';
 import 'package:zsquadfitness/ui/constants/app_strings.dart';
 import 'package:zsquadfitness/ui/constants/gaps.dart';
 import 'package:zsquadfitness/ui/theme/app_assets.dart';
@@ -200,14 +200,7 @@ class _BookingDialogState extends State<BookingDialog> {
                         boxShadow: [shadow, shadowGlass2, shadowGlass3],
                         child: Column(
                           children: [
-                            Text(
-                              bookedText,
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.6),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
+                            Text(bookedText, style: AppTextStyles.bodySmall),
                             Text(
                               '$spotsLeft ${AppStrings.available}',
                               style: AppTextStyles.hT.copyWith(

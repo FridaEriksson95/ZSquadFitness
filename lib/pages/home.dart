@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/services/database.dart';
-import 'package:zsquadfitness/ui/components/custom_appbar.dart';
+import 'package:zsquadfitness/utils/components/custom_appbar.dart';
 import 'package:zsquadfitness/ui/components/home_card.dart';
 import 'package:zsquadfitness/ui/components/week_calendar.dart';
 import 'package:zsquadfitness/ui/constants/app_strings.dart';

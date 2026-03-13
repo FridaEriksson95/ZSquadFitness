@@ -114,7 +114,7 @@ class AppTextStyles {
   );
 
   static const TextStyle bodyWhiteMedium = TextStyle(
-    fontFamily: 'Geist',
+    fontFamily: 'VidaLoka',
     fontSize: 16,
     fontWeight: FontWeight.bold,
     color: AppColors.white,
