@@ -38,6 +38,134 @@ class _BookingDialogState extends State<BookingDialog> {
   String get bookedText =>
       '${widget.classData['spotsBooked'] ?? 0}/${widget.classData['spotsTotal'] ?? 25}';
 
+  final Map<int, String> weekdayNames = {
+    DateTime.monday: 'Måndagar',
+    DateTime.tuesday: 'Tisdagar',
+    DateTime.wednesday: 'Onsdagar',
+    DateTime.thursday: 'Torsdagar',
+    DateTime.friday: 'Fredagar',
+    DateTime.saturday: 'Lördagar',
+    DateTime.sunday: 'Söndagar',
+  };
+
+  List<String> _availableReapeatDayLabels = [];
+
+  int _repeatWeeksToInt(String value) {
+    if (value == AppStrings.weeksAhead2) return 2;
+    if (value == AppStrings.weeksAhead3) return 3;
+    if (value == AppStrings.weeksAhead5) return 5;
+    return 0;
+  }
+
+  int _repeatDayToWeekday(String label) {
+    return weekdayNames.entries.firstWhere((entry) => entry.value == label).key;
+  }
+
+  Future<void> _loadAvailableRepeatDays() async {
+    final now = DateTime.now();
+    final end = now.add(const Duration(days: 90));
+    final query = await FirebaseFirestore.instance
+        .collection('classes')
+        .where('dateRaw', isGreaterThanOrEqualTo: Timestamp.fromDate(now))
+        .where('dateRaw', isLessThanOrEqualTo: Timestamp.fromDate(end))
+        .get();
+
+    final Set<int> days = {};
+    for (final doc in query.docs) {
+      final ts = doc['dateRaw'] as Timestamp?;
+      if (ts == null) continue;
+      final d = ts.toDate();
+      days.add(d.weekday);
+    }
+
+    setState(() {
+      final sortedDays = days.toList()..sort();
+      final labels = sortedDays.map((w) => weekdayNames[w]!).toList();
+
+      _availableReapeatDayLabels = labels;
+
+      if (_availableReapeatDayLabels.isNotEmpty &&
+          !_availableReapeatDayLabels.contains(_repeatDay)) {
+        _repeatDay = _availableReapeatDayLabels.first;
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAvailableRepeatDays();
+  }
+
+  Future<void> _bookRepeatingClasses(User user) async {
+    final int weeks = _repeatWeeksToInt(_repeatWeeks);
+    if (weeks <= 0) return;
+
+    final Timestamp? currentTs = widget.classData['dateRaw'] as Timestamp?;
+    if (currentTs == null) return;
+    final DateTime currentDate = currentTs.toDate();
+
+    final int targetWeekday = _repeatBooking
+        ? _repeatDayToWeekday(_repeatDay)
+        : currentDate.weekday;
+
+    final DateTime endDate = currentDate.add(Duration(days: 7 * weeks));
+
+    final query = await FirebaseFirestore.instance
+        .collection('classes')
+        .where('dateRaw', isGreaterThan: Timestamp.fromDate(currentDate))
+        .where('dateRaw', isLessThanOrEqualTo: Timestamp.fromDate(endDate))
+        .orderBy('dateRaw')
+        .get();
+
+    for (final doc in query.docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      final ts = data['dateRaw'] as Timestamp?;
+      if (ts == null) continue;
+      final date = ts.toDate();
+
+      if (date.weekday != targetWeekday) continue;
+
+      final classId = doc.id;
+
+      final existing = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('bookings')
+          .where('classId', isEqualTo: classId)
+          .limit(1)
+          .get();
+
+      if (existing.docs.isNotEmpty) continue;
+
+      final classRef = FirebaseFirestore.instance
+          .collection('classes')
+          .doc(classId);
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final snap = await transaction.get(classRef);
+        if (!snap.exists) return;
+        final booked = snap.data()?['spotsBooked'] ?? 0;
+        final total = snap.data()?['spotsTotal'] ?? 0;
+
+        transaction.update(classRef, {'spotsBooked': booked + 1});
+
+        final bookingRef = FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('bookings')
+            .doc();
+
+        transaction.set(bookingRef, {
+          'classId': classId,
+          'date': data['date'],
+          'time': data['time'],
+          'dateRaw': widget.classData['dateRaw'],
+          'bookedAt': FieldValue.serverTimestamp(),
+        });
+      });
+    }
+  }
+
   Future<void> _bookClass() async {
     setState(() => _isBooking = true);
 
@@ -80,8 +208,11 @@ class _BookingDialogState extends State<BookingDialog> {
           'classId': widget.classId,
           'date': widget.classData['date'],
           'time': widget.classData['time'],
+          'dateRaw': widget.classData['dateRaw'],
           'bookedAt': FieldValue.serverTimestamp(),
         });
+
+        await _bookRepeatingClasses(user);
       });
 
       Navigator.pop(context);
@@ -363,11 +494,11 @@ class _BookingDialogState extends State<BookingDialog> {
                               ),
                               contentPadding: paddingVH,
                             ),
-                            items: [AppStrings.wednesdays, AppStrings.sundays]
+                            items: _availableReapeatDayLabels
                                 .map(
-                                  (day) => DropdownMenuItem(
-                                    value: day,
-                                    child: Text(day),
+                                  (label) => DropdownMenuItem(
+                                    value: label,
+                                    child: Text(label),
                                   ),
                                 )
                                 .toList(),

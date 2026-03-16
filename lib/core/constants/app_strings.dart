@@ -44,7 +44,10 @@ class AppStrings {
   static const String errorBooking = 'Ogiltig bokning';
   static const String removedBooking = 'Passet borttaget';
   static const String cancelBooking = 'AVBOKA';
+  static const String accomplished = 'UTFÖRD';
   static const String confirmCancel = 'Pass avbokat!';
+  static const String accomplishedTitle = 'UTFÖRDA PASS';
+  static const String allBookedTitle = 'BOKADE PASS';
 
   //ConfirmationDialog
   static const String confirmCancelBooking = 'Avboka pass?';

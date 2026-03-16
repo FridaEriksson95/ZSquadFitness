@@ -182,6 +182,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
               labelColor: AppColors.neonGreen,
               unselectedLabelColor: AppColors.lightGrey,
               labelStyle: AppTextStyles.bodyGrey,
+              indicatorColor: AppColors.turquise,
+              indicatorWeight: 3,
+              dividerColor: Colors.transparent,
               tabs: [
                 Tab(text: AppStrings.upcoming),
                 Tab(text: AppStrings.passed),
