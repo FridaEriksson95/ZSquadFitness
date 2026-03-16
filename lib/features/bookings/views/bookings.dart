@@ -21,25 +21,23 @@ class BookingsPage extends StatefulWidget {
 class _BookingsPageState extends State<BookingsPage> {
   final user = FirebaseAuth.instance.currentUser;
 
-  Future<void> _cancelBooking(BuildContext context, String classId) async {
+  Future<void> _cancelBooking(
+    BuildContext context, {
+    required DocumentReference bookingRef,
+    required String classId,
+  }) async {
     await FirebaseFirestore.instance.runTransaction((transaction) async {
       final classRef = FirebaseFirestore.instance
           .collection('classes')
           .doc(classId);
 
       final classSnap = await transaction.get(classRef);
-      final data = classSnap.data();
 
-      final booked = data?['spotsBooked'] ?? 0;
+      final booked = classSnap.data()?['spotsBooked'] ?? 0;
       if (booked > 0) {
         transaction.update(classRef, {'spotsBooked': booked - 1});
       }
 
-      final bookingRef = FirebaseFirestore.instance
-          .collection('users')
-          .doc(user?.uid)
-          .collection('bookings')
-          .doc(classId);
       transaction.delete(bookingRef);
     });
 
@@ -206,7 +204,9 @@ class _BookingsPageState extends State<BookingsPage> {
                                                   onConfirm: () =>
                                                       _cancelBooking(
                                                         context,
-                                                        classId,
+                                                        bookingRef: bookingDoc
+                                                            .reference,
+                                                        classId: classId,
                                                       ),
                                                   onCancel: () =>
                                                       Navigator.pop(context),

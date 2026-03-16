@@ -74,7 +74,7 @@ class _BookingDialogState extends State<BookingDialog> {
             .collection('users')
             .doc(user.uid)
             .collection('bookings')
-            .doc(widget.classId);
+            .doc();
 
         transaction.set(bookingRef, {
           'classId': widget.classId,

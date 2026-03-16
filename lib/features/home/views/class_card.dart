@@ -86,18 +86,19 @@ class _ClassCardState extends State<ClassCard> {
                 ),
               ),
               gapW12,
-              StreamBuilder<DocumentSnapshot>(
+              StreamBuilder<QuerySnapshot>(
                 stream: user != null
                     ? FirebaseFirestore.instance
                           .collection('users')
                           .doc(user?.uid)
                           .collection('bookings')
-                          .doc(widget.classId)
+                          .where('classId', isEqualTo: widget.classId)
+                          .limit(1)
                           .snapshots()
                     : null,
                 builder: (context, snapshot) {
                   bool booked = false;
-                  if (snapshot.hasData && snapshot.data!.exists) {
+                  if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
                     booked = true;
                   }
 

@@ -36,3 +36,54 @@ Future<void> openEmail(BuildContext context) async {
     }
   }
 }
+
+Future<void> openEmailToClients(
+  BuildContext context, {
+  required List<String> emails,
+  String? subject,
+}) async {
+  final validEmails = emails
+      .where((e) => e.isNotEmpty && e != AppStrings.unknown && e.contains('@'))
+      .toList();
+  if (validEmails.isEmpty) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppStrings.noEmailsToSendTo),
+          backgroundColor: AppColors.neonPink,
+        ),
+      );
+    }
+    return;
+  }
+  final emailUri = Uri(
+    scheme: AppStrings.mailTo,
+    path: validEmails.join(','),
+    queryParameters: subject != null ? {'subject': subject} : null,
+  );
+  try {
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri, mode: LaunchMode.externalApplication);
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: AppColors.neonPink.withValues(alpha: 0.5),
+            content: Text(AppStrings.cantOpenEmail),
+            duration: Duration(seconds: 5),
+          ),
+        );
+      }
+    }
+  } catch (e) {
+    debugPrint('${AppStrings.errorOpeningEmail} $e');
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: AppColors.neonPink.withValues(alpha: 0.5),
+          content: Text(AppStrings.errorOpeningEmailMessage),
+        ),
+      );
+    }
+  }
+}

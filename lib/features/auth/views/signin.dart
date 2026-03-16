@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/services/auth.dart';
+import 'package:zsquadfitness/features/auth/auth_actions.dart';
+import 'package:zsquadfitness/features/auth/views/reset_password.dart';
 import 'package:zsquadfitness/shared/ui/components/custom_textfield.dart';
 import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
@@ -114,7 +116,8 @@ class _SignInPageState extends State<SignInPage> {
                                   Align(
                                     alignment: Alignment.centerLeft,
                                     child: TextButton(
-                                      onPressed: _resetPassword,
+                                      onPressed: () =>
+                                          showResetPasswordDialog(context),
                                       style: TextButton.styleFrom(
                                         padding: EdgeInsets.only(left: 10),
                                       ),
@@ -145,9 +148,7 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                           gapH15,
                           GestureDetector(
-                            onTap: () {
-                              AuthService().signInWithGoogle(context);
-                            },
+                            onTap: _googleSignin,
                             child: Container(
                               height: 60,
                               margin: marginOnlyRL,
@@ -243,148 +244,20 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<void> _signin() async {
-    try {
-      await AuthService().signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${AppStrings.signinFail} $e')));
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
+    setState(() => _isLoading = true);
+    final success = await performEmailSignin(
+      context,
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
+    if (mounted) setState(() => _isLoading = false);
+    if(success) widget.onToggle();
   }
 
-  Future<void> _resetPassword() async {
-    final TextEditingController resetEmailController = TextEditingController();
-    bool isLoading = false;
-    String? errorMessage;
-    bool emailSent = false;
-
-    await showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: borderRadiusBig),
-              contentPadding: paddingAll24,
-              backgroundColor: AppColors.background.withValues(alpha: 0.9),
-              titlePadding: paddingOnlyLRT,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    emailSent ? AppStrings.emailSent : AppStrings.forgotPW,
-                    style: AppTextStyles.h3.copyWith(
-                      color: AppColors.neonGreen,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(dialogContext),
-                    icon: const Icon(Icons.close, color: AppColors.darkRed),
-                    padding: paddingOnlyL,
-                    constraints: const BoxConstraints(),
-                  ),
-                ],
-              ),
-              content: emailSent
-                  ? Padding(
-                      padding: paddingOnlyBs,
-                      child: Text(
-                        AppStrings.checkEmail,
-                        style: AppTextStyles.bodyMedium,
-                        textAlign: TextAlign.center,
-                      ),
-                    )
-                  : Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppStrings.submitEmailLink,
-                          style: AppTextStyles.bodySmall,
-                        ),
-                        gapH15,
-                        CustomTextfield(
-                          labelText: AppStrings.email,
-                          keyboardType: TextInputType.emailAddress,
-                          controller: resetEmailController,
-                          prefixIcon: const Icon(
-                            Icons.email_outlined,
-                            color: AppColors.lightGrey,
-                          ),
-                        ),
-                        if (errorMessage != null) ...[
-                          gapH10,
-                          Text(
-                            errorMessage!,
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.darkRed,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-              actionsPadding: paddingOnlyLRT,
-              actions: [
-                PrimaryButton(
-                  text: emailSent
-                      ? (isLoading
-                            ? AppStrings.sendingAgainLoad
-                            : AppStrings.sendAgain)
-                      : (isLoading
-                            ? AppStrings.sendingLoad
-                            : AppStrings.sendLink),
-                  color: AppColors.turquise,
-                  onPressed: isLoading
-                      ? null
-                      : () async {
-                          final email = resetEmailController.text.trim();
-
-                          if (email.isEmpty) {
-                            setDialogState(() {
-                              errorMessage = AppStrings.errorSubmitEmail;
-                            });
-                            return;
-                          }
-
-                          setDialogState(() {
-                            isLoading = true;
-                            errorMessage = null;
-                          });
-
-                          try {
-                            await AuthService().sendPasswordResetEmail(email);
-                            setDialogState(() {
-                              emailSent = true;
-                              isLoading = false;
-                            });
-                          } catch (e) {
-                            setDialogState(() {
-                              errorMessage = e.toString().replaceFirst(
-                                AppStrings.exception,
-                                '',
-                              );
-                              isLoading = false;
-                            });
-                          }
-                        },
-                ),
-
-                gapH20,
-              ],
-            );
-          },
-        );
-      },
-    );
+  Future<void> _googleSignin() async {
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
+    await performGoogleSignIn(context);
+    if (mounted) setState(() => _isLoading = false);
   }
 }

@@ -37,6 +37,7 @@ const paddingOnlyTsmall = EdgeInsets.only(top: 15.0);
 const paddingOnlyTSmall = EdgeInsets.only(top: 4.0);
 const paddingOnlyR = EdgeInsets.only(right: 25.0);
 const paddingOnlyRB = EdgeInsets.only(right: 25.0, bottom: 9.0);
+const paddingOnlyRT = EdgeInsets.only(right: 22.0, top: 18.0);
 
 const marginAll5 = EdgeInsets.all(5.0);
 const marginAll8 = EdgeInsets.all(8.0);

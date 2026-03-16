@@ -159,6 +159,7 @@ class AppStrings {
   static const String errorOpeningEmail = 'Fel vid öppning av epost:';
   static const String errorOpeningEmailMessage =
       'Kunde inte öppna epost. Kontrollera din mejlapp';
+  static const String noEmailsToSendTo = 'Inga giltiga eposter att mejla till';
 
   //ClassInfoPage
   static const String classInfoTitle = 'Pass Info';
@@ -166,6 +167,7 @@ class AppStrings {
       'Kunde inte ladda bokningar. Kontrollera Firestore.';
   static const String noOneBooked = 'Ingen inbokad på passet ännu';
   static const String bookedInClass = 'BOKADE';
+  static const String emailAllBooked = 'Alla';
 
   //All
   static const String zumba = 'Zumba';

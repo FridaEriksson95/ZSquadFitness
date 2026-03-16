@@ -208,6 +208,24 @@ class _UploadClassState extends State<UploadClass> {
         final month = monthMap[monthStr];
         if (day != null && month != null) {
           parsedDate = DateTime(DateTime.now().year, month, day);
+
+          int hour = 0, minute = 0;
+          final timeStr = _timeController.text.trim();
+          if (timeStr.isNotEmpty) {
+            final startPart = timeStr.split(' - ').first.trim();
+            final timeParts = startPart.replaceAll('.', ':').split(':');
+            if (timeParts.length >= 2) {
+              hour = int.tryParse(timeParts[0]) ?? 0;
+              minute = int.tryParse(timeParts[1]) ?? 0;
+            }
+          }
+          parsedDate = DateTime(
+            parsedDate.year,
+            parsedDate.month,
+            parsedDate.day,
+            hour,
+            minute,
+          );
         }
       }
     } catch (_) {}
@@ -228,6 +246,8 @@ class _UploadClassState extends State<UploadClass> {
         parsedDate.year + 1,
         parsedDate.month,
         parsedDate.day,
+        parsedDate.hour,
+        parsedDate.minute,
       );
     }
 
@@ -259,7 +279,7 @@ class _UploadClassState extends State<UploadClass> {
       Navigator.pop(context);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text(AppStrings.saveClass)));
+      ).showSnackBar(SnackBar(content: Text(AppStrings.saveClass)));
     } catch (e) {
       ScaffoldMessenger.of(
         context,

@@ -79,6 +79,13 @@ class AppTextStyles {
     color: AppColors.lightGrey,
   );
 
+  static const TextStyle geistGrey = TextStyle(
+    fontFamily: 'Geist',
+    fontSize: 14,
+    fontWeight: FontWeight.bold,
+    color: AppColors.lightGrey,
+  );
+
   static const TextStyle buttonText = TextStyle(
     fontFamily: 'Geist',
     fontSize: 20,
