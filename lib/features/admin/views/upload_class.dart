@@ -5,6 +5,7 @@ import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
 import 'package:zsquadfitness/core/constants/gaps.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
+import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
 class UploadClass extends StatefulWidget {
   final String? classId;
@@ -18,6 +19,20 @@ class UploadClass extends StatefulWidget {
 
 class _UploadClassState extends State<UploadClass> {
   final _formKey = GlobalKey<FormState>();
+  bool _repeatUpload = false;
+  String _repeatWeeks = '4 veckor framåt';
+  final List<String> _repeatWeekOptions = [
+    '4 veckor framåt',
+    '6 veckor framåt',
+    '8 veckor framåt',
+  ];
+
+  int _repeatWeeksToInt(String value) {
+    if (value.startsWith('4')) return 4;
+    if (value.startsWith('6')) return 6;
+    if (value.startsWith('8')) return 8;
+    return 0;
+  }
 
   late TextEditingController _titleController;
   late TextEditingController _dateController;
@@ -28,6 +43,7 @@ class _UploadClassState extends State<UploadClass> {
   late TextEditingController _priceSingleController;
   late TextEditingController _price10CardController;
   late TextEditingController _descriptionController;
+  late TextEditingController _roomController;
 
   @override
   void initState() {
@@ -59,6 +75,9 @@ class _UploadClassState extends State<UploadClass> {
     _descriptionController = TextEditingController(
       text: widget.initialData?['description'] ?? AppStrings.descZumba,
     );
+    _roomController = TextEditingController(
+      text: widget.initialData?['room'] ?? AppStrings.room,
+    );
   }
 
   @override
@@ -72,6 +91,7 @@ class _UploadClassState extends State<UploadClass> {
     _priceSingleController.dispose();
     _price10CardController.dispose();
     _descriptionController.dispose();
+    _roomController.dispose();
     super.dispose();
   }
 
@@ -208,6 +228,24 @@ class _UploadClassState extends State<UploadClass> {
         final month = monthMap[monthStr];
         if (day != null && month != null) {
           parsedDate = DateTime(DateTime.now().year, month, day);
+
+          int hour = 0, minute = 0;
+          final timeStr = _timeController.text.trim();
+          if (timeStr.isNotEmpty) {
+            final startPart = timeStr.split(' - ').first.trim();
+            final timeParts = startPart.replaceAll('.', ':').split(':');
+            if (timeParts.length >= 2) {
+              hour = int.tryParse(timeParts[0]) ?? 0;
+              minute = int.tryParse(timeParts[1]) ?? 0;
+            }
+          }
+          parsedDate = DateTime(
+            parsedDate.year,
+            parsedDate.month,
+            parsedDate.day,
+            hour,
+            minute,
+          );
         }
       }
     } catch (_) {}
@@ -228,6 +266,8 @@ class _UploadClassState extends State<UploadClass> {
         parsedDate.year + 1,
         parsedDate.month,
         parsedDate.day,
+        parsedDate.hour,
+        parsedDate.minute,
       );
     }
 
@@ -243,6 +283,7 @@ class _UploadClassState extends State<UploadClass> {
       'priceSingle': _priceSingleController.text.trim(),
       'price10Card': _price10CardController.text.trim(),
       'description': _descriptionController.text.trim(),
+      'room': _roomController.text.trim(),
       'createdAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
     };
@@ -255,15 +296,53 @@ class _UploadClassState extends State<UploadClass> {
             .update(data);
       } else {
         await FirebaseFirestore.instance.collection('classes').add(data);
+
+        if (_repeatUpload) {
+          await _createRepeatingClasses(parsedDate, data);
+        }
       }
       Navigator.pop(context);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text(AppStrings.saveClass)));
+      ).showSnackBar(SnackBar(content: Text(AppStrings.saveClass)));
     } catch (e) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('${AppStrings.errorSave} $e')));
+    }
+  }
+
+  Future<void> _createRepeatingClasses(
+    DateTime baseDate,
+    Map<String, dynamic> baseData,
+  ) async {
+    final int weeks = _repeatWeeksToInt(_repeatWeeks);
+    if (weeks <= 0) return;
+
+    for (int i = 1; i <= weeks; i++) {
+      final nextDate = baseDate.add(Duration(days: 7 * i));
+
+      if (nextDate.isBefore(DateTime.now())) continue;
+
+      final formatted = DateFormat('EEEE d MMMM', 'sv_SE').format(nextDate);
+      final displayDate = formatted[0].toUpperCase() + formatted.substring(1);
+
+      final data = Map<String, dynamic>.from(baseData);
+      data['dateRaw'] = Timestamp.fromDate(nextDate);
+      data['date'] = displayDate;
+      data['createdAt'] = FieldValue.serverTimestamp();
+      data['updatedAt'] = FieldValue.serverTimestamp();
+
+      final existing = await FirebaseFirestore.instance
+          .collection('classes')
+          .where('title', isEqualTo: data['title'])
+          .where('dateRaw', isEqualTo: data['dateRaw'])
+          .limit(1)
+          .get();
+
+      if (existing.docs.isNotEmpty) continue;
+
+      await FirebaseFirestore.instance.collection('classes').add(data);
     }
   }
 
@@ -272,10 +351,14 @@ class _UploadClassState extends State<UploadClass> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
+        backgroundColor: AppColors.background,
+        surfaceTintColor: AppColors.background,
+        centerTitle: true,
         title: Text(
           widget.classId == null
               ? AppStrings.createNewClass
               : AppStrings.editClass,
+          style: AppTextStyles.h1.copyWith(color: AppColors.turquise),
         ),
       ),
       body: SingleChildScrollView(
@@ -329,6 +412,10 @@ class _UploadClassState extends State<UploadClass> {
                 keyboardType: TextInputType.number,
                 validator: (choice) => choice!.isEmpty ? AppStrings.req : null,
               ),
+              TextFormField(
+                controller: _roomController,
+                decoration: const InputDecoration(labelText: AppStrings.roomNr),
+              ),
               gapH10,
               TextFormField(
                 controller: _locationNameController,
@@ -370,7 +457,58 @@ class _UploadClassState extends State<UploadClass> {
                 ),
                 maxLines: 7,
               ),
-              gapH20,
+              gapH10,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    AppStrings.repeatClass,
+                    style: AppTextStyles.bodyWhiteGeist,
+                  ),
+                  gapW35,
+                  Switch(
+                    value: _repeatUpload,
+                    onChanged: (choice) =>
+                        setState(() => _repeatUpload = choice),
+                    activeThumbColor: AppColors.neonGreen,
+                    inactiveThumbColor: AppColors.lightGrey,
+                    inactiveTrackColor: AppColors.greenish,
+                  ),
+                ],
+              ),
+              if (_repeatUpload) ...[
+                gapH10,
+                SizedBox(
+                  width: 220,
+                  child: DropdownButtonFormField<String>(
+                    initialValue: _repeatWeeks,
+                    isExpanded: true,
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                    borderRadius: borderRadiusBig,
+                    dropdownColor: AppColors.lightBg,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: AppColors.darkGrey.withValues(alpha: 0.6),
+                      border: OutlineInputBorder(
+                        borderRadius: borderRadiusSmall,
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: paddingVH,
+                    ),
+
+                    items: _repeatWeekOptions
+                        .map((w) => DropdownMenuItem(value: w, child: Text(w)))
+                        .toList(),
+                    onChanged: (choice) =>
+                        setState(() => _repeatWeeks = choice!),
+                  ),
+                ),
+              ],
+              gapH15,
               PrimaryButton(
                 text: widget.classId == null
                     ? AppStrings.uploadClass

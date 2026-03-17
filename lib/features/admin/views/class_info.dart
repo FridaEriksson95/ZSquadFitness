@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:zsquadfitness/shared/ui/components/custom_appbar.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
 import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/utils/email_launcher.dart';
+import 'package:zsquadfitness/shared/ui/components/confirmation_dialog.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
@@ -111,44 +112,208 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
                         ),
                       );
                     }
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: bookingDocs.length,
-                      itemBuilder: (context, index) {
-                        final userId =
-                            bookingDocs[index].reference.parent.parent!.id;
-                        return FutureBuilder<DocumentSnapshot>(
-                          future: FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(userId)
-                              .get(),
-                          builder: (context, userSnap) {
-                            final data =
-                                userSnap.data?.data() as Map<String, dynamic>?;
-                            final name =
-                                data?['Name'] as String? ?? AppStrings.unknown;
-                            final phone =
-                                data?['Phone'] as String? ?? AppStrings.unknown;
-                            final email =
-                                data?['Email'] as String? ?? AppStrings.unknown;
-                            return ListTile(
-                              leading: Text(name),
-                              title: Text(phone),
-                              subtitle: Text(email),
-                              onTap: () {},
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+
+                      children: [
+                        Padding(
+                          padding: paddingAll8,
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              final emails = <String>[];
+                              for (final doc in bookingDocs) {
+                                final userId = doc.reference.parent.parent!.id;
+                                final userSnap = await FirebaseFirestore
+                                    .instance
+                                    .collection('users')
+                                    .doc(userId)
+                                    .get();
+                                final data = userSnap.data();
+                                final email = data?['Email'] as String? ?? '';
+                                if (email.isNotEmpty &&
+                                    email != AppStrings.unknown) {
+                                  emails.add(email);
+                                }
+                              }
+                              if (context.mounted) {
+                                await openEmailToClients(
+                                  context,
+                                  emails: emails,
+                                  subject:
+                                      '${widget.classData['title'] ?? ''} - ${widget.classData['date'] ?? ''}'
+                                          .replaceAll(' ', ''),
+                                );
+                              }
+                            },
+                            icon: Icon(
+                              Icons.email_outlined,
+                              color: AppColors.neonGreen,
+                            ),
+                            label: Text(AppStrings.emailAllBooked),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.neonGreen,
+                              side: BorderSide(color: AppColors.neonGreen),
+                            ),
+                          ),
+                        ),
+
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: bookingDocs.length,
+                          itemBuilder: (context, index) {
+                            final bookingDoc = bookingDocs[index];
+                            final userId =
+                                bookingDoc.reference.parent.parent!.id;
+
+                            return FutureBuilder<DocumentSnapshot>(
+                              future: FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(userId)
+                                  .get(),
+                              builder: (context, userSnap) {
+                                final data =
+                                    userSnap.data?.data()
+                                        as Map<String, dynamic>?;
+                                final name =
+                                    data?['Name'] as String? ??
+                                    AppStrings.unknown;
+                                final phone =
+                                    data?['Phone'] as String? ??
+                                    AppStrings.unknown;
+                                final email =
+                                    data?['Email'] as String? ??
+                                    AppStrings.unknown;
+
+                                return Column(
+                                  children: [
+                                    Padding(
+                                      padding: paddingOnlyLRT,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(name, style: AppTextStyles.vT),
+
+                                          Text(
+                                            phone,
+                                            style: AppTextStyles.geistGrey,
+                                          ),
+
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  email,
+                                                  style:
+                                                      AppTextStyles.geistGrey,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                icon: Icon(
+                                                  Icons.delete_forever_rounded,
+                                                  color: AppColors.neonPink,
+                                                  size: 22,
+                                                ),
+                                                onPressed: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        ConfirmationDialog(
+                                                          type: ConfirmationType
+                                                              .cancelBooking,
+                                                          onConfirm: () async {
+                                                            Navigator.pop(
+                                                              context,
+                                                            );
+                                                            await _removeClient(
+                                                              context,
+                                                              bookingRef:
+                                                                  bookingDocs[index]
+                                                                      .reference,
+                                                            );
+                                                          },
+                                                          onCancel: () =>
+                                                              Navigator.pop(
+                                                                context,
+                                                              ),
+                                                        ),
+                                                  );
+                                                },
+                                                padding: paddingOnlyR,
+                                                constraints: BoxConstraints(
+                                                  minWidth: 36,
+                                                  minHeight: 36,
+                                                ),
+                                                style: IconButton.styleFrom(
+                                                  tapTargetSize:
+                                                      MaterialTapTargetSize
+                                                          .shrinkWrap,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            width: 360,
+                                            child: Divider(
+                                              color: AppColors.turquise
+                                                  .withValues(alpha: 0.4),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
                             );
                           },
-                        );
-                      },
+                        ),
+                      ],
                     );
                   },
                 ),
               ],
             ),
+            gapBottom,
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _removeClient(
+    BuildContext context, {
+    required DocumentReference bookingRef,
+  }) async {
+    try {
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final classRef = FirebaseFirestore.instance
+            .collection('classes')
+            .doc(widget.classId);
+        final classSnap = await transaction.get(classRef);
+        final booked = classSnap.data()?['spotsBooked'] ?? 0;
+        if (booked > 0) {
+          transaction.update(classRef, {'spotsBooked': booked - 1});
+        }
+        transaction.delete(bookingRef);
+      });
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(AppStrings.confirmCancel)));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${AppStrings.bookingFailed} $e')),
+        );
+      }
+    }
   }
 }

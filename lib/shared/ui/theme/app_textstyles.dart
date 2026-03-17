@@ -79,6 +79,13 @@ class AppTextStyles {
     color: AppColors.lightGrey,
   );
 
+  static const TextStyle geistGrey = TextStyle(
+    fontFamily: 'Geist',
+    fontSize: 14,
+    fontWeight: FontWeight.bold,
+    color: AppColors.lightGrey,
+  );
+
   static const TextStyle buttonText = TextStyle(
     fontFamily: 'Geist',
     fontSize: 20,
@@ -102,6 +109,13 @@ class AppTextStyles {
   static const TextStyle bodyWhiteDialog = TextStyle(
     fontFamily: 'Geist',
     fontSize: 22,
+    fontWeight: FontWeight.bold,
+    color: AppColors.white,
+  );
+
+  static const TextStyle bodyWhiteGeist = TextStyle(
+    fontFamily: 'Geist',
+    fontSize: 18,
     fontWeight: FontWeight.bold,
     color: AppColors.white,
   );

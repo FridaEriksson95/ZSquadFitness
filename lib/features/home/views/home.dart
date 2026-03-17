@@ -37,11 +37,11 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            gapH30,
+            gapH20,
             Padding(
-              padding: paddingH20,
+              padding: paddingH16,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   StreamBuilder(
                     stream: DatabaseService().getUserData(user!.uid),

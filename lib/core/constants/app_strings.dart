@@ -35,6 +35,9 @@ class AppStrings {
   static const String price10Card = 'Pris för 10-kort';
   static const String uploadClass = 'Ladda upp pass';
   static const String saveChanges = 'Spara ändringar';
+  static const String repeatClass = 'Upprepa pass';
+  static const String roomNr = 'Sal';
+  static const String room = '2';
 
   //Bookingspage
   static const String loginRequired = 'Du måste vara inloggad';
@@ -44,7 +47,10 @@ class AppStrings {
   static const String errorBooking = 'Ogiltig bokning';
   static const String removedBooking = 'Passet borttaget';
   static const String cancelBooking = 'AVBOKA';
+  static const String accomplished = 'UTFÖRD';
   static const String confirmCancel = 'Pass avbokat!';
+  static const String accomplishedTitle = 'UTFÖRDA PASS';
+  static const String allBookedTitle = 'BOKADE PASS';
 
   //ConfirmationDialog
   static const String confirmCancelBooking = 'Avboka pass?';
@@ -57,7 +63,7 @@ class AppStrings {
   //HomePage
   static const String welcomeDots = 'VÄLKOMMEN...';
   static const String welcome = 'VÄLKOMMEN';
-  static const String bookClassText = 'Boka ditt nästa Zumbapass🕺';
+  static const String bookClassText = 'Boka ditt nästa pass🕺';
 
   //ProfilePage
   static const String profileTitle = 'PROFIL';
@@ -146,7 +152,8 @@ class AppStrings {
   static const String available = 'lediga';
   static const String bookClass = 'BOKA PASS';
   static const String bookingFailed = 'Bokningen misslyckades:';
-  static const String classFull = 'Passet är fullbokat';
+  static const String classFull =
+      'Passet är fullbokat, mejla oss för att kontrollera tillgänglighet.';
   static const String classRemoved = 'Passet finns inte längre';
 
   //EmailLauncher
@@ -159,6 +166,7 @@ class AppStrings {
   static const String errorOpeningEmail = 'Fel vid öppning av epost:';
   static const String errorOpeningEmailMessage =
       'Kunde inte öppna epost. Kontrollera din mejlapp';
+  static const String noEmailsToSendTo = 'Inga giltiga eposter att mejla till';
 
   //ClassInfoPage
   static const String classInfoTitle = 'Pass Info';
@@ -166,6 +174,7 @@ class AppStrings {
       'Kunde inte ladda bokningar. Kontrollera Firestore.';
   static const String noOneBooked = 'Ingen inbokad på passet ännu';
   static const String bookedInClass = 'BOKADE';
+  static const String emailAllBooked = 'Alla';
 
   //All
   static const String zumba = 'Zumba';

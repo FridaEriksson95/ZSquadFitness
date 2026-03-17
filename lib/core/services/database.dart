@@ -5,7 +5,7 @@ class DatabaseService {
     return await FirebaseFirestore.instance
         .collection("users")
         .doc(id)
-        .set(userInfoMap);
+        .set(userInfoMap, SetOptions(merge: true));
   }
 
   Stream<DocumentSnapshot> getUserData(String id) {

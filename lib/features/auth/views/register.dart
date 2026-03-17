@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/services/auth.dart';
+import 'package:zsquadfitness/features/auth/auth_actions.dart';
 import 'package:zsquadfitness/shared/ui/components/custom_textfield.dart';
 import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
@@ -251,9 +252,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                           ),
                           gapH10,
                           GestureDetector(
-                            onTap: () {
-                              _googleSingIn();
-                            },
+                            onTap: _googleSignin,
                             child: Container(
                               height: 60,
                               margin: marginOnlyRL,
@@ -331,42 +330,24 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
       return;
     }
 
-    try {
-      await AuthService().registerWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-        name: _nameController.text.trim(),
-        phone: _phoneController.text.trim(),
-      );
-      if (mounted) {
-        widget.onToggle();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppStrings.registerFail} $e')),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+    setState(() => _isLoading = true);
+    final success = await performRegister(
+      context,
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+      name: _nameController.text.trim(),
+      phone: _phoneController.text.trim(),
+    );
+    if (mounted) {
+      setState(() => _isLoading = false);
+      if (success) widget.onToggle();
     }
   }
 
-  Future<void> _googleSingIn() async {
-    try {
-      final user = await AuthService().signInWithGoogle(context);
-
-      if (user != null && mounted) {
-        widget.onToggle();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppStrings.registerFailGoogle} $e')),
-        );
-      }
-    }
+  Future<void> _googleSignin() async {
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
+    await performGoogleSignIn(context);
+    if (mounted) setState(() => _isLoading = false);
   }
 }
