@@ -35,6 +35,9 @@ class AppStrings {
   static const String price10Card = 'Pris för 10-kort';
   static const String uploadClass = 'Ladda upp pass';
   static const String saveChanges = 'Spara ändringar';
+  static const String repeatClass = 'Upprepa pass';
+  static const String roomNr = 'Sal';
+  static const String room = '2';
 
   //Bookingspage
   static const String loginRequired = 'Du måste vara inloggad';
@@ -60,7 +63,7 @@ class AppStrings {
   //HomePage
   static const String welcomeDots = 'VÄLKOMMEN...';
   static const String welcome = 'VÄLKOMMEN';
-  static const String bookClassText = 'Boka ditt nästa Zumbapass🕺';
+  static const String bookClassText = 'Boka ditt nästa pass🕺';
 
   //ProfilePage
   static const String profileTitle = 'PROFIL';
@@ -149,7 +152,8 @@ class AppStrings {
   static const String available = 'lediga';
   static const String bookClass = 'BOKA PASS';
   static const String bookingFailed = 'Bokningen misslyckades:';
-  static const String classFull = 'Passet är fullbokat';
+  static const String classFull =
+      'Passet är fullbokat, mejla oss för att kontrollera tillgänglighet.';
   static const String classRemoved = 'Passet finns inte längre';
 
   //EmailLauncher

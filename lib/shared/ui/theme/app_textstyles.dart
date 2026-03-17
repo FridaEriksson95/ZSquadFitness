@@ -113,6 +113,13 @@ class AppTextStyles {
     color: AppColors.white,
   );
 
+  static const TextStyle bodyWhiteGeist = TextStyle(
+    fontFamily: 'Geist',
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: AppColors.white,
+  );
+
   static const TextStyle bodyWhiteSmall = TextStyle(
     fontFamily: 'Geist',
     fontSize: 14,

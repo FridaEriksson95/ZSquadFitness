@@ -229,11 +229,16 @@ class _BookingDialogState extends State<BookingDialog> {
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${AppStrings.bookingFailed} $e')));
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${AppStrings.bookingFailed} $e')),
+        );
+      }
     } finally {
-      setState(() => _isBooking = false);
+      if (mounted) setState(() => _isBooking = false);
     }
   }
 
@@ -265,7 +270,7 @@ class _BookingDialogState extends State<BookingDialog> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: IconButton(
-                      icon: Icon(Icons.close, color: AppColors.darkRed),
+                      icon: Icon(Icons.close, color: AppColors.neonPink),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -317,6 +322,13 @@ class _BookingDialogState extends State<BookingDialog> {
                               Text(
                                 widget.classData['time'] ?? AppStrings.noTime,
                               ),
+                              if ((widget.classData['room'] as String?)
+                                      ?.isNotEmpty ==
+                                  true)
+                                Text(
+                                  widget.classData['room'],
+                                  style: AppTextStyles.bodyWhiteSmall,
+                                ),
                             ],
                           ),
                         ),
@@ -483,6 +495,13 @@ class _BookingDialogState extends State<BookingDialog> {
                           child: DropdownButtonFormField<String>(
                             initialValue: _repeatDay,
                             isExpanded: true,
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                            borderRadius: borderRadiusBig,
+                            dropdownColor: AppColors.lightBg,
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: AppColors.lightBlack.withValues(
@@ -511,6 +530,14 @@ class _BookingDialogState extends State<BookingDialog> {
                           child: DropdownButtonFormField<String>(
                             initialValue: _repeatWeeks,
                             isExpanded: true,
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                            borderRadius: borderRadiusBig,
+                            dropdownColor: AppColors.lightBg,
+
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: AppColors.lightBlack.withValues(

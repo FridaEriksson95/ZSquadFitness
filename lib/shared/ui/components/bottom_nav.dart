@@ -57,55 +57,52 @@ class BottomNavState extends State<BottomNav> {
               const ProfilePage(key: PageStorageKey('profile')),
             ],
           ),
-          bottomNavigationBar: Padding(
-            padding: paddingOnlyBm,
-            child: CurvedNavigationBar(
-              height: 65,
-              backgroundColor: Colors.transparent,
-              color: AppColors.lightBg,
-              buttonBackgroundColor: const Color.fromRGBO(157, 255, 0, 0.18),
-              animationDuration: const Duration(milliseconds: 500),
-              index: currentTabIndex,
-              onTap: (int index) {
-                setState(() {
-                  currentTabIndex = index;
-                });
-              },
-              items: [
-                Padding(
-                  padding: paddingOnlyTB,
-                  child: Icon(
-                    isAdmin
-                        ? Icons.dashboard_rounded
-                        : Icons.calendar_month_rounded,
-                    size: 40,
-                    color: currentTabIndex == 0
-                        ? AppColors.neonGreen
-                        : AppColors.lightGrey,
-                  ),
+          bottomNavigationBar: CurvedNavigationBar(
+            height: 70,
+            backgroundColor: Colors.transparent,
+            color: AppColors.lightBg,
+            buttonBackgroundColor: const Color.fromRGBO(157, 255, 0, 0.18),
+            animationDuration: const Duration(milliseconds: 500),
+            index: currentTabIndex,
+            onTap: (int index) {
+              setState(() {
+                currentTabIndex = index;
+              });
+            },
+            items: [
+              Padding(
+                padding: paddingOnlyTB,
+                child: Icon(
+                  isAdmin
+                      ? Icons.dashboard_rounded
+                      : Icons.calendar_month_rounded,
+                  size: 40,
+                  color: currentTabIndex == 0
+                      ? AppColors.neonGreen
+                      : AppColors.lightGrey,
                 ),
-                Padding(
-                  padding: paddingOnlyTB,
-                  child: Icon(
-                    Icons.home_rounded,
-                    size: 40,
-                    color: currentTabIndex == 1
-                        ? AppColors.neonGreen
-                        : AppColors.lightGrey,
-                  ),
+              ),
+              Padding(
+                padding: paddingOnlyTB,
+                child: Icon(
+                  Icons.home_rounded,
+                  size: 40,
+                  color: currentTabIndex == 1
+                      ? AppColors.neonGreen
+                      : AppColors.lightGrey,
                 ),
-                Padding(
-                  padding: paddingOnlyTB,
-                  child: Icon(
-                    Icons.person_rounded,
-                    size: 40,
-                    color: currentTabIndex == 2
-                        ? AppColors.neonGreen
-                        : AppColors.lightGrey,
-                  ),
+              ),
+              Padding(
+                padding: paddingOnlyTB,
+                child: Icon(
+                  Icons.person_rounded,
+                  size: 40,
+                  color: currentTabIndex == 2
+                      ? AppColors.neonGreen
+                      : AppColors.lightGrey,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },

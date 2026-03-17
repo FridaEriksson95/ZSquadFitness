@@ -63,7 +63,7 @@ class ConfirmationDialog extends StatelessWidget {
                 IconButton(
                   icon: const Icon(
                     Icons.close,
-                    color: AppColors.darkRed,
+                    color: AppColors.neonPink,
                     size: 28,
                   ),
                   onPressed: onCancel ?? () => Navigator.pop(context),
