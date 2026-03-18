@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:zsquadfitness/shared/ui/components/custom_dropdownfield.dart';
 import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
 import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/shared/ui/components/snackbar_utils.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
@@ -302,13 +304,9 @@ class _UploadClassState extends State<UploadClass> {
         }
       }
       Navigator.pop(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(AppStrings.saveClass)));
+      showAppSnackBar(context, message: (AppStrings.saveClass));
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${AppStrings.errorSave} $e')));
+      showAppSnackBar(context, message: ('${AppStrings.errorSave} $e'));
     }
   }
 
@@ -480,26 +478,9 @@ class _UploadClassState extends State<UploadClass> {
                 gapH10,
                 SizedBox(
                   width: 220,
-                  child: DropdownButtonFormField<String>(
-                    initialValue: _repeatWeeks,
-                    isExpanded: true,
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                    borderRadius: borderRadiusBig,
-                    dropdownColor: AppColors.lightBg,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: AppColors.darkGrey.withValues(alpha: 0.6),
-                      border: OutlineInputBorder(
-                        borderRadius: borderRadiusSmall,
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: paddingVH,
-                    ),
-
+                  child: CustomDropdownfield<String>(
+                    value: _repeatWeeks,
+                    fontSize: 18,
                     items: _repeatWeekOptions
                         .map((w) => DropdownMenuItem(value: w, child: Text(w)))
                         .toList(),

@@ -171,6 +171,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
                                 showDialog(
                                   context: context,
                                   builder: (context) => BookingDialog(
+                                    parentContext: context,
                                     classId: classForDay.first.id,
                                     classData: classData,
                                   ),

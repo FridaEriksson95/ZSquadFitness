@@ -36,7 +36,7 @@ class AppStrings {
   static const String uploadClass = 'Ladda upp pass';
   static const String saveChanges = 'Spara ändringar';
   static const String repeatClass = 'Upprepa pass';
-  static const String roomNr = 'Sal';
+  static const String roomNr = 'Sal ';
   static const String room = '2';
 
   //Bookingspage
@@ -155,6 +155,8 @@ class AppStrings {
   static const String classFull =
       'Passet är fullbokat, mejla oss för att kontrollera tillgänglighet.';
   static const String classRemoved = 'Passet finns inte längre';
+  static const String noAvailableRepeatDays =
+      'Inga tillgängliga dagar för upprepning hittades';
 
   //EmailLauncher
   static const String mailTo = 'mailto';
