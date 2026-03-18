@@ -6,6 +6,7 @@ import 'package:zsquadfitness/core/services/database.dart';
 import 'package:zsquadfitness/shared/ui/components/border_card.dart';
 import 'package:zsquadfitness/shared/ui/components/custom_appbar.dart';
 import 'package:zsquadfitness/features/profile/views/edit_profile_dialog.dart';
+import 'package:zsquadfitness/shared/ui/components/custom_dropdownfield.dart';
 import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_assets.dart';
@@ -183,24 +184,28 @@ class _ProfilePageState extends State<ProfilePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(AppStrings.statistics, style: AppTextStyles.h3),
-                      DropdownButton(
-                        value: AppStrings.latest4,
-                        items:
-                            [
-                                  AppStrings.latest4,
-                                  AppStrings.latest3,
-                                  AppStrings.latest6,
-                                ]
-                                .map(
-                                  (choice) => DropdownMenuItem(
-                                    value: choice,
-                                    child: Text(choice),
-                                  ),
-                                )
-                                .toList(),
-                        onChanged: (choice) {
-                          //TODO
-                        },
+                      SizedBox(
+                        width: 200,
+                        child: CustomDropdownfield<String>(
+                          value: AppStrings.latest4,
+                          fontSize: 14,
+                          items:
+                              [
+                                    AppStrings.latest4,
+                                    AppStrings.latest3,
+                                    AppStrings.latest6,
+                                  ]
+                                  .map(
+                                    (choice) => DropdownMenuItem(
+                                      value: choice,
+                                      child: Text(choice),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged: (choice) {
+                            //TODO
+                          },
+                        ),
                       ),
                     ],
                   ),

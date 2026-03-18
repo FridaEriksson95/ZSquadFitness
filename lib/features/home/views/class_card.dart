@@ -114,6 +114,7 @@ class _ClassCardState extends State<ClassCard> {
                                 showDialog(
                                   context: context,
                                   builder: (context) => BookingDialog(
+                                    parentContext: context,
                                     classId: widget.classId,
                                     classData: widget.classData,
                                   ),

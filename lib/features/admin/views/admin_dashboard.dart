@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:zsquadfitness/core/utils/date_utils.dart';
 import 'package:zsquadfitness/features/admin/views/class_info.dart';
 import 'package:zsquadfitness/features/admin/views/upload_class.dart';
 import 'package:zsquadfitness/shared/ui/components/border_card.dart';
@@ -132,18 +133,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   static List<QueryDocumentSnapshot> _pastOnly(QuerySnapshot snapshot) {
-    final now = DateTime.now();
     return snapshot.docs.where((doc) {
       final ts = (doc.data() as Map<String, dynamic>)['dateRaw'] as Timestamp?;
-      return ts != null && ts.toDate().isBefore(now);
+      return ts.isPast;
     }).toList();
   }
 
   static List<QueryDocumentSnapshot> _upcomingOnly(QuerySnapshot snapshot) {
-    final now = DateTime.now();
     return snapshot.docs.where((doc) {
       final ts = (doc.data() as Map<String, dynamic>)['dateRaw'] as Timestamp?;
-      return ts != null && !ts.toDate().isBefore(now);
+      return ts.isUpcomingOrToday;
     }).toList();
   }
 
