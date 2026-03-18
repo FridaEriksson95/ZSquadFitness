@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:zsquadfitness/core/constants/app_strings.dart';
+import 'package:zsquadfitness/core/constants/confirmation_status.dart';
 
 class BookingService {
   final _firestore = FirebaseFirestore.instance;
@@ -24,11 +26,58 @@ class BookingService {
     });
   }
 
+  Future<void> bookSingleClass({
+    required User user,
+    required String classId,
+    required Map<String, dynamic> classData,
+    required bool sendConfirmation,
+  }) async {
+    final classRef = _firestore.collection('classes').doc(classId);
+
+    await _firestore.runTransaction((transaction) async {
+      final classSnapshot = await transaction.get(classRef);
+
+      if (!classSnapshot.exists) {
+        throw AppStrings.classRemoved;
+      }
+      final currentBooked = classSnapshot.data()?['spotsBooked'] ?? 0;
+      final total = classSnapshot.data()?['spotsTotal'] ?? 0;
+
+      if (currentBooked >= total) {
+        throw AppStrings.classFull;
+      }
+
+      transaction.update(classRef, {'spotsBooked': currentBooked + 1});
+
+      final bookingRef = _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('bookings')
+          .doc();
+
+      transaction.set(bookingRef, {
+        'classId': classId,
+        'title': classData['title'],
+        'date': classData['date'],
+        'time': classData['time'],
+        'dateRaw': classData['dateRaw'],
+        'locationName': classData['locationName'],
+        'locationAddress': classData['locationAddress'],
+        'room': classData['room'] ?? '',
+        'sendConfirmation': sendConfirmation,
+        'confirmationStatus': sendConfirmation
+            ? ConfirmationStatus.pending
+            : ConfirmationStatus.skipped,
+        'bookedAt': FieldValue.serverTimestamp(),
+      });
+    });
+  }
+
   Future<void> bookRepeatingClasses({
-    required String baseClassId,
     required Map<String, dynamic> baseClassData,
     required int weeks,
     required int targetWeekday,
+    required bool sendConfirmation,
   }) async {
     final user = currentUser;
     if (user == null || weeks <= 0) return;
@@ -84,12 +133,37 @@ class BookingService {
 
         transaction.set(bookingRef, {
           'classId': classId,
+          'title': data['title'],
           'date': data['date'],
           'time': data['time'],
           'dateRaw': data['dateRaw'],
+          'locationName': data['locationName'],
+          'locationAddress': data['locationAddress'],
+          'room': data['room'] ?? '',
+          'sendConfirmation': sendConfirmation,
+          'confirmationStatus': sendConfirmation
+              ? ConfirmationStatus.pending
+              : ConfirmationStatus.skipped,
           'bookedAt': FieldValue.serverTimestamp(),
         });
       });
     }
+  }
+
+  Future<void> bookRepeating({
+    required bool repeatBooking,
+    required int weeks,
+    required int targetWeekday,
+    required Map<String, dynamic> classData,
+    required bool sendConfirmation,
+  }) async {
+    if (!repeatBooking || weeks <= 0) return;
+
+    await bookRepeatingClasses(
+      baseClassData: classData,
+      weeks: weeks,
+      targetWeekday: targetWeekday,
+      sendConfirmation: sendConfirmation,
+    );
   }
 }

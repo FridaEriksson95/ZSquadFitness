@@ -2,18 +2,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/services/booking_service.dart';
 import 'package:zsquadfitness/core/services/class_schedule_helper.dart';
-import 'package:zsquadfitness/features/bookings/services/booking_dialog_service.dart';
 import 'package:zsquadfitness/features/bookings/widgets/booking_dialog_summary.dart';
 import 'package:zsquadfitness/features/bookings/widgets/repeat_booking_section.dart';
 import 'package:zsquadfitness/shared/ui/components/border_card.dart';
 import 'package:zsquadfitness/shared/ui/components/bottom_nav.dart';
 import 'package:zsquadfitness/shared/ui/components/confirmation_dialog.dart';
-import 'package:zsquadfitness/shared/ui/components/custom_dropdownfield.dart';
 import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
 import 'package:zsquadfitness/core/constants/gaps.dart';
 import 'package:zsquadfitness/shared/ui/components/snackbar_utils.dart';
-import 'package:zsquadfitness/shared/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
@@ -35,7 +32,6 @@ class BookingDialog extends StatefulWidget {
 
 class _BookingDialogState extends State<BookingDialog> {
   final _bookingService = BookingService();
-  late final BookingDialogService _dialogService;
   bool _sendConfirmation = false;
   bool _repeatBooking = false;
   String _repeatDay = AppStrings.wednesdays;
@@ -81,7 +77,6 @@ class _BookingDialogState extends State<BookingDialog> {
   @override
   void initState() {
     super.initState();
-    _dialogService = BookingDialogService(bookingService: _bookingService);
     _loadAvailableRepeatDays();
   }
 
@@ -118,21 +113,22 @@ class _BookingDialogState extends State<BookingDialog> {
     }
 
     try {
-      await _dialogService.bookSingleClass(
+      await _bookingService.bookSingleClass(
         user: user,
         classId: widget.classId,
         classData: widget.classData,
+        sendConfirmation: _sendConfirmation,
       );
       if (_repeatBooking && _availableRepeatWeekdays.isNotEmpty) {
         final weeks = _repeatWeeksToInt(_repeatWeeks);
         final targetWeekday = ClassScheduleHelper.weekdayFromLabel(_repeatDay);
 
-        await _dialogService.bookRepeating(
+        await _bookingService.bookRepeating(
           repeatBooking: _repeatBooking,
           weeks: weeks,
           targetWeekday: targetWeekday,
-          classId: widget.classId,
           classData: widget.classData,
+          sendConfirmation: _sendConfirmation,
         );
       }
 
