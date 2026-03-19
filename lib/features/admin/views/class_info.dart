@@ -46,7 +46,7 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
                 gapH10,
                 Text(
                   widget.classData['title'] ?? AppStrings.zumba,
-                  style: AppTextStyles.hT,
+                  style: AppTextStyles.h2,
                 ),
                 gapH5,
                 Text(widget.classData['date'] ?? AppStrings.noDate),
@@ -189,16 +189,41 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
                                 return Column(
                                   children: [
                                     Padding(
-                                      padding: paddingOnlyLRT,
+                                      padding: paddingOnlyLR,
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(name, style: AppTextStyles.vT),
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.person_3_outlined,
+                                                size: 18,
+                                                color: AppColors.turquise,
+                                              ),
+                                              gapW5,
+                                              Text(
+                                                name,
+                                                style: AppTextStyles.vT,
+                                              ),
+                                            ],
+                                          ),
 
-                                          Text(
-                                            phone,
-                                            style: AppTextStyles.geistGrey,
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.phone_iphone_outlined,
+                                                size: 18,
+                                                color: AppColors.lightGrey,
+                                              ),
+                                              gapW5,
+                                              Text(
+                                                phone,
+                                                style: AppTextStyles.geistGrey,
+                                              ),
+                                            ],
                                           ),
 
                                           Row(
@@ -208,12 +233,67 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
                                                 CrossAxisAlignment.center,
                                             children: [
                                               Expanded(
-                                                child: Text(
-                                                  email,
-                                                  style:
-                                                      AppTextStyles.geistGrey,
+                                                child: InkWell(
+                                                  onTap:
+                                                      (email.isEmpty ||
+                                                          email ==
+                                                              AppStrings
+                                                                  .unknown ||
+                                                          !email.contains('@'))
+                                                      ? null
+                                                      : () async {
+                                                          if (context.mounted) {
+                                                            await openEmailToClients(
+                                                              context,
+                                                              emails: [email],
+                                                              subject:
+                                                                  '${widget.classData['title'] ?? ''} - ${widget.classData['date'] ?? ''}'
+                                                                      .replaceAll(
+                                                                        ' ',
+                                                                        '',
+                                                                      ),
+                                                            );
+                                                          }
+                                                        },
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+
+                                                  child: Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.mail_outline,
+                                                        size: 18,
+                                                        color:
+                                                            (email.isEmpty ||
+                                                                email ==
+                                                                    AppStrings
+                                                                        .unknown ||
+                                                                !email.contains(
+                                                                  '@',
+                                                                ))
+                                                            ? AppColors
+                                                                  .mediumGrey
+                                                            : AppColors
+                                                                  .neonGreen,
+                                                      ),
+                                                      const SizedBox(width: 6),
+                                                      Flexible(
+                                                        child: Text(
+                                                          email,
+                                                          style: AppTextStyles
+                                                              .geistGrey,
+
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
+
                                               IconButton(
                                                 icon: Icon(
                                                   Icons.delete_forever_rounded,

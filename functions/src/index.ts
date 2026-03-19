@@ -7,6 +7,7 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
+import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {setGlobalOptions} from "firebase-functions";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {defineSecret} from "firebase-functions/params";
@@ -17,6 +18,62 @@ import {Resend} from "resend";
 admin.initializeApp();
 
 setGlobalOptions({maxInstances: 10, region: "europe-west1"});
+
+export const deleteUserAccountData = onCall(
+  {region: "europe-west1"},
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated",
+        "Login required");
+    }
+
+    const uid = request.auth.uid;
+    const db = admin.firestore();
+
+
+    const bookingRef = db.collection("users").doc(uid)
+      .collection("bookings");
+    const bookingsSnap = await bookingRef.get();
+
+    const classCounts = new Map<string, number>();
+    for (const doc of bookingsSnap.docs) {
+      const classId = doc.data().classId as string | undefined;
+      if (!classId) continue;
+      classCounts.set(classId, (classCounts.get(classId) ?? 0) + 1);
+    }
+
+    for (const [classId, count] of classCounts.entries()) {
+      const classRef = db.collection("classes").doc(classId);
+      await db.runTransaction(async (tx) => {
+        const snap = await tx.get(classRef);
+        if (!snap.exists) return;
+        const booked = Number(snap.data()?.spotsBooked ?? 0);
+        tx.update(classRef, {spotsBooked:
+          Math.max(0, booked - count)});
+      });
+    }
+
+    let batch = db.batch();
+    let opCount = 0;
+    for (const doc of bookingsSnap.docs) {
+      batch.delete(doc.ref);
+      opCount++;
+      if (opCount === 450) {
+        await batch.commit();
+        batch = db.batch();
+        opCount = 0;
+      }
+    }
+
+    if (opCount > 0) await batch.commit();
+
+    await db.collection("users").doc(uid).delete();
+
+    await admin.auth().deleteUser(uid);
+
+    return {ok: true};
+  },
+);
 
 const RESEND_API_KEY = defineSecret("RESEND_API_KEY");
 
@@ -95,7 +152,8 @@ export const sendBookingConfirmation = onDocumentCreated(
   font-family:Arial,Helvetica,sans-serif;color:#ffffff;">
     <div style="max-width:600px;margin:0 auto;padding:32px 20px;">
       <div style="text-align:center;margin-bottom:24px;">
-        <h1 style="margin:0;font-size:28px;letter-spacing:0.5px;color:#9dff00;">
+        <h1 style="margin:0;font-size:28px;
+        letter-spacing:0.5px;color:#9dff00;">
           ZSquad Fitness
         </h1>
         <p style="margin:8px 0 0 0;font-size:15px;color:#cfd6dd;">

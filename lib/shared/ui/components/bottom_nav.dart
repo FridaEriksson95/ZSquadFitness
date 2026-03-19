@@ -44,7 +44,6 @@ class BottomNavState extends State<BottomNav> {
           final data = snapshot.data!.data() as Map<String, dynamic>?;
           isAdmin = data?['isAdmin'] == true;
         }
-
         return Scaffold(
           extendBody: true,
           body: IndexedStack(

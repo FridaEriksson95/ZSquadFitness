@@ -42,7 +42,7 @@ class AppStrings {
   //Bookingspage
   static const String loginRequired = 'Du måste vara inloggad';
   static const String noBookings =
-      'Inga bokningar ännu,\n boka ditt nästa pass på startsidan nu så ses vi på dansgolvet!';
+      'Här ekar det tomt,\n boka ditt nästa pass på startsidan så ses vi på dansgolvet!';
   static const String yourBookings = 'DINA BOKNINGAR';
   static const String errorBooking = 'Ogiltig bokning';
   static const String removedBooking = 'Passet borttaget';
@@ -74,12 +74,23 @@ class AppStrings {
   static const String latest6 = '6 månader';
   static const String completedClasses = 'Utförda pass: ';
   static const String noProfileData = 'Kunde inte hämta profilinformation ';
+  static const String pwReq = 'Lösenord krävs';
+  static const String googleSignInCancel = 'Google inloggning avbröts';
+  static const String failedToDelete = 'Kunde inte radera konto:';
 
   //EditProfileDialog
   static const String editProfileTitle = 'ÄNDRA PROFILINFO';
   static const String save = 'SPARA';
   static const String saving = 'Sparar...';
   static const String profileUpdated = 'Uppdateringar sparade!';
+  static const String deleteAccount = 'Radera konto';
+  static const String deleteInfo =
+      'Detta tar bort ditt konto & dina bokningar permanent. '
+      'Åtgärden går inte att ångra.';
+  static const String confirmPW = 'Bekräfta lösenord';
+  static const String submitPW = 'Ange lösenord';
+  static const String deleteAccountCaps = 'RADERA KONTO';
+  static const String delete = 'Radera';
 
   //Register/LoginPage
   static const String email = 'Epost';

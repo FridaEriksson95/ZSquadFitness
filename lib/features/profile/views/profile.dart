@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:zsquadfitness/core/services/auth.dart';
 import 'package:zsquadfitness/core/services/database.dart';
 import 'package:zsquadfitness/shared/ui/components/border_card.dart';
@@ -9,6 +11,7 @@ import 'package:zsquadfitness/features/profile/views/edit_profile_dialog.dart';
 import 'package:zsquadfitness/shared/ui/components/custom_dropdownfield.dart';
 import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
+import 'package:zsquadfitness/shared/ui/components/snackbar_utils.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 import 'package:zsquadfitness/core/constants/gaps.dart';
@@ -22,10 +25,84 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final user = FirebaseAuth.instance.currentUser;
+  bool _isDeleting = false;
+
+  Future<void> _openEditDialog(Map<String, dynamic>? data) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    final result = await showDialog<dynamic>(
+      context: context,
+      builder: (_) => EditProfileDialog(user: currentUser, userData: data),
+    );
+
+    if (result is Map<String, dynamic> && result['action'] == 'readyToDelete') {
+      if (!mounted) return;
+      setState(() => _isDeleting = true);
+
+      await Future<void>.delayed(Duration.zero);
+
+      await _deleteAccount(password: result['password'] as String?);
+      return;
+    }
+
+    if (result == true && mounted) {
+      showAppSnackBar(context, message: AppStrings.profileUpdated);
+    }
+  }
+
+  Future<void> _deleteAccount({String? password}) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+
+      final providerIds = user.providerData.map((p) => p.providerId).toSet();
+      if (providerIds.contains('password')) {
+        if (password == null || password.isEmpty) {
+          throw Exception(AppStrings.pwReq);
+        }
+        final cred = EmailAuthProvider.credential(
+          email: user.email!,
+          password: password,
+        );
+        await user.reauthenticateWithCredential(cred);
+      } else if (providerIds.contains('google.com')) {
+        final googleUser = await GoogleSignIn().signIn();
+        if (googleUser == null) throw Exception(AppStrings.googleSignInCancel);
+        final googleAuth = await googleUser.authentication;
+        final cred = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        await user.reauthenticateWithCredential(cred);
+      }
+
+      final callable = FirebaseFunctions.instanceFor(
+        region: 'europe-west1',
+      ).httpsCallable('deleteUserAccountData');
+
+      await callable.call();
+
+      await AuthService().signOut();
+    } catch (e) {
+      if (mounted) {
+        showAppSnackBar(context, message: '${AppStrings.failedToDelete} $e');
+        setState(() => _isDeleting = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isDeleting) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
       appBar: const CustomAppbar(),
       body: SingleChildScrollView(
@@ -46,31 +123,27 @@ class _ProfilePageState extends State<ProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   StreamBuilder<DocumentSnapshot>(
-                    stream: DatabaseService().getUserData(user!.uid),
+                    stream: DatabaseService().getUserData(currentUser.uid),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text(
-                          AppStrings.zsquader,
-                          style: AppTextStyles.hT,
+                        return const Padding(
+                          padding: paddingAll24,
+                          child: Center(child: CircularProgressIndicator()),
                         );
                       }
-                      if (snapshot.hasError) {
-                        return Text(
-                          AppStrings.noProfileData,
-                          style: AppTextStyles.hT.copyWith(
-                            color: AppColors.neonPink,
-                          ),
+                      if (snapshot.hasError ||
+                          !snapshot.hasData ||
+                          !snapshot.data!.exists) {
+                        return const Padding(
+                          padding: paddingAll24,
+                          child: Center(child: CircularProgressIndicator()),
                         );
                       }
 
-                      String welcomeName = AppStrings.zsquader;
-                      Map<String, dynamic>? data;
-
-                      if (snapshot.hasData && snapshot.data!.exists) {
-                        data = snapshot.data!.data() as Map<String, dynamic>?;
-                        welcomeName =
-                            data?['Name'] as String? ?? AppStrings.zsquader;
-                      }
+                      final data =
+                          snapshot.data!.data() as Map<String, dynamic>?;
+                      final welcomeName =
+                          data?['Name'] as String? ?? AppStrings.zsquader;
 
                       return Padding(
                         padding: paddingOnlyTsmall,
@@ -107,7 +180,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             style: AppTextStyles.bodyWhiteSmall,
                                           ),
                                           Text(
-                                            user!.email ?? '',
+                                            currentUser.email ?? '',
                                             style: AppTextStyles.bodyWhiteSmall,
                                           ),
                                         ],
@@ -125,29 +198,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Icons.edit_square,
                                   color: AppColors.lightGrey,
                                 ),
-                                onPressed: () async {
-                                  final currentUser =
-                                      FirebaseAuth.instance.currentUser;
-                                  if (currentUser == null) return;
-
-                                  final updated = await showDialog<bool>(
-                                    context: context,
-                                    builder: (context) => EditProfileDialog(
-                                      user: currentUser,
-                                      userData: data,
-                                    ),
-                                  );
-
-                                  if (updated == true && mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          AppStrings.profileUpdated,
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                },
+                                onPressed: () => _openEditDialog(data),
                               ),
                             ),
                           ],
