@@ -30,6 +30,8 @@ const paddingOnlyBxs = EdgeInsets.only(bottom: 5.0);
 const paddingOnlyBs = EdgeInsets.only(bottom: 10.0);
 const paddingOnlyBm = EdgeInsets.only(bottom: 16.0);
 const paddingOnlyL = EdgeInsets.only(left: 40.0);
+const paddingOnlyLsmall = EdgeInsets.only(left: 23.0);
+const paddingOnlyLxsmall = EdgeInsets.only(left: 8.0);
 const paddingOnlyLRT = EdgeInsets.only(left: 20.0, right: 20.0, top: 7.0);
 const paddingOnlyLR = EdgeInsets.only(left: 13.0, right: 13.0);
 const paddingOnlyT = EdgeInsets.only(top: 30.0);
@@ -38,6 +40,7 @@ const paddingOnlyTSmall = EdgeInsets.only(top: 4.0);
 const paddingOnlyR = EdgeInsets.only(right: 25.0);
 const paddingOnlyRB = EdgeInsets.only(right: 25.0, bottom: 9.0);
 const paddingOnlyRT = EdgeInsets.only(right: 22.0, top: 18.0);
+const paddingZero = EdgeInsets.zero;
 
 const marginAll5 = EdgeInsets.all(5.0);
 const marginAll8 = EdgeInsets.all(8.0);

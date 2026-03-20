@@ -18,6 +18,7 @@ class AuthWrapper extends StatelessWidget {
           return AuthPage();
         }
         final user = authSnapshot.data!;
+
         return StreamBuilder<DocumentSnapshot>(
           stream: DatabaseService().getUserData(user.uid),
           builder: (context, userSnapshot) {
@@ -25,12 +26,23 @@ class AuthWrapper extends StatelessWidget {
               return Scaffold(body: Center(child: CircularProgressIndicator()));
             }
 
-            final data = userSnapshot.data?.data() as Map<String, dynamic>?;
+            if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+              final isGoogleUser = user.providerData.any(
+                (p) => p.providerId == 'google.com',
+              );
+
+              if (isGoogleUser) {
+                return PhoneRequiredPage(userId: user.uid);
+              }
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+            final data = userSnapshot.data!.data() as Map<String, dynamic>?;
             final phone = data?['Phone'] as String?;
             final isGoogleUser = user.providerData.any(
               (p) => p.providerId == 'google.com',
             );
-
             if (isGoogleUser && (phone == null || phone.isEmpty)) {
               return PhoneRequiredPage(userId: user.uid);
             }
