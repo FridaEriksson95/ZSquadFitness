@@ -6,7 +6,16 @@ import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/core/utils/email_launcher.dart';
 
 class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppbar({super.key});
+  final double toolbarHeight;
+  final double logoHeight;
+  final double logoWidth;
+
+  const CustomAppbar({
+    super.key,
+    this.toolbarHeight = 153,
+    this.logoHeight = 350,
+    this.logoWidth = 300,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,13 +24,13 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       scrolledUnderElevation: 0,
       surfaceTintColor: Colors.transparent,
-      toolbarHeight: 153,
+      toolbarHeight: toolbarHeight,
       titleSpacing: 0,
       centerTitle: true,
       title: Image.asset(
         AppAssets.logoText,
-        height: 350,
-        width: 300,
+        height: logoHeight,
+        width: logoWidth,
         fit: BoxFit.contain,
       ),
 

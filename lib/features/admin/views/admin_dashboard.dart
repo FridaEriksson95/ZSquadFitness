@@ -95,6 +95,17 @@ class __PagedClassListState extends State<_PagedClassList> {
               }),
             ),
           ),
+        Padding(
+          padding: paddingOnlyBs,
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              '${AppStrings.total}: ${widget.docs.length}',
+              style: AppTextStyles.bodySmall,
+            ),
+          ),
+        ),
+
         Expanded(
           child: PageView.builder(
             controller: _pageController,
@@ -149,12 +160,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppbar(),
+      appBar: const CustomAppbar(
+        toolbarHeight: 150,
+        logoHeight: 250,
+        logoWidth: 220,
+      ),
       body: DefaultTabController(
         length: 3,
         child: Column(
           children: [
-            gapH15,
             Text(AppStrings.adminTitle, style: AppTextStyles.h1),
             SizedBox(
               width: 300,
@@ -176,7 +190,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 },
               ),
             ),
-            gapH20,
+            gapH10,
             TabBar(
               labelColor: AppColors.neonGreen,
               unselectedLabelColor: AppColors.lightGrey,
@@ -190,7 +204,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 Tab(text: AppStrings.allClasses),
               ],
             ),
-            gapH10,
+            gapH5,
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -224,7 +238,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 },
               ),
             ),
-            gapH20,
+            gapH10,
           ],
         ),
       ),

@@ -11,6 +11,7 @@ class AppStrings {
   static const String allClasses = 'Alla pass';
   static const String upcoming = 'Kommande';
   static const String passed = 'Utförda';
+  static const String total = 'Totalt';
 
   //UploadClass
   static const String amount = '25';
@@ -70,13 +71,14 @@ class AppStrings {
   static const String logoutBtn = 'Logga ut';
   static const String statistics = 'Statistik';
   static const String latest4 = 'Senaste 4 veckorna';
+  static const String latest2 = '2 månader';
   static const String latest3 = '3 månader';
-  static const String latest6 = '6 månader';
-  static const String completedClasses = 'Utförda pass: ';
+  static const String completedClasses = 'Utförda pass';
   static const String noProfileData = 'Kunde inte hämta profilinformation ';
   static const String pwReq = 'Lösenord krävs';
   static const String googleSignInCancel = 'Google inloggning avbröts';
   static const String failedToDelete = 'Kunde inte radera konto:';
+  static const String clients = 'Deltagare';
 
   //EditProfileDialog
   static const String editProfileTitle = 'ÄNDRA PROFILINFO';

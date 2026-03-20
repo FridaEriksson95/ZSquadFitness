@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
       appBar: const CustomAppbar(),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             gapH20,
             Padding(
