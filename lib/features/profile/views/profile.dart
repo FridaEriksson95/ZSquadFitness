@@ -106,12 +106,12 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               AnimatedContainer(
-                duration: const Duration(milliseconds: 350),
+                duration: duration350,
                 height: h.clamp(4.0, chartHeight),
-                margin: const EdgeInsets.symmetric(horizontal: 6),
+                margin: marginHorizon6,
                 decoration: BoxDecoration(
                   color: AppColors.turquise,
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: borderRadius6,
                 ),
               ),
               gapH10,
@@ -177,15 +177,15 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               AnimatedContainer(
-                duration: const Duration(milliseconds: 350),
+                duration: duration350,
                 height: h.clamp(4.0, chartHeight),
-                margin: const EdgeInsets.symmetric(horizontal: 6),
+                margin: marginHorizon6,
                 decoration: BoxDecoration(
                   color: AppColors.turquise,
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: borderRadius6,
                 ),
               ),
-              const SizedBox(height: 8),
+              gapH5,
               Text('v${i + 1}', style: AppTextStyles.bodyWhiteSmall),
             ],
           ),
@@ -262,12 +262,12 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     if (_isDeleting) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(body: cpi);
     }
 
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(body: cpi);
     }
 
     return Scaffold(
@@ -277,10 +277,7 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             gapH15,
             Text(AppStrings.profileTitle, style: AppTextStyles.h1),
-            SizedBox(
-              width: 300,
-              child: Divider(color: AppColors.neonGreen.withValues(alpha: 0.4)),
-            ),
+            divider300,
             gapH15,
 
             BorderCard(
@@ -293,18 +290,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     stream: DatabaseService().getUserData(currentUser.uid),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Padding(
-                          padding: paddingAll24,
-                          child: Center(child: CircularProgressIndicator()),
-                        );
+                        return Padding(padding: paddingAll24, child: cpi);
                       }
                       if (snapshot.hasError ||
                           !snapshot.hasData ||
                           !snapshot.data!.exists) {
-                        return const Padding(
-                          padding: paddingAll24,
-                          child: Center(child: CircularProgressIndicator()),
-                        );
+                        return Padding(padding: paddingAll24, child: cpi);
                       }
 
                       final data =
@@ -452,7 +443,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           builder: (context, classSnap) {
                             if (classSnap.connectionState ==
                                 ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
+                              return cpi;
                             }
 
                             final classDocs = classSnap.data?.docs ?? [];
@@ -473,7 +464,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 color: AppColors.lightBlack.withValues(
                                   alpha: 0.25,
                                 ),
-                                borderRadius: borderRadiusSmall,
+                                borderRadius: borderRadius12,
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -507,7 +498,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
+                            return cpi;
                           }
 
                           final docs = snapshot.data?.docs ?? [];
@@ -525,7 +516,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               color: AppColors.lightBlack.withValues(
                                 alpha: 0.25,
                               ),
-                              borderRadius: borderRadiusSmall,
+                              borderRadius: borderRadius12,
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -534,7 +525,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   '${AppStrings.completedClasses}: $totalCompleted',
                                   style: AppTextStyles.bodyWhiteDialog,
                                 ),
-                                const SizedBox(height: 10),
+                                gapH10,
                                 SizedBox(
                                   height: 180,
                                   child: _buildWeeklyBarChart(counts),

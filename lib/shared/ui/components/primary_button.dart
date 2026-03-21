@@ -19,7 +19,7 @@ class PrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: borderRadiusBig,
+      borderRadius: borderRadius24,
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 16, sigmaY: 24),
         child: Container(
@@ -35,7 +35,7 @@ class PrimaryButton extends StatelessWidget {
                 color.withValues(alpha: 0.3),
               ],
             ),
-            borderRadius: borderRadiusBig,
+            borderRadius: borderRadius24,
             border: buttonGlassBorder,
             boxShadow: [shadowGlass1, shadowGlass2, shadowGlass3],
           ),
@@ -48,7 +48,7 @@ class PrimaryButton extends StatelessWidget {
                   shadowColor: Colors.transparent,
                   elevation: 0,
                   padding: paddingAll8,
-                  shape: RoundedRectangleBorder(borderRadius: borderRadiusBig),
+                  shape: RoundedRectangleBorder(borderRadius: borderRadius24),
                 ).copyWith(
                   overlayColor: WidgetStateProperty.all(
                     Colors.white.withValues(alpha: 0.15),

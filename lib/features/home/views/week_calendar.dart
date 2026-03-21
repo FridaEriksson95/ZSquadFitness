@@ -188,7 +188,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
                                 boxShadow: isToday
                                     ? [shadowGlass1, shadowGlass2, shadowGlass3]
                                     : null,
-                                borderRadius: borderRadiusSmall,
+                                borderRadius: borderRadius12,
                                 border: isToday ? borderCard : null,
                               ),
                               child: Column(

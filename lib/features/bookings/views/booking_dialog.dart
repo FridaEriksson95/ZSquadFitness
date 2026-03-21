@@ -151,7 +151,7 @@ class _BookingDialogState extends State<BookingDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: borderRadiusBig),
+      shape: RoundedRectangleBorder(borderRadius: borderRadius24),
       backgroundColor: Colors.transparent,
       insetPadding: paddingVH,
       child: BorderCard(

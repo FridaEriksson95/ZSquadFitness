@@ -19,7 +19,7 @@ Future<void> showResetPasswordDialog(BuildContext context) async {
       return StatefulBuilder(
         builder: (context, setDialogState) {
           return AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: borderRadiusBig),
+            shape: RoundedRectangleBorder(borderRadius: borderRadius24),
             contentPadding: paddingAll24,
             backgroundColor: AppColors.background.withValues(alpha: 0.9),
             titlePadding: paddingOnlyLRT,

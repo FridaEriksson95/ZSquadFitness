@@ -39,7 +39,7 @@ class ConfirmationDialog extends StatelessWidget {
         : AppColors.neonGreen;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: borderRadiusBig),
+      shape: RoundedRectangleBorder(borderRadius: borderRadius24),
       backgroundColor: Colors.transparent,
       insetPadding: paddingVH,
       child: BorderCard(

@@ -26,13 +26,13 @@ class CustomDropdownfield<T> extends StatelessWidget {
         fontWeight: FontWeight.bold,
         fontSize: fontSize,
       ),
-      borderRadius: borderRadiusBig,
+      borderRadius: borderRadius24,
       dropdownColor: AppColors.lightBg,
       decoration: InputDecoration(
         filled: true,
         fillColor: AppColors.lightBlack.withValues(alpha: 0.6),
         border: OutlineInputBorder(
-          borderRadius: borderRadiusSmall,
+          borderRadius: borderRadius12,
           borderSide: BorderSide.none,
         ),
         contentPadding: paddingVH,

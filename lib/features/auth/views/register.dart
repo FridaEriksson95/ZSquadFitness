@@ -74,7 +74,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                             padding: paddingAll15,
                             decoration: BoxDecoration(
                               color: Colors.transparent,
-                              borderRadius: borderRadiusBig,
+                              borderRadius: borderRadius24,
                               border: Border.all(
                                 color: AppColors.greenish,
                                 width: 1.5,
@@ -267,7 +267,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                                     AppColors.neonGreen.withValues(alpha: 0.5),
                                   ],
                                 ),
-                                borderRadius: borderRadiusBig,
+                                borderRadius: borderRadius24,
                                 border: buttonGlassBorder,
                                 boxShadow: [
                                   shadowGlass1,

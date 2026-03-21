@@ -36,7 +36,7 @@ class CustomTextfield extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: borderRadiusSmall,
+        borderRadius: borderRadius12,
         border: Border.all(color: AppColors.greenish, width: 1.5),
         boxShadow: [textFieldShadow],
       ),
@@ -60,15 +60,15 @@ class CustomTextfield extends StatelessWidget {
           filled: true,
           fillColor: AppColors.greenish.withValues(alpha: 0.03),
           border: OutlineInputBorder(
-            borderRadius: borderRadiusSmall,
+            borderRadius: borderRadius12,
             borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: borderRadiusSmall,
+            borderRadius: borderRadius12,
             borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: borderRadiusSmall,
+            borderRadius: borderRadius12,
             borderSide: BorderSide.none,
           ),
           prefixIcon: prefixIcon,

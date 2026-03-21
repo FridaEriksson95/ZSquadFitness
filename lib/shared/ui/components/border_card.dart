@@ -29,7 +29,7 @@ class BorderCard extends StatelessWidget {
       padding: padding ?? paddingAll15,
       decoration: BoxDecoration(
         color: color ?? AppColors.dark.withValues(alpha: alpha),
-        borderRadius: borderRadiusBig,
+        borderRadius: borderRadius24,
         border: border ?? borderCard,
         boxShadow: boxShadow ?? [shadow],
       ),

@@ -15,6 +15,11 @@ const gapW35 = SizedBox(width: 35.0);
 const gapW48 = SizedBox(width: 48.0);
 const gapW70 = SizedBox(width: 70.0);
 
+final divider300 = SizedBox(
+  width: 300,
+  child: Divider(color: AppColors.neonGreen.withValues(alpha: 0.4)),
+);
+
 const paddingH16 = EdgeInsets.symmetric(horizontal: 16.0);
 const paddingH20 = EdgeInsets.symmetric(horizontal: 20.0);
 const paddingV16 = EdgeInsets.symmetric(vertical: 16.0);
@@ -44,13 +49,17 @@ const paddingZero = EdgeInsets.zero;
 
 const marginAll5 = EdgeInsets.all(5.0);
 const marginAll8 = EdgeInsets.all(8.0);
-const marginOnlyRL = EdgeInsets.only(left: 10, right: 10);
+const marginOnlyRL = EdgeInsets.only(left: 10.0, right: 10.0);
 const marginOnlyB = EdgeInsets.only(bottom: 12.0);
-const marginHorizon = EdgeInsets.symmetric(horizontal: 10);
-const marginHV = EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+const marginHorizon = EdgeInsets.symmetric(horizontal: 10.0);
+const marginHorizon6 = EdgeInsets.symmetric(horizontal: 6.0);
+const marginHV = EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0);
 
-final borderRadiusBig = BorderRadius.circular(24);
-final borderRadiusSmall = BorderRadius.circular(12);
+const duration350 = Duration(milliseconds: 350);
+
+final borderRadius24 = BorderRadius.circular(24.0);
+final borderRadius12 = BorderRadius.circular(12.0);
+final borderRadius6 = BorderRadius.circular(6.0);
 
 final shadow = BoxShadow(
   color: AppColors.lightBg.withValues(alpha: 0.20),
@@ -109,3 +118,5 @@ final borderCard = Border.all(
   color: AppColors.neonGreen.withValues(alpha: 0.2),
   width: 1,
 );
+
+final cpi = Center(child: CircularProgressIndicator());

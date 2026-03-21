@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         snackBarTheme: SnackBarThemeData(
           backgroundColor: AppColors.neonPink.withValues(alpha: 0.4),
           contentTextStyle: const TextStyle(color: AppColors.white),
-          shape: RoundedRectangleBorder(borderRadius: borderRadiusSmall),
+          shape: RoundedRectangleBorder(borderRadius: borderRadius12),
           behavior: SnackBarBehavior.floating,
           elevation: 8,
         ),
