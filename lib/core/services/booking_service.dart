@@ -95,7 +95,7 @@ class BookingService {
         .get();
 
     for (final doc in query.docs) {
-      final data = doc.data() as Map<String, dynamic>;
+      final data = doc.data();
       final ts = data['dateRaw'] as Timestamp?;
       if (ts == null) continue;
       final date = ts.toDate();

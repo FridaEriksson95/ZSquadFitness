@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zsquadfitness/shared/ui/components/border_card.dart';
 import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
@@ -39,11 +39,11 @@ class ConfirmationDialog extends StatelessWidget {
         : AppColors.neonGreen;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: borderRadiusBig),
+      shape: RoundedRectangleBorder(borderRadius: borderRadius24),
       backgroundColor: Colors.transparent,
       insetPadding: paddingVH,
       child: BorderCard(
-        margin: EdgeInsets.zero,
+        margin: marginZero,
         alpha: 0.55,
         boxShadow: [shadowGlass1, shadowGlass2, shadowGlass3],
         child: Column(
@@ -57,9 +57,7 @@ class ConfirmationDialog extends StatelessWidget {
                   size: 28,
                 ),
                 gapW12,
-                Expanded(
-                  child: Text(title, style: AppTextStyles.bodyWhiteDialog),
-                ),
+                Expanded(child: Text(title, style: AppTextStyles.geist22W)),
                 IconButton(
                   icon: const Icon(
                     Icons.close,
@@ -75,7 +73,7 @@ class ConfirmationDialog extends StatelessWidget {
               padding: paddingOnlyR,
               child: Text(
                 message,
-                style: AppTextStyles.bodyWhiteDialog.copyWith(
+                style: AppTextStyles.geist22W.copyWith(
                   fontWeight: FontWeight.normal,
                   fontSize: 20,
                 ),

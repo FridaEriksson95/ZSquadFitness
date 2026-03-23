@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'app_colors.dart';
 import 'app_textstyles.dart';
 
@@ -10,23 +11,23 @@ class AppTheme {
     primaryColor: AppColors.neonGreen,
 
     textTheme: TextTheme(
-      headlineSmall: AppTextStyles.h1,
-      headlineMedium: AppTextStyles.h2,
-      headlineLarge: AppTextStyles.h3,
-      bodyMedium: AppTextStyles.bodyMedium,
-      bodySmall: AppTextStyles.bodySmall,
-      titleLarge: AppTextStyles.hG,
-      titleMedium: AppTextStyles.hT,
-      labelMedium: AppTextStyles.bodyWhiteBold,
-      labelSmall: AppTextStyles.bodyWhiteThin,
-      displaySmall: AppTextStyles.buttonText,
+      headlineSmall: AppTextStyles.cinzel24LG,
+      headlineMedium: AppTextStyles.vidaLoka24T,
+      headlineLarge: AppTextStyles.vidaLoka32T,
+      bodyMedium: AppTextStyles.geist16LG,
+      bodySmall: AppTextStyles.vidaLoka14LG,
+      titleLarge: AppTextStyles.geist20LG,
+      titleMedium: AppTextStyles.geist18T,
+      labelMedium: AppTextStyles.vidaLoka14W,
+      labelSmall: AppTextStyles.vidaLoka14Wthin,
+      displaySmall: AppTextStyles.geist20LB,
     ),
 
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.lightBg,
       foregroundColor: AppColors.white,
       elevation: 0,
-      titleTextStyle: AppTextStyles.h2,
+      titleTextStyle: AppTextStyles.vidaLoka24T,
     ),
 
     colorScheme: const ColorScheme.dark(
@@ -35,6 +36,14 @@ class AppTheme {
       surface: AppColors.surface,
       onSurface: AppColors.white,
       onPrimary: AppColors.lightBlack,
+    ),
+
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: AppColors.neonPink.withValues(alpha: 0.4),
+      contentTextStyle: const TextStyle(color: AppColors.white),
+      shape: RoundedRectangleBorder(borderRadius: borderRadius12),
+      behavior: SnackBarBehavior.floating,
+      elevation: 8,
     ),
   );
 }

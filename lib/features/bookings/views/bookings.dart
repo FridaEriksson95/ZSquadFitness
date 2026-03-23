@@ -2,11 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/services/booking_service.dart';
-import 'package:zsquadfitness/core/services/user_bookings_helper.dart';
+import 'package:zsquadfitness/features/bookings/helpers/user_bookings_helper.dart';
 import 'package:zsquadfitness/features/bookings/widgets/paged_booking_list.dart';
 import 'package:zsquadfitness/shared/ui/components/custom_appbar.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/components/snackbar_utils.dart';
 import 'package:zsquadfitness/shared/ui/components/stream_builder_view.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
@@ -54,16 +54,13 @@ class _BookingsPageState extends State<BookingsPage> {
         child: Column(
           children: [
             gapH15,
-            Text(AppStrings.yourBookings, style: AppTextStyles.h1),
-            SizedBox(
-              width: 300,
-              child: Divider(color: AppColors.neonGreen.withValues(alpha: 0.4)),
-            ),
+            Text(AppStrings.yourBookings, style: AppTextStyles.cinzel24LG),
+            divider300,
             gapH15,
             TabBar(
               labelColor: AppColors.neonGreen,
               unselectedLabelColor: AppColors.lightGrey,
-              labelStyle: AppTextStyles.bodyGrey,
+              labelStyle: AppTextStyles.vidaLoka16LG,
               indicatorColor: AppColors.turquise,
               indicatorWeight: 3,
               dividerColor: Colors.transparent,
@@ -79,7 +76,7 @@ class _BookingsPageState extends State<BookingsPage> {
                 empty: Center(
                   child: Text(
                     AppStrings.noBookings,
-                    style: AppTextStyles.h2,
+                    style: AppTextStyles.vidaLoka24T,
                     textAlign: TextAlign.center,
                   ),
                 ),

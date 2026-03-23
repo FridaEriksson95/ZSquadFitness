@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:zsquadfitness/shared/ui/components/border_card.dart';
 import 'package:zsquadfitness/features/home/views/class_card.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
 class HomeCard extends StatefulWidget {
-  final List<QueryDocumentSnapshot> classes;
+  final List<QueryDocumentSnapshot<Map<String, dynamic>>> classes;
   const HomeCard({super.key, required this.classes});
 
   @override
@@ -42,7 +42,8 @@ class _HomeCardState extends State<HomeCard> {
       return const SizedBox.shrink();
     }
 
-    final groupedClasses = <List<QueryDocumentSnapshot>>[];
+    final groupedClasses =
+        <List<QueryDocumentSnapshot<Map<String, dynamic>>>>[];
     for (int i = 0; i < widget.classes.length; i += 2) {
       groupedClasses.add(
         widget.classes.sublist(
@@ -60,7 +61,7 @@ class _HomeCardState extends State<HomeCard> {
         children: [
           Text(
             AppStrings.upcomingClasses,
-            style: AppTextStyles.h3,
+            style: AppTextStyles.vidaLoka32T,
             textAlign: TextAlign.center,
           ),
           gapH5,
@@ -71,7 +72,7 @@ class _HomeCardState extends State<HomeCard> {
                 return GestureDetector(
                   onTap: () => _pageController.animateToPage(
                     index,
-                    duration: const Duration(milliseconds: 300),
+                    duration: duration300,
                     curve: Curves.easeInOut,
                   ),
                   child: Container(
@@ -101,7 +102,7 @@ class _HomeCardState extends State<HomeCard> {
 
                 return Column(
                   children: pageUploads.map((doc) {
-                    final data = doc.data() as Map<String, dynamic>;
+                    final data = doc.data();
 
                     return Padding(
                       padding: paddingOnlyBxs,

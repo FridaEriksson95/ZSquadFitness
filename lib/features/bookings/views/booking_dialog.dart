@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/services/booking_service.dart';
-import 'package:zsquadfitness/core/services/class_schedule_helper.dart';
+import 'package:zsquadfitness/features/bookings/helpers/class_schedule_helper.dart';
 import 'package:zsquadfitness/features/bookings/widgets/booking_dialog_summary.dart';
 import 'package:zsquadfitness/features/bookings/widgets/repeat_booking_section.dart';
 import 'package:zsquadfitness/shared/ui/components/border_card.dart';
@@ -9,7 +9,7 @@ import 'package:zsquadfitness/shared/ui/components/bottom_nav.dart';
 import 'package:zsquadfitness/shared/ui/components/confirmation_dialog.dart';
 import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/components/snackbar_utils.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
@@ -151,12 +151,12 @@ class _BookingDialogState extends State<BookingDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: borderRadiusBig),
+      shape: RoundedRectangleBorder(borderRadius: borderRadius24),
       backgroundColor: Colors.transparent,
       insetPadding: paddingVH,
       child: BorderCard(
-        padding: EdgeInsets.zero,
-        margin: EdgeInsets.zero,
+        padding: paddingZero,
+        margin: marginZero,
         alpha: 0.62,
         boxShadow: [shadowGlass1, shadowGlass2, shadowGlass3],
         child: Column(
@@ -169,7 +169,7 @@ class _BookingDialogState extends State<BookingDialog> {
                 children: [
                   Text(
                     AppStrings.bookClass,
-                    style: AppTextStyles.h1,
+                    style: AppTextStyles.cinzel24LG,
                     textAlign: TextAlign.center,
                   ),
 
@@ -185,10 +185,7 @@ class _BookingDialogState extends State<BookingDialog> {
                 ],
               ),
             ),
-            SizedBox(
-              width: 300,
-              child: Divider(color: AppColors.neonGreen.withValues(alpha: 0.4)),
-            ),
+            divider300,
 
             BookingDialogSummary(
               classData: widget.classData,

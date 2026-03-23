@@ -2,13 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:zsquadfitness/features/bookings/views/booking_dialog.dart';
+import 'package:zsquadfitness/features/home/helpers/week_calendar_helper.dart';
 import 'package:zsquadfitness/shared/ui/components/border_card.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
 class WeekCalendar extends StatefulWidget {
-  final List<QueryDocumentSnapshot> classes;
+  final List<QueryDocumentSnapshot<Map<String, dynamic>>> classes;
 
   const WeekCalendar({super.key, required this.classes});
 
@@ -18,21 +19,19 @@ class WeekCalendar extends StatefulWidget {
 
 class _WeekCalendarState extends State<WeekCalendar> {
   late PageController _pageController;
-  DateTime _currentWeekStart = DateTime.now().subtract(
-    Duration(days: DateTime.now().weekday - 1),
-  );
+  DateTime _currentWeekStart = WeekCalendarHelper.mondayOf(DateTime.now());
 
   final DateFormat _dayShort = DateFormat('E', 'sv_SE');
   final DateFormat _dayNum = DateFormat('d');
   final DateFormat _monthShort = DateFormat('MMM', 'sv_SE');
 
-  Set<DateTime> _daysWithClasses = {};
+  Set<DateTime> get _daysWithClasses =>
+      WeekCalendarHelper.daysWithClasses(widget.classes);
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 1000);
-    _loadDaysWithClasses();
   }
 
   @override
@@ -41,40 +40,72 @@ class _WeekCalendarState extends State<WeekCalendar> {
     super.dispose();
   }
 
-  Future<void> _loadDaysWithClasses() async {
-    try {
-      final start = _currentWeekStart.subtract(const Duration(days: 90));
-      final end = _currentWeekStart.add(const Duration(days: 90));
-
-      final query = await FirebaseFirestore.instance
-          .collection('classes')
-          .where('dateRaw', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
-          .where('dateRaw', isLessThanOrEqualTo: Timestamp.fromDate(end))
-          .get();
-
-      final Set<DateTime> days = {};
-      for (final doc in query.docs) {
-        final timestamp = doc['dateRaw'] as Timestamp?;
-        if (timestamp != null) {
-          final date = timestamp.toDate();
-          final normalized = DateTime(date.year, date.month, date.day);
-          days.add(normalized);
-        }
-      }
-      setState(() {
-        _daysWithClasses = days;
-      });
-    } catch (e) {}
-  }
-
   void _onPageChanged(int page) {
     setState(() {
-      final today = DateTime.now();
-      final todayMonday = today.subtract(Duration(days: today.weekday - 1));
+      final todayMonday = WeekCalendarHelper.mondayOf(DateTime.now());
       _currentWeekStart = todayMonday.add(Duration(days: (page - 1000) * 7));
     });
+  }
 
-    _loadDaysWithClasses();
+  Future<void> _openClassPicker(
+    BuildContext context, {
+    required List<QueryDocumentSnapshot<Map<String, dynamic>>> dayClasses,
+  }) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.dark,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: ListView.separated(
+            shrinkWrap: true,
+            itemCount: dayClasses.length,
+            separatorBuilder: (_, __) => Divider(
+              color: AppColors.lightGrey.withValues(alpha: 0.15),
+              height: 1,
+            ),
+            itemBuilder: (context, index) {
+              final doc = dayClasses[index];
+              final data = doc.data();
+
+              final title = data['title'] as String? ?? '';
+              final time = data['time'] as String? ?? '';
+              final location = data['locationName'] as String? ?? '';
+
+              return ListTile(
+                title: Text(
+                  title,
+                  style: AppTextStyles.vidaLoka18T.copyWith(
+                    color: AppColors.turquise,
+                  ),
+                ),
+                subtitle: Text(
+                  '$time • $location',
+                  style: AppTextStyles.vidaLoka14LG,
+                ),
+                trailing: const Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColors.lightGrey,
+                ),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  showDialog(
+                    context: context,
+                    builder: (dialogContext) => BookingDialog(
+                      classId: doc.id,
+                      classData: data,
+                      parentContext: context,
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -82,8 +113,8 @@ class _WeekCalendarState extends State<WeekCalendar> {
     return Padding(
       padding: paddingOnlyLR,
       child: BorderCard(
-        padding: EdgeInsets.zero,
-        margin: EdgeInsets.zero,
+        padding: paddingZero,
+        margin: marginZero,
         alpha: 1.5,
         boxShadow: [shadowGlass3],
         child: Row(
@@ -97,7 +128,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
               ),
               onPressed: () {
                 _pageController.previousPage(
-                  duration: const Duration(milliseconds: 300),
+                  duration: duration300,
                   curve: Curves.easeInOut,
                 );
               },
@@ -111,9 +142,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
                   onPageChanged: _onPageChanged,
                   itemBuilder: (context, index) {
                     final today = DateTime.now();
-                    final todayMonday = today.subtract(
-                      Duration(days: today.weekday - 1),
-                    );
+                    final todayMonday = WeekCalendarHelper.mondayOf(today);
                     final weekStart = todayMonday.add(
                       Duration(days: (index - 1000) * 7),
                     );
@@ -124,59 +153,55 @@ class _WeekCalendarState extends State<WeekCalendar> {
                     );
 
                     return Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.dark.withValues(alpha: 1.5),
-                      ),
+                      decoration: boxDecorDark,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: days.map((day) {
-                          final normalizedDay = DateTime(
-                            day.year,
-                            day.month,
-                            day.day,
+                          final normalizedDay = WeekCalendarHelper.normalize(
+                            day,
                           );
                           final hasClass = _daysWithClasses.contains(
                             normalizedDay,
                           );
-                          final isToday =
-                              day.day == today.day &&
-                              day.month == today.month &&
-                              day.year == today.year;
+
+                          final isToday = WeekCalendarHelper.isSameDay(
+                            day,
+                            today,
+                          );
 
                           final fontWeight = hasClass || isToday
                               ? FontWeight.bold
                               : FontWeight.normal;
 
                           return GestureDetector(
-                            onTap: () {
+                            onTap: () async {
                               if (!hasClass) return;
 
-                              final classForDay = widget.classes.where((doc) {
-                                final data = doc.data() as Map<String, dynamic>;
-                                final classDateRaw =
-                                    data['dateRaw'] as Timestamp?;
-                                if (classDateRaw == null) return false;
-                                final classDate = classDateRaw.toDate();
-                                return classDate.year == day.year &&
-                                    classDate.month == day.month &&
-                                    classDate.day == day.day;
-                              }).toList();
+                              final dayClasses =
+                                  WeekCalendarHelper.classesForDay(
+                                    widget.classes,
+                                    day,
+                                  );
 
-                              if (classForDay.isEmpty) return;
+                              if (dayClasses.isEmpty) return;
+                              if (dayClasses.length == 1) {
+                                final data = dayClasses.first.data();
 
-                              if (classForDay.length == 1) {
-                                final classData =
-                                    classForDay.first.data()
-                                        as Map<String, dynamic>;
                                 showDialog(
                                   context: context,
-                                  builder: (context) => BookingDialog(
+                                  builder: (dialogContext) => BookingDialog(
                                     parentContext: context,
-                                    classId: classForDay.first.id,
-                                    classData: classData,
+                                    classId: dayClasses.first.id,
+                                    classData: data,
                                   ),
                                 );
+                                return;
                               }
+
+                              await _openClassPicker(
+                                context,
+                                dayClasses: dayClasses,
+                              );
                             },
                             child: Container(
                               width: 40,
@@ -188,7 +213,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
                                 boxShadow: isToday
                                     ? [shadowGlass1, shadowGlass2, shadowGlass3]
                                     : null,
-                                borderRadius: borderRadiusSmall,
+                                borderRadius: borderRadius12,
                                 border: isToday ? borderCard : null,
                               ),
                               child: Column(
@@ -196,7 +221,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
                                 children: [
                                   Text(
                                     _dayShort.format(day).toUpperCase(),
-                                    style: AppTextStyles.bodySmall.copyWith(
+                                    style: AppTextStyles.vidaLoka14LG.copyWith(
                                       color: hasClass
                                           ? AppColors.neonGreen
                                           : AppColors.turquise,
@@ -213,7 +238,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
 
                                   Text(
                                     _dayNum.format(day).toUpperCase(),
-                                    style: AppTextStyles.bodySmall.copyWith(
+                                    style: AppTextStyles.vidaLoka14LG.copyWith(
                                       color: hasClass
                                           ? AppColors.neonGreen
                                           : AppColors.white,
@@ -222,7 +247,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
                                   ),
                                   Text(
                                     _monthShort.format(day).toUpperCase(),
-                                    style: AppTextStyles.bodySmall.copyWith(
+                                    style: AppTextStyles.vidaLoka14LG.copyWith(
                                       color: hasClass
                                           ? AppColors.neonGreen
                                           : AppColors.white,

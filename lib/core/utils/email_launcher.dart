@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
+import 'package:zsquadfitness/shared/ui/components/snackbar_utils.dart';
 
 Future<void> openEmail(BuildContext context) async {
   final Uri emailUri = Uri(
@@ -15,24 +15,13 @@ Future<void> openEmail(BuildContext context) async {
       await launchUrl(emailUri, mode: LaunchMode.externalApplication);
     } else {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: AppColors.neonPink.withValues(alpha: 0.5),
-            content: Text(AppStrings.cantOpenEmail),
-            duration: Duration(seconds: 5),
-          ),
-        );
+        showAppSnackBar(context, message: AppStrings.cantOpenEmail);
       }
     }
   } catch (e) {
     debugPrint('${AppStrings.errorOpeningEmail} $e');
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: AppColors.neonPink.withValues(alpha: 0.5),
-          content: Text(AppStrings.errorOpeningEmailMessage),
-        ),
-      );
+      showAppSnackBar(context, message: AppStrings.errorOpeningEmailMessage);
     }
   }
 }
@@ -47,12 +36,7 @@ Future<void> openEmailToClients(
       .toList();
   if (validEmails.isEmpty) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppStrings.noEmailsToSendTo),
-          backgroundColor: AppColors.neonPink,
-        ),
-      );
+      showAppSnackBar(context, message: AppStrings.noEmailsToSendTo);
     }
     return;
   }
@@ -66,24 +50,13 @@ Future<void> openEmailToClients(
       await launchUrl(emailUri, mode: LaunchMode.externalApplication);
     } else {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: AppColors.neonPink.withValues(alpha: 0.5),
-            content: Text(AppStrings.cantOpenEmail),
-            duration: Duration(seconds: 5),
-          ),
-        );
+        showAppSnackBar(context, message: AppStrings.cantOpenEmail);
       }
     }
   } catch (e) {
     debugPrint('${AppStrings.errorOpeningEmail} $e');
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: AppColors.neonPink.withValues(alpha: 0.5),
-          content: Text(AppStrings.errorOpeningEmailMessage),
-        ),
-      );
+      showAppSnackBar(context, message: AppStrings.errorOpeningEmailMessage);
     }
   }
 }

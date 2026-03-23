@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/components/border_card.dart';
 import 'package:zsquadfitness/shared/ui/components/confirmation_dialog.dart';
 import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
-import 'package:zsquadfitness/shared/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
@@ -18,7 +17,7 @@ typedef BookingCancelCallback =
     });
 
 class PagedBookingList extends StatefulWidget {
-  final List<QueryDocumentSnapshot> docs;
+  final List<QueryDocumentSnapshot<Map<String, dynamic>>> docs;
   final BookingCancelCallback onCancel;
 
   const PagedBookingList({
@@ -58,13 +57,13 @@ class __PagedBookingListState extends State<PagedBookingList> {
       return Center(
         child: Text(
           AppStrings.noBookings,
-          style: AppTextStyles.bodyMedium,
+          style: AppTextStyles.geist16LG,
           textAlign: TextAlign.center,
         ),
       );
     }
 
-    final grouped = <List<QueryDocumentSnapshot>>[];
+    final grouped = <List<QueryDocumentSnapshot<Map<String, dynamic>>>>[];
     for (int i = 0; i < widget.docs.length; i += _bookingItemsPerPage) {
       grouped.add(
         widget.docs.sublist(
@@ -132,10 +131,10 @@ class __PagedBookingListState extends State<PagedBookingList> {
 
 Widget _buildBookingCard(
   BuildContext context, {
-  required QueryDocumentSnapshot bookingDoc,
+  required QueryDocumentSnapshot<Map<String, dynamic>> bookingDoc,
   required BookingCancelCallback onCancel,
 }) {
-  final bookingData = bookingDoc.data() as Map<String, dynamic>;
+  final bookingData = bookingDoc.data();
 
   final classId = bookingData['classId'] as String?;
 
@@ -143,7 +142,7 @@ Widget _buildBookingCard(
     return const ListTile(title: Text(AppStrings.errorBooking));
   }
 
-  return FutureBuilder<DocumentSnapshot>(
+  return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
     future: FirebaseFirestore.instance.collection('classes').doc(classId).get(),
     builder: (context, classSnapshot) {
       if (classSnapshot.connectionState == ConnectionState.waiting) {
@@ -162,19 +161,13 @@ Widget _buildBookingCard(
         padding: paddingOnlyTB,
         child: BorderCard(
           padding: paddingAll8,
-          margin: EdgeInsets.zero,
+          margin: marginZero,
           alpha: 0.07,
           boxShadow: [textFieldShadow],
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 82,
-                height: 75,
-                child: Center(
-                  child: Image.asset(AppAssets.logoBlack, fit: BoxFit.contain),
-                ),
-              ),
+              logoBlack82,
               gapW12,
 
               Expanded(
@@ -183,22 +176,22 @@ Widget _buildBookingCard(
                   children: [
                     Text(
                       classData['title'] ?? AppStrings.zumba,
-                      style: AppTextStyles.vT,
+                      style: AppTextStyles.vidaLoka18T,
                     ),
                     gapH5,
                     Text(
                       classData['date'] ?? AppStrings.noDate,
-                      style: AppTextStyles.bodyWhiteBold,
+                      style: AppTextStyles.vidaLoka14W,
                     ),
                     gapH5,
                     Text(
                       classData['time'] ?? AppStrings.noTime,
-                      style: AppTextStyles.bodyWhiteBold,
+                      style: AppTextStyles.vidaLoka14W,
                     ),
                     gapH5,
                     Text(
                       classData['locationName'] ?? AppStrings.noPlace,
-                      style: AppTextStyles.bodyNeongreen,
+                      style: AppTextStyles.vidaLoka11G,
                     ),
                     gapH5,
                   ],

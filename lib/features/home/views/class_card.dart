@@ -5,8 +5,8 @@ import 'package:zsquadfitness/features/bookings/views/booking_dialog.dart';
 import 'package:zsquadfitness/shared/ui/components/border_card.dart';
 import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
-import 'package:zsquadfitness/shared/ui/theme/app_assets.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
+import 'package:zsquadfitness/shared/ui/components/stream_builder_view.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
@@ -34,7 +34,7 @@ class _ClassCardState extends State<ClassCard> {
       children: [
         Text(
           (widget.classData['date'] ?? AppStrings.noDate).toUpperCase(),
-          style: AppTextStyles.vG,
+          style: AppTextStyles.vidaLoka20LG,
         ),
         gapH10,
 
@@ -45,13 +45,7 @@ class _ClassCardState extends State<ClassCard> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 82,
-                height: 75,
-                child: Center(
-                  child: Image.asset(AppAssets.logoBlack, fit: BoxFit.contain),
-                ),
-              ),
+              logoBlack82,
               gapW12,
 
               Expanded(
@@ -60,25 +54,25 @@ class _ClassCardState extends State<ClassCard> {
                   children: [
                     Text(
                       widget.classData['title'] ?? AppStrings.zumba,
-                      style: AppTextStyles.vT,
+                      style: AppTextStyles.vidaLoka18T,
                     ),
                     gapH5,
                     Text(
                       widget.classData['time'] ?? AppStrings.noTime,
-                      style: AppTextStyles.bodyWhiteBold,
+                      style: AppTextStyles.vidaLoka14W,
                     ),
                     gapH5,
                     Row(
                       children: [
                         Text(
                           '$spotsLeft',
-                          style: AppTextStyles.bodyWhiteThin.copyWith(
+                          style: AppTextStyles.vidaLoka14Wthin.copyWith(
                             color: AppColors.neonGreen,
                           ),
                         ),
                         Text(
                           AppStrings.spotsLeft,
-                          style: AppTextStyles.bodyWhiteThin,
+                          style: AppTextStyles.vidaLoka14Wthin,
                         ),
                       ],
                     ),
@@ -86,53 +80,54 @@ class _ClassCardState extends State<ClassCard> {
                 ),
               ),
               gapW12,
-              StreamBuilder<QuerySnapshot>(
-                stream: user != null
-                    ? FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(user?.uid)
-                          .collection('bookings')
-                          .where('classId', isEqualTo: widget.classId)
-                          .limit(1)
-                          .snapshots()
-                    : null,
-                builder: (context, snapshot) {
-                  bool booked = false;
-                  if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-                    booked = true;
-                  }
 
-                  return SizedBox(
-                    width: 100,
-                    child: Padding(
-                      padding: paddingOnlyTB,
-                      child: PrimaryButton(
-                        text: booked ? AppStrings.booked : AppStrings.book,
-                        onPressed: booked
-                            ? null
-                            : () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => BookingDialog(
-                                    parentContext: context,
-                                    classId: widget.classId,
-                                    classData: widget.classData,
-                                  ),
-                                );
-                              },
-                        color: booked
-                            ? AppColors.lightGrey
-                            : AppColors.neonGreen,
-                      ),
-                    ),
-                  );
-                },
-              ),
+              if (user == null)
+                _buildBookButton(context, booked: false)
+              else
+                SimpleStreamView<QuerySnapshot<Map<String, dynamic>>>(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(user?.uid)
+                      .collection('bookings')
+                      .where('classId', isEqualTo: widget.classId)
+                      .limit(1)
+                      .snapshots(),
+                  loading: _buildBookButton(context, booked: false),
+                  empty: _buildBookButton(context, booked: false),
+                  isEmpty: (qs) => qs.docs.isEmpty,
+
+                  builder: (_) => _buildBookButton(context, booked: true),
+                ),
             ],
           ),
         ),
         gapH5,
       ],
+    );
+  }
+
+  Widget _buildBookButton(BuildContext context, {required bool booked}) {
+    return SizedBox(
+      width: 100,
+      child: Padding(
+        padding: paddingOnlyTB,
+        child: PrimaryButton(
+          text: booked ? AppStrings.booked : AppStrings.book,
+          onPressed: booked
+              ? null
+              : () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => BookingDialog(
+                      parentContext: context,
+                      classId: widget.classId,
+                      classData: widget.classData,
+                    ),
+                  );
+                },
+          color: booked ? AppColors.lightGrey : AppColors.neonGreen,
+        ),
+      ),
     );
   }
 }

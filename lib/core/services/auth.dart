@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -147,5 +148,42 @@ class AuthService {
     } catch (e) {
       throw Exception('${AppStrings.unknownError} $e');
     }
+  }
+
+  Future<void> deleteAccount({String? password}) async {
+    final user = auth.currentUser;
+    if (user == null) throw Exception(AppStrings.loginRequired);
+
+    final providerIds = user.providerData.map((p) => p.providerId).toSet();
+
+    if (providerIds.contains('password')) {
+      if (password == null || password.isEmpty) {
+        throw Exception(AppStrings.pwReq);
+      }
+      final cred = EmailAuthProvider.credential(
+        email: user.email!,
+        password: password,
+      );
+
+      await user.reauthenticateWithCredential(cred);
+    } else if (providerIds.contains('google.com')) {
+      final googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) throw Exception(AppStrings.googleSignInCancel);
+
+      final googleAuth = await googleUser.authentication;
+      final cred = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      await user.reauthenticateWithCredential(cred);
+    }
+
+    final callable = FirebaseFunctions.instanceFor(
+      region: 'europe-west1',
+    ).httpsCallable('deleteUserAccountData');
+
+    await callable.call();
+
+    await signOut();
   }
 }

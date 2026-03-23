@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
@@ -19,11 +19,11 @@ class PrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: borderRadiusBig,
+      borderRadius: borderRadius24,
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 16, sigmaY: 24),
         child: Container(
-          width: double.infinity,
+          width: MediaQuery.of(context).size.width * 0.9,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -35,7 +35,7 @@ class PrimaryButton extends StatelessWidget {
                 color.withValues(alpha: 0.3),
               ],
             ),
-            borderRadius: borderRadiusBig,
+            borderRadius: borderRadius24,
             border: buttonGlassBorder,
             boxShadow: [shadowGlass1, shadowGlass2, shadowGlass3],
           ),
@@ -48,7 +48,7 @@ class PrimaryButton extends StatelessWidget {
                   shadowColor: Colors.transparent,
                   elevation: 0,
                   padding: paddingAll8,
-                  shape: RoundedRectangleBorder(borderRadius: borderRadiusBig),
+                  shape: RoundedRectangleBorder(borderRadius: borderRadius24),
                 ).copyWith(
                   overlayColor: WidgetStateProperty.all(
                     Colors.white.withValues(alpha: 0.15),
@@ -56,7 +56,7 @@ class PrimaryButton extends StatelessWidget {
                 ),
             child: Text(
               text,
-              style: AppTextStyles.buttonText.copyWith(
+              style: AppTextStyles.geist20LB.copyWith(
                 color: AppColors.lightBlack,
               ),
             ),

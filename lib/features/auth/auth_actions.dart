@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
 import 'package:zsquadfitness/core/services/auth.dart';
+import 'package:zsquadfitness/shared/ui/components/snackbar_utils.dart';
 
 Future<bool> performEmailSignin(
   BuildContext context, {
@@ -15,9 +16,7 @@ Future<bool> performEmailSignin(
     return true;
   } catch (e) {
     if (context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${AppStrings.signinFail} $e')));
+      showAppSnackBar(context, message: '${AppStrings.signinFail} $e');
     }
     return false;
   }
@@ -29,9 +28,7 @@ Future<bool> performGoogleSignIn(BuildContext context) async {
     return user != null;
   } catch (e) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${AppStrings.registerFailGoogle} $e')),
-      );
+      showAppSnackBar(context, message: '${AppStrings.registerFailGoogle} $e');
     }
     return false;
   }
@@ -54,9 +51,7 @@ Future<bool> performRegister(
     return true;
   } catch (e) {
     if (context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${AppStrings.registerFail} $e')));
+      showAppSnackBar(context, message: '${AppStrings.registerFail} $e');
     }
     return false;
   }

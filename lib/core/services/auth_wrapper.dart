@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/features/auth/views/auth_page.dart';
 import 'package:zsquadfitness/features/auth/views/phone_required.dart';
 import 'package:zsquadfitness/core/services/database.dart';
@@ -19,11 +20,11 @@ class AuthWrapper extends StatelessWidget {
         }
         final user = authSnapshot.data!;
 
-        return StreamBuilder<DocumentSnapshot>(
+        return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
           stream: DatabaseService().getUserData(user.uid),
           builder: (context, userSnapshot) {
             if (userSnapshot.connectionState == ConnectionState.waiting) {
-              return Scaffold(body: Center(child: CircularProgressIndicator()));
+              return Scaffold(body: cpi);
             }
 
             if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
@@ -34,11 +35,9 @@ class AuthWrapper extends StatelessWidget {
               if (isGoogleUser) {
                 return PhoneRequiredPage(userId: user.uid);
               }
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
+              return Scaffold(body: cpi);
             }
-            final data = userSnapshot.data!.data() as Map<String, dynamic>?;
+            final data = userSnapshot.data!.data();
             final phone = data?['Phone'] as String?;
             final isGoogleUser = user.providerData.any(
               (p) => p.providerId == 'google.com',

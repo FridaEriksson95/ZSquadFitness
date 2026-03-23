@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 
 class CustomDropdownfield<T> extends StatelessWidget {
@@ -26,17 +26,9 @@ class CustomDropdownfield<T> extends StatelessWidget {
         fontWeight: FontWeight.bold,
         fontSize: fontSize,
       ),
-      borderRadius: borderRadiusBig,
+      borderRadius: borderRadius24,
       dropdownColor: AppColors.lightBg,
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: AppColors.lightBlack.withValues(alpha: 0.6),
-        border: OutlineInputBorder(
-          borderRadius: borderRadiusSmall,
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: paddingVH,
-      ),
+      decoration: inputDropDown,
       items: items,
       onChanged: onChanged,
     );
