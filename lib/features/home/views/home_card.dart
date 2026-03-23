@@ -9,7 +9,13 @@ import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
 class HomeCard extends StatefulWidget {
   final List<QueryDocumentSnapshot<Map<String, dynamic>>> classes;
-  const HomeCard({super.key, required this.classes});
+  final Set<String> bookedClassIds;
+
+  const HomeCard({
+    super.key,
+    required this.classes,
+    required this.bookedClassIds,
+  });
 
   @override
   State<HomeCard> createState() => _HomeCardState();
@@ -106,7 +112,11 @@ class _HomeCardState extends State<HomeCard> {
 
                     return Padding(
                       padding: paddingOnlyBxs,
-                      child: ClassCard(classData: data, classId: doc.id),
+                      child: ClassCard(
+                        classData: data,
+                        classId: doc.id,
+                        isBooked: widget.bookedClassIds.contains(doc.id),
+                      ),
                     );
                   }).toList(),
                 );

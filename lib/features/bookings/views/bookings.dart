@@ -25,7 +25,7 @@ class _BookingsPageState extends State<BookingsPage> {
 
   Future<void> _cancelBooking(
     BuildContext context, {
-    required DocumentReference bookingRef,
+    required DocumentReference<Map<String, dynamic>> bookingRef,
     required String classId,
   }) async {
     await _bookingService.cancelBooking(

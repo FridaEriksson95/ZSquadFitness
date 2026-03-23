@@ -19,14 +19,10 @@ class WeekCalendar extends StatefulWidget {
 
 class _WeekCalendarState extends State<WeekCalendar> {
   late PageController _pageController;
-  DateTime _currentWeekStart = WeekCalendarHelper.mondayOf(DateTime.now());
 
   final DateFormat _dayShort = DateFormat('E', 'sv_SE');
   final DateFormat _dayNum = DateFormat('d');
   final DateFormat _monthShort = DateFormat('MMM', 'sv_SE');
-
-  Set<DateTime> get _daysWithClasses =>
-      WeekCalendarHelper.daysWithClasses(widget.classes);
 
   @override
   void initState() {
@@ -38,13 +34,6 @@ class _WeekCalendarState extends State<WeekCalendar> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
-  }
-
-  void _onPageChanged(int page) {
-    setState(() {
-      final todayMonday = WeekCalendarHelper.mondayOf(DateTime.now());
-      _currentWeekStart = todayMonday.add(Duration(days: (page - 1000) * 7));
-    });
   }
 
   Future<void> _openClassPicker(
@@ -110,6 +99,8 @@ class _WeekCalendarState extends State<WeekCalendar> {
 
   @override
   Widget build(BuildContext context) {
+    final daysWithClasses = WeekCalendarHelper.daysWithClasses(widget.classes);
+
     return Padding(
       padding: paddingOnlyLR,
       child: BorderCard(
@@ -139,7 +130,6 @@ class _WeekCalendarState extends State<WeekCalendar> {
                 height: 60,
                 child: PageView.builder(
                   controller: _pageController,
-                  onPageChanged: _onPageChanged,
                   itemBuilder: (context, index) {
                     final today = DateTime.now();
                     final todayMonday = WeekCalendarHelper.mondayOf(today);
@@ -160,7 +150,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
                           final normalizedDay = WeekCalendarHelper.normalize(
                             day,
                           );
-                          final hasClass = _daysWithClasses.contains(
+                          final hasClass = daysWithClasses.contains(
                             normalizedDay,
                           );
 

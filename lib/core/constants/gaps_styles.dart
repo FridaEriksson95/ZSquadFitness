@@ -27,6 +27,11 @@ final divider360 = SizedBox(
   child: Divider(color: AppColors.neonGreen.withValues(alpha: 0.4)),
 );
 
+final divider330 = SizedBox(
+  width: 330,
+  child: Divider(color: AppColors.neonGreen.withValues(alpha: 0.4)),
+);
+
 final divider250 = SizedBox(
   width: 250,
   child: Divider(color: AppColors.greenish),
@@ -270,4 +275,7 @@ final outlineInputBorderTF = OutlineInputBorder(
   borderSide: BorderSide.none,
 );
 
-
+final outlinedButton = OutlinedButton.styleFrom(
+  foregroundColor: AppColors.neonGreen,
+  side: BorderSide(color: AppColors.neonGreen),
+);

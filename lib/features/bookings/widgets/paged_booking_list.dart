@@ -12,7 +12,7 @@ const int _bookingItemsPerPage = 3;
 typedef BookingCancelCallback =
     Future<void> Function(
       BuildContext context, {
-      required DocumentReference bookingRef,
+      required DocumentReference<Map<String, dynamic>> bookingRef,
       required String classId,
     });
 
@@ -86,7 +86,7 @@ class __PagedBookingListState extends State<PagedBookingList> {
               return GestureDetector(
                 onTap: () => _pageController.animateToPage(
                   index,
-                  duration: const Duration(milliseconds: 300),
+                  duration: duration300,
                   curve: Curves.easeInOut,
                 ),
                 child: Container(
@@ -138,101 +138,81 @@ Widget _buildBookingCard(
 
   final classId = bookingData['classId'] as String?;
 
-  if (classId == null) {
+  if (classId == null || classId.isEmpty) {
     return const ListTile(title: Text(AppStrings.errorBooking));
   }
 
-  return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-    future: FirebaseFirestore.instance.collection('classes').doc(classId).get(),
-    builder: (context, classSnapshot) {
-      if (classSnapshot.connectionState == ConnectionState.waiting) {
-        return const ListTile(title: CircularProgressIndicator());
-      }
+  final ts = bookingData['dateRaw'] as Timestamp?;
+  final isPast = ts != null && ts.toDate().isBefore(DateTime.now());
 
-      if (!classSnapshot.hasData || !classSnapshot.data!.exists) {
-        return const ListTile(title: Text(AppStrings.removedBooking));
-      }
+  final title = bookingData['title'] as String? ?? AppStrings.zumba;
+  final date = bookingData['date'] as String? ?? AppStrings.noDate;
+  final time = bookingData['time'] as String? ?? AppStrings.noTime;
+  final locationName =
+      bookingData['locationName'] as String? ?? AppStrings.noPlace;
 
-      final classData = classSnapshot.data!.data() as Map<String, dynamic>;
-      final ts = classData['dateRaw'] as Timestamp?;
-      final isPast = ts != null && ts.toDate().isBefore(DateTime.now());
+  return Padding(
+    padding: paddingOnlyTB,
+    child: BorderCard(
+      padding: paddingAll8,
+      margin: marginZero,
+      alpha: 0.07,
+      boxShadow: [textFieldShadow],
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          logoBlack82,
+          gapW12,
 
-      return Padding(
-        padding: paddingOnlyTB,
-        child: BorderCard(
-          padding: paddingAll8,
-          margin: marginZero,
-          alpha: 0.07,
-          boxShadow: [textFieldShadow],
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              logoBlack82,
-              gapW12,
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      classData['title'] ?? AppStrings.zumba,
-                      style: AppTextStyles.vidaLoka18T,
-                    ),
-                    gapH5,
-                    Text(
-                      classData['date'] ?? AppStrings.noDate,
-                      style: AppTextStyles.vidaLoka14W,
-                    ),
-                    gapH5,
-                    Text(
-                      classData['time'] ?? AppStrings.noTime,
-                      style: AppTextStyles.vidaLoka14W,
-                    ),
-                    gapH5,
-                    Text(
-                      classData['locationName'] ?? AppStrings.noPlace,
-                      style: AppTextStyles.vidaLoka11G,
-                    ),
-                    gapH5,
-                  ],
-                ),
-              ),
-              gapW12,
-
-              SizedBox(
-                width: 110,
-                child: Padding(
-                  padding: paddingOnlyT,
-                  child: IntrinsicWidth(
-                    child: PrimaryButton(
-                      text: isPast
-                          ? AppStrings.accomplished
-                          : AppStrings.cancelBooking,
-                      color: isPast ? AppColors.lightGrey : AppColors.neonPink,
-                      onPressed: isPast
-                          ? null
-                          : () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => ConfirmationDialog(
-                                  type: ConfirmationType.cancelBooking,
-                                  onConfirm: () => onCancel(
-                                    context,
-                                    bookingRef: bookingDoc.reference,
-                                    classId: classId,
-                                  ),
-                                  onCancel: () => Navigator.pop(context),
-                                ),
-                              );
-                            },
-                    ),
-                  ),
-                ),
-              ),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: AppTextStyles.vidaLoka18T),
+                gapH5,
+                Text(date, style: AppTextStyles.vidaLoka14W),
+                gapH5,
+                Text(time, style: AppTextStyles.vidaLoka14W),
+                gapH5,
+                Text(locationName, style: AppTextStyles.vidaLoka11G),
+                gapH5,
+              ],
+            ),
           ),
-        ),
-      );
-    },
+          gapW12,
+
+          SizedBox(
+            width: 110,
+            child: Padding(
+              padding: paddingOnlyT,
+              child: IntrinsicWidth(
+                child: PrimaryButton(
+                  text: isPast
+                      ? AppStrings.accomplished
+                      : AppStrings.cancelBooking,
+                  color: isPast ? AppColors.lightGrey : AppColors.neonPink,
+                  onPressed: isPast
+                      ? null
+                      : () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => ConfirmationDialog(
+                              type: ConfirmationType.cancelBooking,
+                              onConfirm: () => onCancel(
+                                context,
+                                bookingRef: bookingDoc.reference,
+                                classId: classId,
+                              ),
+                              onCancel: () => Navigator.pop(context),
+                            ),
+                          );
+                        },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
   );
 }

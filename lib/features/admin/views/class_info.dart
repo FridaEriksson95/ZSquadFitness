@@ -44,10 +44,7 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
         child: Column(
           children: [
             Text(AppStrings.classInfoTitle, style: AppTextStyles.cinzel24LG),
-            SizedBox(
-              width: 330,
-              child: Divider(color: AppColors.neonGreen.withValues(alpha: 0.4)),
-            ),
+            divider330,
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -69,12 +66,7 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
                 ),
                 gapH15,
                 Text(AppStrings.bookedInClass, style: AppTextStyles.cinzel24LG),
-                SizedBox(
-                  width: 200,
-                  child: Divider(
-                    color: AppColors.neonGreen.withValues(alpha: 0.4),
-                  ),
-                ),
+                divider250,
 
                 SimpleStreamView<QuerySnapshot<Map<String, dynamic>>>(
                   stream: FirebaseFirestore.instance
@@ -128,10 +120,7 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
                                   color: AppColors.neonGreen,
                                 ),
                                 label: Text(AppStrings.emailAllBooked),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: AppColors.neonGreen,
-                                  side: BorderSide(color: AppColors.neonGreen),
-                                ),
+                                style: outlinedButton,
                               ),
                             ),
 
@@ -305,7 +294,7 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
               ),
             ],
           ),
-          divider360,
+          Center(child: divider360),
         ],
       ),
     );
