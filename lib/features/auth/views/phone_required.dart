@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
+import 'package:zsquadfitness/shared/ui/components/snackbar_utils.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 import 'package:zsquadfitness/shared/ui/components/custom_appbar.dart';
@@ -32,9 +33,7 @@ class _PhoneRequiredPageState extends State<PhoneRequiredPage> {
     final phone = _controller.text.trim();
     final error = validatePhone(phone);
     if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      showAppSnackBar(context, message: error);
       return;
     }
     setState(() => _saving = true);
@@ -59,7 +58,7 @@ class _PhoneRequiredPageState extends State<PhoneRequiredPage> {
               children: [
                 Text(
                   AppStrings.needPhoneNr,
-                  style: AppTextStyles.bodyWhiteDialog,
+                  style: AppTextStyles.geist22W,
                   textAlign: TextAlign.center,
                 ),
                 gapH15,

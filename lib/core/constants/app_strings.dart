@@ -88,7 +88,8 @@ class AppStrings {
   static const String deleteAccount = 'Radera konto';
   static const String deleteInfo =
       'Detta tar bort ditt konto & dina bokningar permanent. '
-      'Åtgärden går inte att ångra.';
+      'Åtgärden går inte att ångra.\n'
+      'Du kommer att behöva logga in igen för att slutföra raderingen.';
   static const String confirmPW = 'Bekräfta lösenord';
   static const String submitPW = 'Ange lösenord';
   static const String deleteAccountCaps = 'RADERA KONTO';

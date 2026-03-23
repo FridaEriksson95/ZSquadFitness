@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
-import 'package:zsquadfitness/core/services/class_schedule_helper.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
+import 'package:zsquadfitness/features/bookings/helpers/class_schedule_helper.dart';
 import 'package:zsquadfitness/shared/ui/components/custom_dropdownfield.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
@@ -41,7 +41,7 @@ class RepeatBookingSection extends StatelessWidget {
             children: [
               Text(
                 AppStrings.bookingConfirmation,
-                style: AppTextStyles.hT.copyWith(color: Colors.white),
+                style: AppTextStyles.geist18T.copyWith(color: Colors.white),
                 overflow: TextOverflow.ellipsis,
               ),
               gapW35,
@@ -60,7 +60,7 @@ class RepeatBookingSection extends StatelessWidget {
             children: [
               Text(
                 AppStrings.repeatBooking,
-                style: AppTextStyles.hT.copyWith(color: Colors.white),
+                style: AppTextStyles.geist18T.copyWith(color: Colors.white),
                 overflow: TextOverflow.ellipsis,
               ),
               gapW70,
@@ -119,7 +119,7 @@ class RepeatBookingSection extends StatelessWidget {
             gapH10,
             Text(
               AppStrings.noAvailableRepeatDays,
-              style: AppTextStyles.bodySmall,
+              style: AppTextStyles.vidaLoka14LG,
               textAlign: TextAlign.center,
             ),
           ],

@@ -5,8 +5,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:zsquadfitness/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:zsquadfitness/core/services/auth_wrapper.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
-import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_theme.dart';
 
 Future<void> main() async {
@@ -34,15 +32,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme.copyWith(
-        snackBarTheme: SnackBarThemeData(
-          backgroundColor: AppColors.neonPink.withValues(alpha: 0.4),
-          contentTextStyle: const TextStyle(color: AppColors.white),
-          shape: RoundedRectangleBorder(borderRadius: borderRadius12),
-          behavior: SnackBarBehavior.floating,
-          elevation: 8,
-        ),
-      ),
+      theme: AppTheme.darkTheme,
       locale: const Locale('sv', 'SE'),
       supportedLocales: const [Locale('sv', 'SE'), Locale('en', 'US')],
       localizationsDelegates: const [

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/components/border_card.dart';
-import 'package:zsquadfitness/shared/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
@@ -30,18 +29,7 @@ class BookingDialogSummary extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(
-                width: 60,
-                height: 90,
-                child: Center(
-                  child: Image.asset(
-                    AppAssets.logoBlack,
-                    width: 60,
-                    height: 90,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
+              logoBlack60,
 
               Expanded(
                 child: Center(
@@ -51,7 +39,7 @@ class BookingDialogSummary extends StatelessWidget {
                       gapH10,
                       Text(
                         classData['title'] ?? AppStrings.zumba,
-                        style: AppTextStyles.hT,
+                        style: AppTextStyles.geist18T,
                       ),
                       gapH5,
                       Text(classData['date'] ?? AppStrings.noDate),
@@ -59,9 +47,7 @@ class BookingDialogSummary extends StatelessWidget {
                       if ((classData['room'] as String?)?.isNotEmpty == true)
                         Text(
                           '${AppStrings.roomNr}${classData['room']}',
-                          style: AppTextStyles.bodyWhiteSmall.copyWith(
-                            fontSize: 10,
-                          ),
+                          style: AppTextStyles.geist14W.copyWith(fontSize: 10),
                         ),
                     ],
                   ),
@@ -71,16 +57,16 @@ class BookingDialogSummary extends StatelessWidget {
 
               BorderCard(
                 padding: paddingAll8,
-                margin: EdgeInsets.zero,
+                margin: marginZero,
                 color: AppColors.turquise.withValues(alpha: 0.2),
                 border: buttonGlassBorder,
                 boxShadow: [shadow, shadowGlass2, shadowGlass3],
                 child: Column(
                   children: [
-                    Text(bookedText, style: AppTextStyles.bodySmall),
+                    Text(bookedText, style: AppTextStyles.vidaLoka14LG),
                     Text(
                       '$spotsLeft ${AppStrings.available}',
-                      style: AppTextStyles.hT.copyWith(
+                      style: AppTextStyles.geist18T.copyWith(
                         color: AppColors.neonGreen.withValues(alpha: 0.7),
                         fontSize: 12,
                       ),
@@ -113,7 +99,9 @@ class BookingDialogSummary extends StatelessWidget {
                       children: [
                         Text(
                           classData['locationName'] ?? AppStrings.noLocation,
-                          style: AppTextStyles.hT.copyWith(color: Colors.white),
+                          style: AppTextStyles.geist18T.copyWith(
+                            color: Colors.white,
+                          ),
                         ),
                         gapH5,
                         Text(
@@ -138,18 +126,15 @@ class BookingDialogSummary extends StatelessWidget {
                     gapW5,
                     Text(
                       '${classData['priceSingle'] ?? AppStrings.priceSingle} ${AppStrings.perClass}  |  ${classData['price10Card'] ?? AppStrings.tenCard} ${AppStrings.perTenCard} ',
-                      style: AppTextStyles.hT.copyWith(color: Colors.white),
+                      style: AppTextStyles.geist18T.copyWith(
+                        color: Colors.white,
+                      ),
                     ),
                   ],
                 ),
                 gapH10,
 
-                SizedBox(
-                  width: 300,
-                  child: Divider(
-                    color: AppColors.neonGreen.withValues(alpha: 0.4),
-                  ),
-                ),
+                divider300,
               ],
             ),
           ),

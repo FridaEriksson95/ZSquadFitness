@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/core/services/auth.dart';
 import 'package:zsquadfitness/shared/ui/components/custom_textfield.dart';
 import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
@@ -29,7 +29,9 @@ Future<void> showResetPasswordDialog(BuildContext context) async {
               children: [
                 Text(
                   emailSent ? AppStrings.emailSent : AppStrings.forgotPW,
-                  style: AppTextStyles.h3.copyWith(color: AppColors.neonGreen),
+                  style: AppTextStyles.vidaLoka32T.copyWith(
+                    color: AppColors.neonGreen,
+                  ),
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(dialogContext),
@@ -44,7 +46,7 @@ Future<void> showResetPasswordDialog(BuildContext context) async {
                     padding: paddingOnlyBs,
                     child: Text(
                       AppStrings.checkEmail,
-                      style: AppTextStyles.bodyMedium,
+                      style: AppTextStyles.geist16LG,
                       textAlign: TextAlign.center,
                     ),
                   )
@@ -54,7 +56,7 @@ Future<void> showResetPasswordDialog(BuildContext context) async {
                     children: [
                       Text(
                         AppStrings.submitEmailLink,
-                        style: AppTextStyles.bodySmall,
+                        style: AppTextStyles.vidaLoka14LG,
                       ),
                       gapH15,
                       CustomTextfield(
@@ -70,7 +72,7 @@ Future<void> showResetPasswordDialog(BuildContext context) async {
                         gapH10,
                         Text(
                           errorMessage!,
-                          style: AppTextStyles.bodySmall.copyWith(
+                          style: AppTextStyles.vidaLoka14LG.copyWith(
                             color: AppColors.darkRed,
                           ),
                         ),

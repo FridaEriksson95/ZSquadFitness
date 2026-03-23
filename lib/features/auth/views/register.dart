@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:zsquadfitness/core/services/auth.dart';
 import 'package:zsquadfitness/features/auth/auth_actions.dart';
 import 'package:zsquadfitness/shared/ui/components/custom_textfield.dart';
 import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
+import 'package:zsquadfitness/shared/ui/components/snackbar_utils.dart';
 import 'package:zsquadfitness/shared/ui/extensions/context_extensions.dart';
-import 'package:zsquadfitness/shared/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 import 'package:zsquadfitness/core/utils/phone_validator.dart';
@@ -37,6 +36,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
   void dispose() {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -48,13 +48,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
       body: Container(
         width: context.screenWidth,
         height: context.screenHeight,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(AppAssets.background),
-            fit: BoxFit.cover,
-            alignment: Alignment.center,
-          ),
-        ),
+        decoration: bgLoginRegister,
         child: Column(
           children: [
             Expanded(
@@ -72,15 +66,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                             constraints: const BoxConstraints(maxWidth: 380),
                             margin: marginHorizon,
                             padding: paddingAll15,
-                            decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius: borderRadius24,
-                              border: Border.all(
-                                color: AppColors.greenish,
-                                width: 1.5,
-                              ),
-                              boxShadow: [shadow],
-                            ),
+                            decoration: boxBGRegisterPage,
                             child: Form(
                               key: _formKey,
                               child: Column(
@@ -218,19 +204,19 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                             children: [
                               Text(
                                 AppStrings.accountCheck,
-                                style: AppTextStyles.bodySmall,
+                                style: AppTextStyles.vidaLoka14LG,
                               ),
                               TextButton(
                                 onPressed: widget.onToggle,
                                 style: TextButton.styleFrom(
-                                  padding: EdgeInsets.only(left: 5),
+                                  padding: paddingOnlyL5,
                                   minimumSize: Size.zero,
                                   tapTargetSize:
                                       MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 child: Text(
                                   AppStrings.signIn,
-                                  style: AppTextStyles.bodyMedium.copyWith(
+                                  style: AppTextStyles.geist16LG.copyWith(
                                     color: AppColors.neonGreen,
                                     decoration: TextDecoration.underline,
                                     decorationColor: AppColors.neonGreen,
@@ -239,14 +225,11 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                               ),
                             ],
                           ),
-                          SizedBox(
-                            width: 250,
-                            child: Divider(color: AppColors.greenish),
-                          ),
+                          divider250,
 
                           Text(
                             AppStrings.or,
-                            style: AppTextStyles.bodySmall.copyWith(
+                            style: AppTextStyles.vidaLoka14LG.copyWith(
                               color: AppColors.lightGrey,
                             ),
                           ),
@@ -256,39 +239,16 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                             child: Container(
                               height: 60,
                               margin: marginOnlyRL,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  stops: const [0.0, 0.45, 1.0],
-                                  colors: [
-                                    AppColors.neonGreen,
-                                    AppColors.neonGreen.withValues(alpha: 8.0),
-                                    AppColors.neonGreen.withValues(alpha: 0.5),
-                                  ],
-                                ),
-                                borderRadius: borderRadius24,
-                                border: buttonGlassBorder,
-                                boxShadow: [
-                                  shadowGlass1,
-                                  shadowGlass2,
-                                  shadowGlass3,
-                                ],
-                              ),
+                              decoration: googleSignInGradient,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Image.asset(
-                                    AppAssets.googleLogo,
-                                    height: 30,
-                                    width: 30,
-                                    fit: BoxFit.fitHeight,
-                                  ),
+                                  googleImage,
                                   gapW12,
                                   Text(
                                     AppStrings.signInGoogle,
                                     textAlign: TextAlign.center,
-                                    style: AppTextStyles.buttonText,
+                                    style: AppTextStyles.geist20LB,
                                   ),
                                 ],
                               ),
@@ -296,15 +256,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                           ),
 
                           gapH20,
-                          Padding(
-                            padding: EdgeInsets.zero,
-                            child: Image.asset(
-                              AppAssets.logoBlack,
-                              height: 120,
-                              width: 120,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
+                          Padding(padding: paddingZero, child: logoBlack120),
                         ],
                       ),
                     ],
@@ -322,9 +274,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
     final phoneError = validatePhone(_phoneController.text.trim());
     if (phoneError != null) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(phoneError)));
+        showAppSnackBar(context, message: phoneError);
       }
       setState(() => _isLoading = false);
       return;

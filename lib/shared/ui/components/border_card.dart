@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 
 class BorderCard extends StatelessWidget {

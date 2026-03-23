@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:zsquadfitness/features/admin/helpers/upload_class_helper.dart';
+import 'package:zsquadfitness/features/admin/services/upload_class_service.dart';
 import 'package:zsquadfitness/shared/ui/components/custom_dropdownfield.dart';
 import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/components/snackbar_utils.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
@@ -21,6 +22,7 @@ class UploadClass extends StatefulWidget {
 
 class _UploadClassState extends State<UploadClass> {
   final _formKey = GlobalKey<FormState>();
+  final _uploadClassService = UploadClassService();
   bool _repeatUpload = false;
   String _repeatWeeks = '4 veckor framåt';
   final List<String> _repeatWeekOptions = [
@@ -28,13 +30,6 @@ class _UploadClassState extends State<UploadClass> {
     '6 veckor framåt',
     '8 veckor framåt',
   ];
-
-  int _repeatWeeksToInt(String value) {
-    if (value.startsWith('4')) return 4;
-    if (value.startsWith('6')) return 6;
-    if (value.startsWith('8')) return 8;
-    return 0;
-  }
 
   late TextEditingController _titleController;
   late TextEditingController _dateController;
@@ -97,6 +92,25 @@ class _UploadClassState extends State<UploadClass> {
     super.dispose();
   }
 
+  Map<String, dynamic> _buildClassData(DateTime parsedDate) {
+    return {
+      'title': _titleController.text.trim(),
+      'dateRaw': Timestamp.fromDate(parsedDate),
+      'date': _dateController.text.trim(),
+      'time': _timeController.text.trim(),
+      'spotsTotal': int.tryParse(_spotsTotalController.text.trim()) ?? 25,
+      'spotsBooked': widget.initialData?['spotsBooked'] ?? 0,
+      'locationName': _locationNameController.text.trim(),
+      'locationAddress': _locationAddressController.text.trim(),
+      'priceSingle': _priceSingleController.text.trim(),
+      'price10Card': _price10CardController.text.trim(),
+      'description': _descriptionController.text.trim(),
+      'room': _roomController.text.trim(),
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    };
+  }
+
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -106,24 +120,17 @@ class _UploadClassState extends State<UploadClass> {
       locale: const Locale('sv', 'SE'),
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.dark(
-              primary: AppColors.neonGreen,
-              onPrimary: AppColors.dark,
-              surface: AppColors.dark,
-              onSurface: AppColors.white,
-            ),
-          ),
+          data: Theme.of(context).copyWith(colorScheme: colorSchemeTimeDate),
           child: child!,
         );
       },
     );
 
     if (picked != null) {
-      final formatted = DateFormat('EEEE d MMMM', 'sv_SE').format(picked);
       setState(() {
-        _dateController.text =
-            formatted[0].toUpperCase() + formatted.substring(1);
+        _dateController.text = UploadClassHelper.formatSwedishDisplayDate(
+          picked,
+        );
       });
     }
   }
@@ -137,14 +144,7 @@ class _UploadClassState extends State<UploadClass> {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
           child: Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: const ColorScheme.dark(
-                primary: AppColors.neonGreen,
-                onPrimary: AppColors.dark,
-                surface: AppColors.dark,
-                onSurface: AppColors.white,
-              ),
-            ),
+            data: Theme.of(context).copyWith(colorScheme: colorSchemeTimeDate),
             child: child!,
           ),
         );
@@ -161,12 +161,7 @@ class _UploadClassState extends State<UploadClass> {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
           child: Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: const ColorScheme.dark(
-                primary: AppColors.neonGreen,
-                onPrimary: AppColors.dark,
-              ),
-            ),
+            data: Theme.of(context).copyWith(colorScheme: colorSchemeTimeDate),
             child: child!,
           ),
         );
@@ -187,160 +182,32 @@ class _UploadClassState extends State<UploadClass> {
   Future<void> _saveClass() async {
     if (!_formKey.currentState!.validate()) return;
 
-    String dateText = _dateController.text.trim();
-
-    final dayStart = dateText.indexOf(RegExp(r'\d'));
-    if (dayStart > 0) {
-      dateText = dateText.substring(dayStart).trim();
-    }
-
-    DateTime? parsedDate;
-
-    try {
-      final parts = dateText.split(' ');
-      if (parts.length >= 2) {
-        final day = int.tryParse(parts[0]);
-        final monthStr = parts[1].toLowerCase();
-        final monthMap = {
-          'jan': 1,
-          'januari': 1,
-          'feb': 2,
-          'februari': 2,
-          'mar': 3,
-          'mars': 3,
-          'apr': 4,
-          'april': 4,
-          'maj': 5,
-          'jun': 6,
-          'juni': 6,
-          'jul': 7,
-          'juli': 7,
-          'aug': 8,
-          'augusti': 8,
-          'sep': 9,
-          'september': 9,
-          'okt': 10,
-          'oktober': 10,
-          'nov': 11,
-          'november': 11,
-          'dec': 12,
-          'december': 12,
-        };
-
-        final month = monthMap[monthStr];
-        if (day != null && month != null) {
-          parsedDate = DateTime(DateTime.now().year, month, day);
-
-          int hour = 0, minute = 0;
-          final timeStr = _timeController.text.trim();
-          if (timeStr.isNotEmpty) {
-            final startPart = timeStr.split(' - ').first.trim();
-            final timeParts = startPart.replaceAll('.', ':').split(':');
-            if (timeParts.length >= 2) {
-              hour = int.tryParse(timeParts[0]) ?? 0;
-              minute = int.tryParse(timeParts[1]) ?? 0;
-            }
-          }
-          parsedDate = DateTime(
-            parsedDate.year,
-            parsedDate.month,
-            parsedDate.day,
-            hour,
-            minute,
-          );
-        }
-      }
-    } catch (_) {}
+    final parsedDate = UploadClassHelper.parseClassDateTime(
+      dateTextRaw: _dateController.text,
+      timeTextRaw: _timeController.text,
+    );
 
     if (parsedDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(AppStrings.errorDate),
-          duration: Duration(seconds: 5),
-        ),
-      );
+      showAppSnackBar(context, message: AppStrings.errorDate);
       return;
     }
 
-    final now = DateTime.now();
-    if (parsedDate.isBefore(now.subtract(const Duration(days: 1)))) {
-      parsedDate = DateTime(
-        parsedDate.year + 1,
-        parsedDate.month,
-        parsedDate.day,
-        parsedDate.hour,
-        parsedDate.minute,
-      );
-    }
-
-    final data = {
-      'title': _titleController.text.trim(),
-      'dateRaw': Timestamp.fromDate(parsedDate),
-      'date': _dateController.text.trim(),
-      'time': _timeController.text.trim(),
-      'spotsTotal': int.tryParse(_spotsTotalController.text.trim()) ?? 25,
-      'spotsBooked': widget.initialData?['spotsBooked'] ?? 0,
-      'locationName': _locationNameController.text.trim(),
-      'locationAddress': _locationAddressController.text.trim(),
-      'priceSingle': _priceSingleController.text.trim(),
-      'price10Card': _price10CardController.text.trim(),
-      'description': _descriptionController.text.trim(),
-      'room': _roomController.text.trim(),
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
-    };
+    final data = _buildClassData(parsedDate);
+    final repeatWeeks = UploadClassHelper.repeatWeeksToInt(_repeatWeeks);
 
     try {
-      if (widget.classId != null) {
-        await FirebaseFirestore.instance
-            .collection('classes')
-            .doc(widget.classId)
-            .update(data);
-      } else {
-        await FirebaseFirestore.instance.collection('classes').add(data);
+      await _uploadClassService.saveClass(
+        classId: widget.classId,
+        classData: data,
+        repeatUpload: _repeatUpload,
+        repeatWeeks: repeatWeeks,
+      );
 
-        if (_repeatUpload) {
-          await _createRepeatingClasses(parsedDate, data);
-        }
-      }
+      if (!mounted) return;
       Navigator.pop(context);
       showAppSnackBar(context, message: (AppStrings.saveClass));
     } catch (e) {
       showAppSnackBar(context, message: ('${AppStrings.errorSave} $e'));
-    }
-  }
-
-  Future<void> _createRepeatingClasses(
-    DateTime baseDate,
-    Map<String, dynamic> baseData,
-  ) async {
-    final int weeks = _repeatWeeksToInt(_repeatWeeks);
-    if (weeks <= 0) return;
-
-    for (int i = 1; i <= weeks; i++) {
-      final nextDate = baseDate.add(Duration(days: 7 * i));
-
-      if (nextDate.isBefore(DateTime.now())) continue;
-
-      final formatted = DateFormat('EEEE d MMMM', 'sv_SE').format(nextDate);
-      final displayDate = formatted[0].toUpperCase() + formatted.substring(1);
-
-      final data = Map<String, dynamic>.from(baseData);
-      data['dateRaw'] = Timestamp.fromDate(nextDate);
-      data['date'] = displayDate;
-      data['createdAt'] = FieldValue.serverTimestamp();
-      data['updatedAt'] = FieldValue.serverTimestamp();
-
-      final existing = await FirebaseFirestore.instance
-          .collection('classes')
-          .where('title', isEqualTo: data['title'])
-          .where('dateRaw', isEqualTo: data['dateRaw'])
-          .limit(1)
-          .get();
-
-      if (existing.docs.isNotEmpty) continue;
-
-      await FirebaseFirestore.instance.collection('classes').add(data);
     }
   }
 
@@ -356,7 +223,7 @@ class _UploadClassState extends State<UploadClass> {
           widget.classId == null
               ? AppStrings.createNewClass
               : AppStrings.editClass,
-          style: AppTextStyles.h1.copyWith(color: AppColors.turquise),
+          style: AppTextStyles.cinzel24LG.copyWith(color: AppColors.turquise),
         ),
       ),
       body: SingleChildScrollView(
@@ -459,10 +326,7 @@ class _UploadClassState extends State<UploadClass> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    AppStrings.repeatClass,
-                    style: AppTextStyles.bodyWhiteGeist,
-                  ),
+                  Text(AppStrings.repeatClass, style: AppTextStyles.geist18W),
                   gapW35,
                   Switch(
                     value: _repeatUpload,

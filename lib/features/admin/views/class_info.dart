@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/core/utils/email_launcher.dart';
+import 'package:zsquadfitness/features/admin/helpers/class_info_booked_users.dart';
 import 'package:zsquadfitness/shared/ui/components/confirmation_dialog.dart';
+import 'package:zsquadfitness/shared/ui/components/snackbar_utils.dart';
+import 'package:zsquadfitness/shared/ui/components/stream_builder_view.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
@@ -25,8 +28,13 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
   int get spotsLeft =>
       (widget.classData['spotsTotal'] ?? 0) -
       (widget.classData['spotsBooked'] ?? 0);
+
   String get bookedText =>
       '${widget.classData['spotsBooked'] ?? 0}/${widget.classData['spotsTotal'] ?? 25}';
+
+  String get _emailSubject =>
+      '${widget.classData['title'] ?? ''} - ${widget.classData['date'] ?? ''}'
+          .replaceAll(' ', '');
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +43,7 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Text(AppStrings.classInfoTitle, style: AppTextStyles.h1),
+            Text(AppStrings.classInfoTitle, style: AppTextStyles.cinzel24LG),
             SizedBox(
               width: 330,
               child: Divider(color: AppColors.neonGreen.withValues(alpha: 0.4)),
@@ -46,21 +54,21 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
                 gapH10,
                 Text(
                   widget.classData['title'] ?? AppStrings.zumba,
-                  style: AppTextStyles.h2,
+                  style: AppTextStyles.vidaLoka24T,
                 ),
                 gapH5,
                 Text(widget.classData['date'] ?? AppStrings.noDate),
                 Text(widget.classData['time'] ?? AppStrings.noTime),
-                Text(bookedText, style: AppTextStyles.bodySmall),
+                Text(bookedText, style: AppTextStyles.vidaLoka14LG),
                 Text(
                   '$spotsLeft ${AppStrings.available}',
-                  style: AppTextStyles.hT.copyWith(
+                  style: AppTextStyles.geist18T.copyWith(
                     color: AppColors.neonGreen.withValues(alpha: 0.7),
                     fontSize: 12,
                   ),
                 ),
                 gapH15,
-                Text(AppStrings.bookedInClass, style: AppTextStyles.h1),
+                Text(AppStrings.bookedInClass, style: AppTextStyles.cinzel24LG),
                 SizedBox(
                   width: 200,
                   child: Divider(
@@ -68,293 +76,84 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
                   ),
                 ),
 
-                StreamBuilder<QuerySnapshot>(
+                SimpleStreamView<QuerySnapshot<Map<String, dynamic>>>(
                   stream: FirebaseFirestore.instance
                       .collectionGroup('bookings')
                       .where('classId', isEqualTo: widget.classId)
                       .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Padding(
-                        padding: paddingAll24,
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    }
-                    if (snapshot.hasError) {
-                      return Padding(
-                        padding: paddingAll24,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                  loading: cpi,
+                  empty: Center(
+                    child: Text(
+                      AppStrings.noOneBooked,
+                      style: AppTextStyles.geist16LG,
+                    ),
+                  ),
+                  isEmpty: (qs) => qs.docs.isEmpty,
+                  builder: (qs) {
+                    final bookingDocs = qs.docs;
+
+                    return FutureBuilder<List<BookedUserRow>>(
+                      future: ClassInfoBookedUsersHelper.loadBookedUsers(
+                        bookingDocs,
+                      ),
+                      builder: (context, usersSnap) {
+                        if (usersSnap.connectionState ==
+                            ConnectionState.waiting) {
+                          return Padding(padding: paddingAll24, child: cpi);
+                        }
+
+                        final rows = usersSnap.data ?? [];
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(
-                              AppStrings.couldntLoadBookings,
-                              style: AppTextStyles.bodySmall,
+                            Padding(
+                              padding: paddingAll8,
+                              child: OutlinedButton.icon(
+                                onPressed: () async {
+                                  final emails =
+                                      ClassInfoBookedUsersHelper.extractValidEmails(
+                                        rows,
+                                      );
+
+                                  if (!context.mounted) return;
+                                  await openEmailToClients(
+                                    context,
+                                    emails: emails,
+                                    subject: _emailSubject,
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.email_outlined,
+                                  color: AppColors.neonGreen,
+                                ),
+                                label: Text(AppStrings.emailAllBooked),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: AppColors.neonGreen,
+                                  side: BorderSide(color: AppColors.neonGreen),
+                                ),
+                              ),
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '${snapshot.error}',
-                              style: AppTextStyles.bodySmall,
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    if (!snapshot.hasData) {
-                      return const SizedBox.shrink();
-                    }
 
-                    final bookingDocs = snapshot.data!.docs;
-                    if (bookingDocs.isEmpty) {
-                      return Center(
-                        child: Text(
-                          AppStrings.noOneBooked,
-                          style: AppTextStyles.bodyMedium,
-                        ),
-                      );
-                    }
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: rows.length,
+                              itemBuilder: (context, index) {
+                                final row = rows[index];
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-
-                      children: [
-                        Padding(
-                          padding: paddingAll8,
-                          child: OutlinedButton.icon(
-                            onPressed: () async {
-                              final emails = <String>[];
-                              for (final doc in bookingDocs) {
-                                final userId = doc.reference.parent.parent!.id;
-                                final userSnap = await FirebaseFirestore
-                                    .instance
-                                    .collection('users')
-                                    .doc(userId)
-                                    .get();
-                                final data = userSnap.data();
-                                final email = data?['Email'] as String? ?? '';
-                                if (email.isNotEmpty &&
-                                    email != AppStrings.unknown) {
-                                  emails.add(email);
-                                }
-                              }
-                              if (context.mounted) {
-                                await openEmailToClients(
+                                return _buildClientRow(
                                   context,
-                                  emails: emails,
-                                  subject:
-                                      '${widget.classData['title'] ?? ''} - ${widget.classData['date'] ?? ''}'
-                                          .replaceAll(' ', ''),
-                                );
-                              }
-                            },
-                            icon: Icon(
-                              Icons.email_outlined,
-                              color: AppColors.neonGreen,
-                            ),
-                            label: Text(AppStrings.emailAllBooked),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.neonGreen,
-                              side: BorderSide(color: AppColors.neonGreen),
-                            ),
-                          ),
-                        ),
-
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: bookingDocs.length,
-                          itemBuilder: (context, index) {
-                            final bookingDoc = bookingDocs[index];
-                            final userId =
-                                bookingDoc.reference.parent.parent!.id;
-
-                            return FutureBuilder<DocumentSnapshot>(
-                              future: FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(userId)
-                                  .get(),
-                              builder: (context, userSnap) {
-                                final data =
-                                    userSnap.data?.data()
-                                        as Map<String, dynamic>?;
-                                final name =
-                                    data?['Name'] as String? ??
-                                    AppStrings.unknown;
-                                final phone =
-                                    data?['Phone'] as String? ??
-                                    AppStrings.unknown;
-                                final email =
-                                    data?['Email'] as String? ??
-                                    AppStrings.unknown;
-
-                                return Column(
-                                  children: [
-                                    Padding(
-                                      padding: paddingOnlyLR,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                Icons.person_3_outlined,
-                                                size: 18,
-                                                color: AppColors.turquise,
-                                              ),
-                                              gapW5,
-                                              Text(
-                                                name,
-                                                style: AppTextStyles.vT,
-                                              ),
-                                            ],
-                                          ),
-
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                Icons.phone_iphone_outlined,
-                                                size: 18,
-                                                color: AppColors.lightGrey,
-                                              ),
-                                              gapW5,
-                                              Text(
-                                                phone,
-                                                style: AppTextStyles.geistGrey,
-                                              ),
-                                            ],
-                                          ),
-
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Expanded(
-                                                child: InkWell(
-                                                  onTap:
-                                                      (email.isEmpty ||
-                                                          email ==
-                                                              AppStrings
-                                                                  .unknown ||
-                                                          !email.contains('@'))
-                                                      ? null
-                                                      : () async {
-                                                          if (context.mounted) {
-                                                            await openEmailToClients(
-                                                              context,
-                                                              emails: [email],
-                                                              subject:
-                                                                  '${widget.classData['title'] ?? ''} - ${widget.classData['date'] ?? ''}'
-                                                                      .replaceAll(
-                                                                        ' ',
-                                                                        '',
-                                                                      ),
-                                                            );
-                                                          }
-                                                        },
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
-
-                                                  child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Icon(
-                                                        Icons.mail_outline,
-                                                        size: 18,
-                                                        color:
-                                                            (email.isEmpty ||
-                                                                email ==
-                                                                    AppStrings
-                                                                        .unknown ||
-                                                                !email.contains(
-                                                                  '@',
-                                                                ))
-                                                            ? AppColors
-                                                                  .mediumGrey
-                                                            : AppColors
-                                                                  .neonGreen,
-                                                      ),
-                                                      const SizedBox(width: 6),
-                                                      Flexible(
-                                                        child: Text(
-                                                          email,
-                                                          style: AppTextStyles
-                                                              .geistGrey,
-
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-
-                                              IconButton(
-                                                icon: Icon(
-                                                  Icons.delete_forever_rounded,
-                                                  color: AppColors.neonPink,
-                                                  size: 22,
-                                                ),
-                                                onPressed: () {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        ConfirmationDialog(
-                                                          type: ConfirmationType
-                                                              .cancelBooking,
-                                                          onConfirm: () async {
-                                                            Navigator.pop(
-                                                              context,
-                                                            );
-                                                            await _removeClient(
-                                                              context,
-                                                              bookingRef:
-                                                                  bookingDocs[index]
-                                                                      .reference,
-                                                            );
-                                                          },
-                                                          onCancel: () =>
-                                                              Navigator.pop(
-                                                                context,
-                                                              ),
-                                                        ),
-                                                  );
-                                                },
-                                                padding: paddingOnlyR,
-                                                constraints: BoxConstraints(
-                                                  minWidth: 36,
-                                                  minHeight: 36,
-                                                ),
-                                                style: IconButton.styleFrom(
-                                                  tapTargetSize:
-                                                      MaterialTapTargetSize
-                                                          .shrinkWrap,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            width: 360,
-                                            child: Divider(
-                                              color: AppColors.turquise
-                                                  .withValues(alpha: 0.4),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                                  name: row.name,
+                                  phone: row.phone,
+                                  email: row.email,
+                                  bookingRef: row.bookingRef,
                                 );
                               },
-                            );
-                          },
-                        ),
-                      ],
+                            ),
+                          ],
+                        );
+                      },
                     );
                   },
                 ),
@@ -384,16 +183,131 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
         transaction.delete(bookingRef);
       });
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(AppStrings.confirmCancel)));
+        showAppSnackBar(context, message: AppStrings.confirmCancel);
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppStrings.bookingFailed} $e')),
-        );
+        showAppSnackBar(context, message: '${AppStrings.bookingFailed} $e');
       }
     }
+  }
+
+  Widget _buildClientRow(
+    BuildContext context, {
+    required String name,
+    required String phone,
+    required String email,
+    required DocumentReference bookingRef,
+  }) {
+    return Padding(
+      padding: paddingOnlyLR,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.person_3_outlined,
+                size: 18,
+                color: AppColors.turquise,
+              ),
+              gapW5,
+              Text(name, style: AppTextStyles.vidaLoka18T),
+            ],
+          ),
+
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.phone_iphone_outlined,
+                size: 18,
+                color: AppColors.lightGrey,
+              ),
+              gapW5,
+              Text(phone, style: AppTextStyles.geist14LG),
+            ],
+          ),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap:
+                      (email.isEmpty ||
+                          email == AppStrings.unknown ||
+                          !email.contains('@'))
+                      ? null
+                      : () async {
+                          if (context.mounted) {
+                            await openEmailToClients(
+                              context,
+                              emails: [email],
+                              subject: _emailSubject,
+                            );
+                          }
+                        },
+                  borderRadius: borderRadius6,
+
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.mail_outline,
+                        size: 18,
+                        color:
+                            (email.isEmpty ||
+                                email == AppStrings.unknown ||
+                                !email.contains('@'))
+                            ? AppColors.mediumGrey
+                            : AppColors.neonGreen,
+                      ),
+                      gapW5,
+                      Flexible(
+                        child: Text(
+                          email,
+                          style: AppTextStyles.geist14LG,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              IconButton(
+                icon: Icon(
+                  Icons.delete_forever_rounded,
+                  color: AppColors.neonPink,
+                  size: 22,
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => ConfirmationDialog(
+                      type: ConfirmationType.cancelBooking,
+                      onConfirm: () async {
+                        Navigator.pop(context);
+                        await _removeClient(context, bookingRef: bookingRef);
+                      },
+                      onCancel: () => Navigator.pop(context),
+                    ),
+                  );
+                },
+                padding: paddingOnlyR,
+                constraints: BoxConstraints(minWidth: 36, minHeight: 36),
+                style: IconButton.styleFrom(
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ),
+            ],
+          ),
+          divider360,
+        ],
+      ),
+    );
   }
 }

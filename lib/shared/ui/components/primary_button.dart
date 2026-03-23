@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
@@ -23,7 +23,7 @@ class PrimaryButton extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 16, sigmaY: 24),
         child: Container(
-          width: double.infinity,
+          width: MediaQuery.of(context).size.width * 0.9,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -56,7 +56,7 @@ class PrimaryButton extends StatelessWidget {
                 ),
             child: Text(
               text,
-              style: AppTextStyles.buttonText.copyWith(
+              style: AppTextStyles.geist20LB.copyWith(
                 color: AppColors.lightBlack,
               ),
             ),

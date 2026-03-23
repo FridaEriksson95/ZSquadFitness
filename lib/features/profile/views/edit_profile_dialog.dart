@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:zsquadfitness/core/services/database.dart';
+import 'package:zsquadfitness/core/services/profile_service.dart';
+import 'package:zsquadfitness/features/profile/helpers/delete_account_dialog.dart';
 import 'package:zsquadfitness/shared/ui/components/custom_textfield.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
-import 'package:zsquadfitness/core/constants/gaps.dart';
+import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 import 'package:zsquadfitness/core/utils/phone_validator.dart';
@@ -26,6 +27,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   late final TextEditingController _nameController;
   late final TextEditingController _emailController;
   late final TextEditingController _phoneController;
+  final _profileEditorService = ProfileEditorService();
   bool _isSaving = false;
   String? _error;
 
@@ -52,14 +54,22 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     super.dispose();
   }
 
+  String? _validateInputs({required String email, required String phone}) {
+    if (email.isEmpty) return AppStrings.submitEmail;
+    if (phone.isEmpty) return AppStrings.phoneReq;
+    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
+      return AppStrings.errorEmail;
+    }
+    return validatePhone(phone);
+  }
+
   Future<void> _save() async {
     setState(() {
       _isSaving = true;
       _error = null;
     });
 
-    final auth = FirebaseAuth.instance;
-    final user = auth.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       setState(() {
         _isSaving = false;
@@ -72,53 +82,23 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     final email = _emailController.text.trim();
     final phone = _phoneController.text.trim();
 
-    if (email.isEmpty) {
+    final validationError = _validateInputs(email: email, phone: phone);
+    if (validationError != null) {
       setState(() {
         _isSaving = false;
-        _error = AppStrings.submitEmail;
-      });
-      return;
-    }
-
-    if (phone.isEmpty) {
-      setState(() {
-        _isSaving = false;
-        _error = AppStrings.phoneReq;
-      });
-      return;
-    }
-
-    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
-      setState(() {
-        _isSaving = false;
-        _error = AppStrings.errorEmail;
-      });
-      return;
-    }
-
-    final phoneError = validatePhone(phone);
-    if (phoneError != null) {
-      setState(() {
-        _isSaving = false;
-        _error = phoneError;
+        _error = validationError;
       });
       return;
     }
 
     try {
-      if (name.isNotEmpty && name != (user.displayName ?? '')) {
-        await user.updateDisplayName(name);
-      }
-      if (email.isNotEmpty && email != (user.email ?? '')) {
-        await user.verifyBeforeUpdateEmail(email);
-      }
-
-      final userInfoMap = {
-        'Name': name.isNotEmpty ? name : (widget.userData?['Name'] ?? ''),
-        'Email': email.isNotEmpty ? email : (widget.userData?['Email'] ?? ''),
-        'Phone': phone,
-      };
-      await DatabaseService().addUserData(userInfoMap, user.uid);
+      await _profileEditorService.saveProfile(
+        user: user,
+        name: name,
+        email: email,
+        phone: phone,
+        existingUserData: widget.userData,
+      );
 
       if (!mounted) return;
       Navigator.pop(context, true);
@@ -134,102 +114,22 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final providerIds = user.providerData.map((p) => p.providerId).toSet();
-    final isPasswordUser = providerIds.contains('password');
-
-    final passwordController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
-    final ok = await showDialog<bool>(
-      context: context,
-      useRootNavigator: true,
-      builder: (dialogContext) {
-        String? dialogError;
-
-        return StatefulBuilder(
-          builder: (context, setDialogState) => AlertDialog(
-            backgroundColor: AppColors.background,
-            title: Text(AppStrings.deleteAccount),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    AppStrings.deleteInfo,
-                    style: TextStyle(color: AppColors.lightGrey),
-                  ),
-                  if (isPasswordUser) ...[
-                    const SizedBox(height: 16),
-                    Form(
-                      key: formKey,
-                      child: TextFormField(
-                        controller: passwordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: AppStrings.confirmPW,
-                          errorText: dialogError,
-                        ),
-                        validator: (v) => (v == null || v.isEmpty)
-                            ? AppStrings.submitPW
-                            : null,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext, false),
-                child: Text(
-                  AppStrings.cancel,
-                  style: TextStyle(color: AppColors.neonPink),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  if (isPasswordUser && !formKey.currentState!.validate()) {
-                    return;
-                  }
-                  Navigator.pop(dialogContext, true);
-                },
-
-                child: Text(
-                  AppStrings.delete,
-                  style: TextStyle(color: AppColors.darkRed),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-
-    void disposeLater(TextEditingController c) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        c.dispose();
-      });
-    }
-
-    if (ok != true) {
-      disposeLater(passwordController);
-      return;
-    }
-    final password = isPasswordUser ? passwordController.text.trim() : null;
-    disposeLater(passwordController);
-
-    if (!mounted) return;
+    final res = await DeleteAccountDialogHelper.show(context, user: user);
+    if (res == null || !mounted) return;
 
     Navigator.of(
       context,
       rootNavigator: true,
-    ).pop({'action': 'readyToDelete', 'password': password});
+    ).pop({'action': 'readyToDelete', 'password': res.password});
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(AppStrings.editProfileTitle, style: AppTextStyles.h2),
+      title: Text(
+        AppStrings.editProfileTitle,
+        style: AppTextStyles.vidaLoka24T,
+      ),
       backgroundColor: AppColors.background.withValues(alpha: 1.0),
       content: SingleChildScrollView(
         child: Column(
@@ -255,7 +155,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
               gapH5,
               Text(
                 _error!,
-                style: AppTextStyles.bodySmall.copyWith(
+                style: AppTextStyles.vidaLoka14LG.copyWith(
                   color: AppColors.neonPink,
                 ),
               ),
@@ -272,7 +172,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                 ),
                 child: Text(
                   AppStrings.deleteAccountCaps,
-                  style: AppTextStyles.bodyWhiteSmall.copyWith(
+                  style: AppTextStyles.geist14W.copyWith(
                     color: AppColors.darkRed,
                     decoration: TextDecoration.underline,
                     decorationColor: AppColors.darkRed,
@@ -289,9 +189,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
           onPressed: _isSaving ? null : () => Navigator.pop(context, false),
           child: Text(
             AppStrings.cancel,
-            style: AppTextStyles.bodyWhiteSmall.copyWith(
-              color: AppColors.neonPink,
-            ),
+            style: AppTextStyles.geist14W.copyWith(color: AppColors.neonPink),
           ),
         ),
 
@@ -299,9 +197,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
           onPressed: _isSaving ? null : _save,
           child: Text(
             _isSaving ? AppStrings.saving : AppStrings.save,
-            style: AppTextStyles.bodyWhiteSmall.copyWith(
-              color: AppColors.neonGreen,
-            ),
+            style: AppTextStyles.geist14W.copyWith(color: AppColors.neonGreen),
           ),
         ),
       ],
