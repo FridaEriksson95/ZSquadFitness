@@ -1,5 +1,6 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:zsquadfitness/core/services/database.dart';
@@ -7,24 +8,30 @@ import 'package:zsquadfitness/core/constants/app_strings.dart';
 
 class AuthService {
   final FirebaseAuth auth = FirebaseAuth.instance;
-
   User? get currentUser => auth.currentUser;
 
+  ///Sign in with Google
+  /// Uses firebase popup on web and google_sign_in on mobile
   Future<User?> signInWithGoogle(BuildContext context) async {
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn();
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      late final UserCredential result;
+      if (kIsWeb) {
+        final provider = GoogleAuthProvider();
+        result = await auth.signInWithPopup(provider);
+      } else {
+        final GoogleSignIn googleSignIn = GoogleSignIn();
+        final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+        if (googleUser == null) return null;
 
-      if (googleUser == null) return null;
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final UserCredential result = await auth.signInWithCredential(credential);
+        result = await auth.signInWithCredential(credential);
+      }
 
       final User userDetails = result.user!;
       final userInfoMap = {
@@ -36,11 +43,15 @@ class AuthService {
       await DatabaseService().addUserData(userInfoMap, userDetails.uid);
 
       return userDetails;
-    } on FirebaseAuthException {
-      return null;
+    } on FirebaseAuthException catch (e) {
+      throw Exception('${AppStrings.signinFail} ${e.code} ${e.message ?? ''}');
+    } catch (e) {
+      throw Exception('${AppStrings.unknownError} $e');
     }
   }
 
+  ///Register user with email and password
+  ///stores profile data
   Future<User?> registerWithEmailAndPassword({
     required String email,
     required String password,
@@ -87,6 +98,7 @@ class AuthService {
     }
   }
 
+  /// Sign in with email and password
   Future<User?> signInWithEmailAndPassword({
     required String email,
     required String password,
@@ -97,9 +109,7 @@ class AuthService {
         password: password,
       );
 
-      final User userDetails = result.user!;
-
-      return userDetails;
+      return result.user!;
     } on FirebaseAuthException catch (e) {
       String errorMessage;
       switch (e.code) {
@@ -126,9 +136,13 @@ class AuthService {
 
   Future<void> signOut() async {
     await auth.signOut();
-    await GoogleSignIn().signOut();
+
+    if (!kIsWeb) {
+      await GoogleSignIn().signOut();
+    }
   }
 
+  /// Send reset password email
   Future<void> sendPasswordResetEmail(String email) async {
     try {
       await auth.sendPasswordResetEmail(email: email.trim());
@@ -150,6 +164,7 @@ class AuthService {
     }
   }
 
+  /// Reauthenticate user and delete account function through Cloud Function
   Future<void> deleteAccount({String? password}) async {
     final user = auth.currentUser;
     if (user == null) throw Exception(AppStrings.loginRequired);

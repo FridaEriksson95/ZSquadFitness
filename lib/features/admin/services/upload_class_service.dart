@@ -7,6 +7,8 @@ class UploadClassService {
   UploadClassService({FirebaseFirestore? firestore})
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
+  /// Saves a class and either update if exists or creates new one
+  /// Optionally create weekly repeated classes for upcoming weeks
   Future<void> saveClass({
     required String? classId,
     required Map<String, dynamic> classData,
@@ -32,6 +34,7 @@ class UploadClassService {
     }
   }
 
+  /// Creates weekly repeating classes and skipping past dates and duplicates
   Future<void> _createRepeatingClasses({
     required DateTime baseDate,
     required Map<String, dynamic> baseData,
@@ -47,7 +50,7 @@ class UploadClassService {
       data['createdAt'] = FieldValue.serverTimestamp();
       data['updatedAt'] = FieldValue.serverTimestamp();
 
-      final existing = await FirebaseFirestore.instance
+      final existing = await _firestore
           .collection('classes')
           .where('title', isEqualTo: data['title'])
           .where('dateRaw', isEqualTo: data['dateRaw'])

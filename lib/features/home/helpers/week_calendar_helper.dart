@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// Date utils used by weekCalendar for grouping and day matching
 class WeekCalendarHelper {
   static DateTime normalize(DateTime d) => DateTime(d.year, d.month, d.day);
 
@@ -9,6 +10,7 @@ class WeekCalendarHelper {
   static bool isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
 
+  /// Returns normalized dates that contain at least one class
   static Set<DateTime> daysWithClasses(
     List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
   ) {

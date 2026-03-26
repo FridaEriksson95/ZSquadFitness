@@ -48,6 +48,7 @@ class _HomeCardState extends State<HomeCard> {
       return const SizedBox.shrink();
     }
 
+    // Group classes to a maximum of 2 cards per page
     final groupedClasses =
         <List<QueryDocumentSnapshot<Map<String, dynamic>>>>[];
     for (int i = 0; i < widget.classes.length; i += 2) {
@@ -60,17 +61,29 @@ class _HomeCardState extends State<HomeCard> {
     }
 
     final pageCount = groupedClasses.length;
+    final pageHeight = groupedClasses.any((p) => p.length > 1) ? 330.0 : 190.0;
 
     return BorderCard(
+      margin: marginAll8,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            AppStrings.upcomingClasses,
-            style: AppTextStyles.vidaLoka32T,
-            textAlign: TextAlign.center,
+          Row(
+            children: [
+              Expanded(child: goldLineLeft),
+              gapW12,
+              Text(
+                AppStrings.upcomingClasses,
+                style: AppTextStyles.vidaLoka32G,
+                textAlign: TextAlign.center,
+              ),
+              gapW12,
+              goldLineRight,
+            ],
           ),
           gapH5,
+
+          // Dot indicator and swipe to jump between pages
           if (pageCount > 1)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -99,7 +112,7 @@ class _HomeCardState extends State<HomeCard> {
           gapH10,
 
           SizedBox(
-            height: 310,
+            height: pageHeight,
             child: PageView.builder(
               controller: _pageController,
               itemCount: pageCount,
@@ -111,7 +124,7 @@ class _HomeCardState extends State<HomeCard> {
                     final data = doc.data();
 
                     return Padding(
-                      padding: paddingOnlyBxs,
+                      padding: paddingOnlyB5,
                       child: ClassCard(
                         classData: data,
                         classId: doc.id,

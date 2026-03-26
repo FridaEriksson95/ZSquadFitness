@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
 
+/// ClientRow user for ClassInfoPage
 class BookedUserRow {
   final DocumentReference bookingRef;
   final String name;
@@ -16,6 +17,7 @@ class BookedUserRow {
 }
 
 class ClassInfoBookedUsersHelper {
+  /// Loads user data for each booking document
   static Future<List<BookedUserRow>> loadBookedUsers(
     List<QueryDocumentSnapshot<Map<String, dynamic>>> bookingDocs,
   ) async {
@@ -38,6 +40,7 @@ class ClassInfoBookedUsersHelper {
     return Future.wait(futures);
   }
 
+  /// Returns only valid emails for the 'email all' action
   static List<String> extractValidEmails(List<BookedUserRow> rows) {
     return rows
         .map((e) => e.email)

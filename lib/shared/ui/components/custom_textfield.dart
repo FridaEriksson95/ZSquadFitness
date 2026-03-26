@@ -4,8 +4,10 @@ import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
+/// Customized TextField for reuse purpose
 class CustomTextfield extends StatelessWidget {
   final String labelText;
+  final TextStyle? labelStyle;
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final bool obscureText;
@@ -20,6 +22,7 @@ class CustomTextfield extends StatelessWidget {
   const CustomTextfield({
     super.key,
     required this.labelText,
+    this.labelStyle,
     this.controller,
     this.keyboardType,
     this.obscureText = false,
@@ -35,7 +38,7 @@ class CustomTextfield extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: boxTextField,
+      decoration: boxTextFieldGreenish,
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
@@ -52,7 +55,7 @@ class CustomTextfield extends StatelessWidget {
         style: AppTextStyles.geist16LG,
         decoration: InputDecoration(
           labelText: labelText,
-          labelStyle: AppTextStyles.geist16LG,
+          labelStyle: labelStyle ?? AppTextStyles.geist16LG,
           filled: true,
           fillColor: AppColors.greenish.withValues(alpha: 0.03),
           border: outlineInputBorderTF,

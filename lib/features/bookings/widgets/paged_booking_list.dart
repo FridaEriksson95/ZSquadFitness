@@ -9,6 +9,8 @@ import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
 const int _bookingItemsPerPage = 3;
+
+/// Callback used by each booking card to trigger cancel flow in parent view
 typedef BookingCancelCallback =
     Future<void> Function(
       BuildContext context, {
@@ -33,6 +35,7 @@ class PagedBookingList extends StatefulWidget {
 class __PagedBookingListState extends State<PagedBookingList> {
   late PageController _pageController;
   int _currentPage = 0;
+  final now = DateTime.now();
 
   @override
   void initState() {
@@ -63,6 +66,7 @@ class __PagedBookingListState extends State<PagedBookingList> {
       );
     }
 
+    // Group bookings info fixed-sized pages for dot flow and swipe
     final grouped = <List<QueryDocumentSnapshot<Map<String, dynamic>>>>[];
     for (int i = 0; i < widget.docs.length; i += _bookingItemsPerPage) {
       grouped.add(
@@ -118,6 +122,7 @@ class __PagedBookingListState extends State<PagedBookingList> {
                     context,
                     bookingDoc: bookingDoc,
                     onCancel: widget.onCancel,
+                    now: now,
                   );
                 },
               );
@@ -129,10 +134,12 @@ class __PagedBookingListState extends State<PagedBookingList> {
   }
 }
 
+/// Renders a single booking card from booking data
 Widget _buildBookingCard(
   BuildContext context, {
   required QueryDocumentSnapshot<Map<String, dynamic>> bookingDoc,
   required BookingCancelCallback onCancel,
+  required DateTime now,
 }) {
   final bookingData = bookingDoc.data();
 
@@ -143,7 +150,7 @@ Widget _buildBookingCard(
   }
 
   final ts = bookingData['dateRaw'] as Timestamp?;
-  final isPast = ts != null && ts.toDate().isBefore(DateTime.now());
+  final isPast = ts != null && ts.toDate().isBefore(now);
 
   final title = bookingData['title'] as String? ?? AppStrings.zumba;
   final date = bookingData['date'] as String? ?? AppStrings.noDate;
@@ -157,7 +164,8 @@ Widget _buildBookingCard(
       padding: paddingAll8,
       margin: marginZero,
       alpha: 0.07,
-      boxShadow: [textFieldShadow],
+      color: AppColors.backgroundGradient1.withValues(alpha: 0.8),
+      boxShadow: [shadowGlass1B, shadowGlass2B, shadowGlass3W],
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -168,23 +176,24 @@ Widget _buildBookingCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: AppTextStyles.vidaLoka18T),
+                Text(title, style: AppTextStyles.vidaLoka24G),
+
+                Text(date, style: AppTextStyles.vidaLoka16W),
+
+                Text(time, style: AppTextStyles.vidaLoka16W),
                 gapH5,
-                Text(date, style: AppTextStyles.vidaLoka14W),
-                gapH5,
-                Text(time, style: AppTextStyles.vidaLoka14W),
-                gapH5,
-                Text(locationName, style: AppTextStyles.vidaLoka11G),
+                Text(locationName, style: AppTextStyles.vidaLoka11NG),
                 gapH5,
               ],
             ),
           ),
           gapW12,
 
+          // Past classes are read-only, marked as 'utförd', upcoming classes can be cancelled
           SizedBox(
             width: 110,
             child: Padding(
-              padding: paddingOnlyT,
+              padding: paddingOnlyT30,
               child: IntrinsicWidth(
                 child: PrimaryButton(
                   text: isPast

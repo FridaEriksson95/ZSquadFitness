@@ -23,12 +23,14 @@ class UploadClass extends StatefulWidget {
 class _UploadClassState extends State<UploadClass> {
   final _formKey = GlobalKey<FormState>();
   final _uploadClassService = UploadClassService();
+
+  // repeat upload state when creating a new class series
   bool _repeatUpload = false;
-  String _repeatWeeks = '4 veckor framåt';
+  String _repeatWeeks = AppStrings.weeksAhead4;
   final List<String> _repeatWeekOptions = [
-    '4 veckor framåt',
-    '6 veckor framåt',
-    '8 veckor framåt',
+    AppStrings.weeksAhead4,
+    AppStrings.weeksAhead6,
+    AppStrings.weeksAhead8,
   ];
 
   late TextEditingController _titleController;
@@ -42,6 +44,7 @@ class _UploadClassState extends State<UploadClass> {
   late TextEditingController _descriptionController;
   late TextEditingController _roomController;
 
+  /// Placeholders for my most common fields when creating new class
   @override
   void initState() {
     super.initState();
@@ -92,6 +95,7 @@ class _UploadClassState extends State<UploadClass> {
     super.dispose();
   }
 
+  // Builds firestore payload from form inputs
   Map<String, dynamic> _buildClassData(DateTime parsedDate) {
     return {
       'title': _titleController.text.trim(),
@@ -111,6 +115,7 @@ class _UploadClassState extends State<UploadClass> {
     };
   }
 
+  // Date is selected from a picker and formatted for Swedish display
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -135,6 +140,7 @@ class _UploadClassState extends State<UploadClass> {
     }
   }
 
+  // Time range picker: start time and end time 1 hour after
   Future<void> _selectTime() async {
     final TimeOfDay? from = await showTimePicker(
       context: context,
@@ -152,6 +158,7 @@ class _UploadClassState extends State<UploadClass> {
     );
 
     if (from == null) return;
+    if (!mounted) return;
 
     final TimeOfDay? to = await showTimePicker(
       context: context,
@@ -168,17 +175,19 @@ class _UploadClassState extends State<UploadClass> {
       },
     );
 
-    if (to != null) {
-      final fromStr =
-          '${from.hour.toString().padLeft(2, '0')}.${from.minute.toString().padLeft(2, '0')}';
-      final toStr =
-          '${to.hour.toString().padLeft(2, '0')}.${to.minute.toString().padLeft(2, '0')}';
-      setState(() {
-        _timeController.text = '$fromStr - $toStr';
-      });
-    }
+    if (to == null) return;
+    if (!mounted) return;
+
+    final fromStr =
+        '${from.hour.toString().padLeft(2, '0')}.${from.minute.toString().padLeft(2, '0')}';
+    final toStr =
+        '${to.hour.toString().padLeft(2, '0')}.${to.minute.toString().padLeft(2, '0')}';
+    setState(() {
+      _timeController.text = '$fromStr - $toStr';
+    });
   }
 
+  // Validates inputs, parses time/date and then saves
   Future<void> _saveClass() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -216,8 +225,10 @@ class _UploadClassState extends State<UploadClass> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
-        surfaceTintColor: AppColors.background,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         centerTitle: true,
         title: Text(
           widget.classId == null
@@ -328,6 +339,8 @@ class _UploadClassState extends State<UploadClass> {
                 children: [
                   Text(AppStrings.repeatClass, style: AppTextStyles.geist18W),
                   gapW35,
+
+                  //Switch to repeat uploads weeks ahead with dropdown values
                   Switch(
                     value: _repeatUpload,
                     onChanged: (choice) =>

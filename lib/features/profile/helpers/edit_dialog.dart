@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:zsquadfitness/features/profile/views/edit_profile_dialog.dart';
 
+/// Parsed result from EditProfileDialog actions
 class EditProfileResult {
   final bool updated;
   final bool readyToDelete;
@@ -14,6 +15,7 @@ class EditProfileResult {
   });
 }
 
+/// Opens edit dialog and maps raw dialog output to a typed result object
 class ProfileDialogHelper {
   static Future<EditProfileResult?> openEditDialog(
     BuildContext context, {

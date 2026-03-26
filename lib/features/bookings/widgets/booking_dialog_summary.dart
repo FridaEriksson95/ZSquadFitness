@@ -5,6 +5,7 @@ import 'package:zsquadfitness/shared/ui/components/border_card.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
+/// Summary section shown at the top of booking dialog
 class BookingDialogSummary extends StatelessWidget {
   final Map<String, dynamic> classData;
   final String bookedText;
@@ -22,26 +23,27 @@ class BookingDialogSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: paddingH20,
+      padding: paddingH30,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Header Row: class identity, date/time and availability
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               logoBlack60,
+              gapW20,
 
               Expanded(
                 child: Center(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       gapH10,
                       Text(
                         classData['title'] ?? AppStrings.zumba,
-                        style: AppTextStyles.geist18T,
+                        style: AppTextStyles.vidaLoka24G,
                       ),
-                      gapH5,
                       Text(classData['date'] ?? AppStrings.noDate),
                       Text(classData['time'] ?? AppStrings.noTime),
                       if ((classData['room'] as String?)?.isNotEmpty == true)
@@ -59,8 +61,8 @@ class BookingDialogSummary extends StatelessWidget {
                 padding: paddingAll8,
                 margin: marginZero,
                 color: AppColors.turquise.withValues(alpha: 0.2),
-                border: buttonGlassBorder,
-                boxShadow: [shadow, shadowGlass2, shadowGlass3],
+                border: buttonBorderW,
+                boxShadow: [shadowLB, shadowGlass2B, shadowGlass3W],
                 child: Column(
                   children: [
                     Text(bookedText, style: AppTextStyles.vidaLoka14LG),
@@ -77,6 +79,8 @@ class BookingDialogSummary extends StatelessWidget {
             ],
           ),
           gapH20,
+
+          // Location and pricing details
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -86,7 +90,7 @@ class BookingDialogSummary extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Padding(
-                      padding: paddingOnlyTSmall,
+                      padding: paddingOnlyT4,
                       child: Icon(
                         Icons.pin_drop_rounded,
                         color: AppColors.gold,
@@ -140,6 +144,7 @@ class BookingDialogSummary extends StatelessWidget {
           ),
           gapH5,
 
+          // Hide long description when repeat booking section is selected
           if (!repeatBooking) ...[
             Text(
               classData['description'] ?? AppStrings.noDesc,

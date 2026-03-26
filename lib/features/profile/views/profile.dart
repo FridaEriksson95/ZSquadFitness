@@ -13,11 +13,13 @@ import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
 import 'package:zsquadfitness/shared/ui/components/snackbar_utils.dart';
 import 'package:zsquadfitness/shared/ui/components/stream_builder_view.dart';
+import 'package:zsquadfitness/shared/ui/extensions/context_extensions.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/features/profile/helpers/profile_stats_helper.dart';
 
+/// Profile page with user info, edit/delete actions and role-based stats
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -28,7 +30,9 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool _isDeleting = false;
   String _selectedStatsRange = AppStrings.latest4;
+  final firestore = FirebaseFirestore.instance;
 
+  /// Opens edit dialog and handles update/delete actions returned by the dialog
   Future<void> _openEditDialog(Map<String, dynamic>? data) async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
@@ -39,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
       userData: data,
     );
 
-    if (res == null) return;
+    if (!mounted || res == null) return;
 
     if (res.updated) {
       showAppSnackBar(context, message: AppStrings.profileUpdated);
@@ -48,6 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  /// Triggers authenticated account deletion flow and shows error on failure
   Future<void> _deleteAccount({String? password}) async {
     try {
       setState(() => _isDeleting = true);
@@ -68,6 +73,10 @@ class _ProfilePageState extends State<ProfilePage> {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return _buildLoadingScaffold();
 
+    final statDropDownWidth = (context.screenWidth * 0.48).clamp(160.0, 230.0);
+    final headerHeight = (context.screenHeight * 0.23).clamp(175.0, 230.0);
+    final chartHeight = (context.screenHeight * 0.22).clamp(150.0, 210.0);
+
     return Scaffold(
       appBar: const CustomAppbar(),
       body: SingleChildScrollView(
@@ -77,10 +86,14 @@ class _ProfilePageState extends State<ProfilePage> {
             Text(AppStrings.profileTitle, style: AppTextStyles.cinzel24LG),
             divider300,
             gapH15,
-            _buildProfileHeaderCard(currentUser),
+            _buildProfileHeaderCard(currentUser, headerHeight: headerHeight),
 
             gapH15,
-            _buildStatsCard(currentUser),
+            _buildStatsCard(
+              currentUser,
+              statsDropdownWidth: statDropDownWidth,
+              chartHeight: chartHeight,
+            ),
             gapBottom,
           ],
         ),
@@ -90,24 +103,35 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildLoadingScaffold() => Scaffold(body: cpi);
 
-  Widget _buildProfileHeaderCard(User currentUser) {
+  Widget _buildProfileHeaderCard(
+    User currentUser, {
+    required double headerHeight,
+  }) {
     return BorderCard(
       padding: paddingZero,
       alpha: 0.1,
-      child: _buildProfileUserStream(currentUser),
+      child: _buildProfileUserStream(currentUser, headerHeight: headerHeight),
     );
   }
 
-  Widget _buildProfileUserStream(User currentUser) {
+  Widget _buildProfileUserStream(
+    User currentUser, {
+    required double headerHeight,
+  }) {
     return SimpleStreamView(
       stream: DatabaseService().getUserData(currentUser.uid),
       loading: Padding(padding: paddingAll24, child: cpi),
       empty: Padding(padding: paddingAll24, child: cpi),
       isEmpty: (doc) => !doc.exists,
       builder: (doc) {
-        final data = doc.data() as Map<String, dynamic>?;
+        final data = doc.data();
         final welcomeName = data?['Name'] as String? ?? AppStrings.zsquader;
-        return _buildProfileHeaderContent(currentUser, data, welcomeName);
+        return _buildProfileHeaderContent(
+          currentUser,
+          data,
+          welcomeName,
+          headerHeight: headerHeight,
+        );
       },
     );
   }
@@ -115,34 +139,37 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildProfileHeaderContent(
     User currentUser,
     Map<String, dynamic>? data,
-    String welcomeName,
-  ) {
+    String welcomeName, {
+    required double headerHeight,
+  }) {
     return Padding(
-      padding: paddingOnlyTsmall,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Row(
+      padding: paddingOnlyT15,
+      child: SizedBox(
+        height: headerHeight,
+        child: Stack(
+          children: [
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 logoBlack150,
 
                 Expanded(
                   child: Padding(
-                    padding: paddingOnlyT,
+                    padding: paddingOnlyT30,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(welcomeName, style: AppTextStyles.geist18T),
+                        gapH10,
                         Text(
                           data?['Phone'] as String? ?? '',
-                          style: AppTextStyles.geist14W,
+                          style: AppTextStyles.geist16W,
                         ),
                         Text(
                           currentUser.email ?? '',
-                          style: AppTextStyles.geist14W,
+                          style: AppTextStyles.geist16W,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
@@ -150,58 +177,59 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ],
             ),
-          ),
 
-          SizedBox(
-            height: 190,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.edit_square,
-                    color: AppColors.lightGrey,
-                  ),
-                  onPressed: () => _openEditDialog(data),
-                ),
-                gapH65,
-                Padding(
-                  padding: paddingOnlyRTB,
-                  child: SizedBox(
-                    width: 120,
-                    child: PrimaryButton(
-                      text: AppStrings.logoutBtn,
-                      color: AppColors.neonPink,
-                      onPressed: () async {
-                        await AuthService().signOut();
-                      },
-                    ),
-                  ),
-                ),
-              ],
+            Positioned(
+              top: 0,
+              right: 10,
+              child: IconButton(
+                icon: const Icon(Icons.edit_square, color: AppColors.lightGrey),
+                onPressed: () => _openEditDialog(data),
+              ),
             ),
-          ),
+            Positioned(
+              right: 15,
+              bottom: 10,
+              child: SizedBox(
+                width: (context.screenWidth * 0.30).clamp(100.0, 130.0),
+                child: PrimaryButton(
+                  text: AppStrings.logoutBtn,
+                  color: AppColors.gold,
+                  onPressed: () async {
+                    await AuthService().signOut();
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsCard(
+    User currentUser, {
+    required double statsDropdownWidth,
+    required double chartHeight,
+  }) {
+    return BorderCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildStatsHeader(statsDropdownWidth: statsDropdownWidth),
+          gapH10,
+          _buildStatsBody(currentUser, chartHeight: chartHeight),
         ],
       ),
     );
   }
 
-  Widget _buildStatsCard(User currentUser) {
-    return BorderCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [_buildStatsHeader(), gapH10, _buildStatsBody(currentUser)],
-      ),
-    );
-  }
-
-  Widget _buildStatsHeader() {
+  Widget _buildStatsHeader({required double statsDropdownWidth}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(AppStrings.statistics, style: AppTextStyles.vidaLoka32T),
         SizedBox(
-          width: 200,
+          width: statsDropdownWidth,
           child: CustomDropdownfield<String>(
             value: _selectedStatsRange,
             fontSize: 14,
@@ -221,22 +249,25 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildStatsBody(User currentUser) {
+  // Admin see monthly clients stats and users see completed classes stats
+  Widget _buildStatsBody(User currentUser, {required double chartHeight}) {
     return SimpleStreamView(
       stream: DatabaseService().getUserData(currentUser.uid),
       loading: cpi,
       empty: cpi,
       isEmpty: (doc) => !doc.exists,
       builder: (doc) {
-        final userData = doc.data() as Map<String, dynamic>?;
+        final userData = doc.data();
         final isAdmin = userData?['isAdmin'] == true;
 
-        return isAdmin ? _buildAdminStats() : _buildUserStats(currentUser);
+        return isAdmin
+            ? _buildAdminStats(chartHeight: chartHeight)
+            : _buildUserStats(currentUser, chartHeight: chartHeight);
       },
     );
   }
 
-  Widget _buildAdminStats() {
+  Widget _buildAdminStats({required double chartHeight}) {
     final months = ProfileStatsHelper.rangeToMonths(
       _selectedStatsRange,
       AppStrings.latest2,
@@ -245,10 +276,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final buckets = ProfileStatsHelper.monthBuckets(months);
 
     return SimpleStreamView(
-      stream: FirebaseFirestore.instance
-          .collection('classes')
-          .orderBy('dateRaw')
-          .snapshots(),
+      stream: firestore.collection('classes').orderBy('dateRaw').snapshots(),
       loading: cpi,
       empty: cpi,
       isEmpty: (_) => false,
@@ -274,7 +302,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               gapH10,
               SizedBox(
-                height: 180,
+                height: chartHeight,
                 child: ProfileMonthlyCharts(
                   counts: monthlyCounts,
                   buckets: buckets,
@@ -287,9 +315,9 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildUserStats(User currentUser) {
+  Widget _buildUserStats(User currentUser, {required double chartHeight}) {
     return SimpleStreamView(
-      stream: FirebaseFirestore.instance
+      stream: firestore
           .collection('users')
           .doc(currentUser.uid)
           .collection('bookings')
@@ -320,7 +348,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: AppTextStyles.geist22W,
               ),
               gapH10,
-              SizedBox(height: 180, child: ProfileWeeklyCharts(counts: counts)),
+              SizedBox(
+                height: chartHeight,
+                child: ProfileWeeklyCharts(counts: counts),
+              ),
             ],
           ),
         );

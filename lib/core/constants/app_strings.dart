@@ -1,3 +1,5 @@
+//Swedish strings
+
 class AppStrings {
   //AdminDashboard
   static const String adminTitle = 'ADMIN - Hantera pass';
@@ -8,7 +10,7 @@ class AppStrings {
       'Är du säker på att du vill ta bort detta pass?';
   static const String deleteBtn = 'Ta bort';
   static const String deleteConfirmation = 'Passet har tagits bort';
-  static const String allClasses = 'Alla pass';
+  static const String allClasses = 'Alla';
   static const String upcoming = 'Kommande';
   static const String passed = 'Utförda';
   static const String total = 'Totalt';
@@ -39,6 +41,9 @@ class AppStrings {
   static const String repeatClass = 'Upprepa pass';
   static const String roomNr = 'Sal ';
   static const String room = '2';
+  static const String weeksAhead4 = '4';
+  static const String weeksAhead6 = '6';
+  static const String weeksAhead8 = '6';
 
   //Bookingspage
   static const String loginRequired = 'Du måste vara inloggad';
@@ -69,7 +74,7 @@ class AppStrings {
   //ProfilePage
   static const String profileTitle = 'PROFIL';
   static const String logoutBtn = 'Logga ut';
-  static const String statistics = 'Statistik';
+  static const String statistics = 'STATISTIK';
   static const String latest4 = 'Senaste 4 veckorna';
   static const String latest2 = '2 månader';
   static const String latest3 = '3 månader';
@@ -198,7 +203,7 @@ class AppStrings {
   static const String noTime = 'Tid saknas';
   static const String noDate = 'Datum saknas';
   static const String cantFindDate = 'Okänt datum';
-  static const String cancel = 'Avbryt';
+  static const String cancel = 'AVBRYT';
   static const String req = 'Obligatoriskt';
   static const String date = 'Datum';
   static const String time = 'Tid';

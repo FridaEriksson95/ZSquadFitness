@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 
+/// Result object returned from delete-account confirmation dialog
 class DeleteAccountDialog {
   final String? password;
 
   const DeleteAccountDialog({this.password});
 }
 
+/// Opens confirmation dialog and collects password for password based users
 class DeleteAccountDialogHelper {
   static Future<DeleteAccountDialog?> show(
     BuildContext context, {
@@ -86,6 +88,7 @@ class DeleteAccountDialogHelper {
       },
     );
 
+    // Dispose controller after dialog frame completes to avoid dispose-timing issues
     WidgetsBinding.instance.addPostFrameCallback((_) {
       passwordController.dispose();
     });

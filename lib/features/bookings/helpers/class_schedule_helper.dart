@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// Helper for weekday schedule logic used by repeat booking flows
 class ClassScheduleHelper {
   static final _firestore = FirebaseFirestore.instance;
 
+  // Sets weekdays to swedish names
   static const Map<int, String> weekdayNamesSv = {
     DateTime.monday: 'Måndagar',
     DateTime.tuesday: 'Tisdagar',
@@ -13,6 +15,7 @@ class ClassScheduleHelper {
     DateTime.sunday: 'Söndagar',
   };
 
+  /// Returns weekdays that have classes within the given date range
   static Future<List<int>> getAvailableWeekdays({
     Duration range = const Duration(days: 90),
   }) async {
@@ -40,9 +43,12 @@ class ClassScheduleHelper {
     return weekdayNamesSv[weekday] ?? '';
   }
 
+  // Maps a swedish weekday label back to DateTime weekday int
   static int weekdayFromLabel(String label) {
-    return weekdayNamesSv.entries
-        .firstWhere((entry) => entry.value == label)
-        .key;
+    final match = weekdayNamesSv.entries.where((entry) => entry.value == label);
+    if (match.isEmpty) {
+      throw ArgumentError('Unknown weekday label: $label');
+    }
+    return match.first.key;
   }
 }

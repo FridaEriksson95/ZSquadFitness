@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/features/bookings/views/booking_dialog.dart';
 import 'package:zsquadfitness/shared/ui/components/border_card.dart';
@@ -30,14 +29,14 @@ class ClassCard extends StatelessWidget {
       children: [
         Text(
           (classData['date'] ?? AppStrings.noDate).toUpperCase(),
-          style: AppTextStyles.vidaLoka20LG,
+          style: AppTextStyles.vidaLoka22T,
         ),
-        gapH10,
+        gapH5,
 
         BorderCard(
-          padding: paddingAll8,
+          padding: paddingAll10,
           alpha: 0.07,
-          boxShadow: [textFieldShadow],
+          boxShadow: [shadowGreenish],
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -50,14 +49,13 @@ class ClassCard extends StatelessWidget {
                   children: [
                     Text(
                       classData['title'] ?? AppStrings.zumba,
-                      style: AppTextStyles.vidaLoka18T,
+                      style: AppTextStyles.vidaLoka20G,
                     ),
-                    gapH5,
                     Text(
                       classData['time'] ?? AppStrings.noTime,
-                      style: AppTextStyles.vidaLoka14W,
+                      style: AppTextStyles.vidaLoka16W,
                     ),
-                    gapH5,
+                    gapH10,
                     Row(
                       children: [
                         Text(
@@ -86,6 +84,7 @@ class ClassCard extends StatelessWidget {
     );
   }
 
+  // Widget to show "boka" or "bokad" depending on state
   Widget _buildBookButton(BuildContext context, {required bool booked}) {
     return SizedBox(
       width: 100,

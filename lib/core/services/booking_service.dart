@@ -6,9 +6,9 @@ import 'package:zsquadfitness/core/constants/confirmation_status.dart';
 class BookingService {
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
-
   User? get currentUser => _auth.currentUser;
 
+  /// Cancel booking and delete from bookingRef in Firestore
   Future<void> cancelBooking({
     required DocumentReference bookingRef,
     required String classId,
@@ -26,6 +26,7 @@ class BookingService {
     });
   }
 
+  /// Book one class only and add data in Firestore
   Future<void> bookSingleClass({
     required User user,
     required String classId,
@@ -73,6 +74,7 @@ class BookingService {
     });
   }
 
+  /// Book several classes and add data in Firestore
   Future<void> bookRepeatingClasses({
     required Map<String, dynamic> baseClassData,
     required int weeks,
@@ -150,6 +152,7 @@ class BookingService {
     }
   }
 
+  /// Repeat bookings and add data in Firestore
   Future<void> bookRepeating({
     required bool repeatBooking,
     required int weeks,

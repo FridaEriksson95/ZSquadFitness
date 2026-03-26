@@ -54,6 +54,7 @@ class __PagedClassListState extends State<_PagedClassList> {
 
   @override
   Widget build(BuildContext context) {
+    // Group class documents into pages with 3 items per page
     final grouped = <List<QueryDocumentSnapshot<Map<String, dynamic>>>>[];
     for (int i = 0; i < widget.docs.length; i += _itemsPerPage) {
       grouped.add(
@@ -71,7 +72,7 @@ class __PagedClassListState extends State<_PagedClassList> {
       children: [
         if (pageCount > 1)
           Padding(
-            padding: paddingOnlyBs,
+            padding: paddingOnlyB10,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(pageCount, (index) {
@@ -83,7 +84,6 @@ class __PagedClassListState extends State<_PagedClassList> {
                   ),
                   child: Container(
                     margin: marginAll8,
-                    padding: paddingAll15,
                     width: 10,
                     height: 10,
                     decoration: BoxDecoration(
@@ -98,7 +98,7 @@ class __PagedClassListState extends State<_PagedClassList> {
             ),
           ),
         Padding(
-          padding: paddingOnlyBs,
+          padding: paddingOnlyB10,
           child: Align(
             alignment: Alignment.center,
             child: Text(
@@ -159,10 +159,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
             gapH10,
             TabBar(
-              labelColor: AppColors.neonGreen,
+              labelColor: AppColors.gold.withValues(alpha: 0.6),
               unselectedLabelColor: AppColors.lightGrey,
               labelStyle: AppTextStyles.vidaLoka16LG,
-              indicatorColor: AppColors.turquise,
+              indicatorColor: AppColors.neonGreen,
               indicatorWeight: 3,
               dividerColor: Colors.transparent,
               tabs: [
@@ -253,7 +253,7 @@ Widget _buildClassCard(
                   children: [
                     Text(
                       data['date'] ?? AppStrings.cantFindDate,
-                      style: AppTextStyles.vidaLoka22T,
+                      style: AppTextStyles.vidaLoka24G,
                     ),
                     Text(data['time'] ?? '', style: AppTextStyles.vidaLoka16W),
                     Text(

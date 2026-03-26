@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 
+/// Customized dropdownField for reuse purpose
 class CustomDropdownfield<T> extends StatelessWidget {
   final T value;
   final List<DropdownMenuItem<T>> items;

@@ -12,14 +12,16 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 1) Listen to Firebase auth state if signed in/out
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, authSnapshot) {
         if (!authSnapshot.hasData || authSnapshot.data == null) {
-          return AuthPage();
+          return const AuthPage();
         }
         final user = authSnapshot.data!;
 
+        // 2) When signed in, stream user profile document
         return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
           stream: DatabaseService().getUserData(user.uid),
           builder: (context, userSnapshot) {
@@ -27,6 +29,7 @@ class AuthWrapper extends StatelessWidget {
               return Scaffold(body: cpi);
             }
 
+            // 3) Google users without phonenr are routed to phone req
             if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
               final isGoogleUser = user.providerData.any(
                 (p) => p.providerId == 'google.com',

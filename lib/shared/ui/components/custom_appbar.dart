@@ -5,6 +5,7 @@ import 'package:zsquadfitness/shared/ui/theme/app_assets.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/core/utils/email_launcher.dart';
 
+/// Main Appbar with text Logo
 class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   final double toolbarHeight;
   final double logoHeight;

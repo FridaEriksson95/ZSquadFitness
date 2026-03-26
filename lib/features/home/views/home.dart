@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    final firestore = FirebaseFirestore.instance;
     final uid = user?.uid;
 
     return Scaffold(
@@ -42,6 +43,7 @@ class _HomePageState extends State<HomePage> {
                       style: AppTextStyles.cinzel24LG,
                     )
                   else
+                    // Welcome text with user profilename
                     SimpleStreamView<DocumentSnapshot>(
                       stream: DatabaseService().getUserData(uid),
                       loading: const Text(
@@ -66,17 +68,15 @@ class _HomePageState extends State<HomePage> {
                     ),
 
                   gapH5,
-                  Text(
-                    AppStrings.bookClassText,
-                    style: AppTextStyles.vidaLoka24T,
-                  ),
+                  Text(AppStrings.bookClassText, style: AppTextStyles.geist18T),
                 ],
               ),
             ),
             gapH20,
 
+            // Load classes once and split into upcoming/past
             SimpleStreamView<QuerySnapshot<Map<String, dynamic>>>(
-              stream: FirebaseFirestore.instance
+              stream: firestore
                   .collection('classes')
                   .orderBy('dateRaw')
                   .snapshots(),
@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> {
               isEmpty: (qs) => qs.docs.isEmpty,
               builder: (qs) {
                 final upcoming = QueryDocsHelper.upcomingOnly(qs.docs);
-
+                //Not signed in: schedule loades with no booked state
                 if (uid == null) {
                   return Column(
                     children: [
@@ -106,8 +106,10 @@ class _HomePageState extends State<HomePage> {
                     ],
                   );
                 }
+
+                //Signed in: loading all user bookings once
                 return SimpleStreamView<QuerySnapshot<Map<String, dynamic>>>(
-                  stream: FirebaseFirestore.instance
+                  stream: firestore
                       .collection('users')
                       .doc(uid)
                       .collection('bookings')

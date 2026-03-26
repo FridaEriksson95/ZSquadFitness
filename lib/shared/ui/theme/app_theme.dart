@@ -3,11 +3,12 @@ import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'app_colors.dart';
 import 'app_textstyles.dart';
 
+/// Primary app theme for text, appbar, colorscheme, snackbar
 class AppTheme {
   static ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     fontFamily: 'Geist',
-    scaffoldBackgroundColor: AppColors.background,
+    scaffoldBackgroundColor: Colors.transparent,
     primaryColor: AppColors.neonGreen,
 
     textTheme: TextTheme(
@@ -23,7 +24,7 @@ class AppTheme {
       displaySmall: AppTextStyles.geist20LB,
     ),
 
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       backgroundColor: AppColors.lightBg,
       foregroundColor: AppColors.white,
       elevation: 0,

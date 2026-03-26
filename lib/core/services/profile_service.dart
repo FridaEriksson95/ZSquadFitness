@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:zsquadfitness/core/services/database.dart';
 
+//Profile edit service to update information about user if changed
 class ProfileEditorService {
   Future<void> saveProfile({
     required User user,

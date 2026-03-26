@@ -7,6 +7,7 @@ import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
+/// Opens a reset password dialog and send Firebase reset email
 Future<void> showResetPasswordDialog(BuildContext context) async {
   final TextEditingController resetEmailController = TextEditingController();
   bool isLoading = false;
@@ -16,6 +17,7 @@ Future<void> showResetPasswordDialog(BuildContext context) async {
   await showDialog(
     context: context,
     builder: (dialogContext) {
+      // Dialog state with loading, error, sent that's handled inside the dialog
       return StatefulBuilder(
         builder: (context, setDialogState) {
           return AlertDialog(
@@ -35,15 +37,15 @@ Future<void> showResetPasswordDialog(BuildContext context) async {
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(dialogContext),
-                  icon: const Icon(Icons.close, color: AppColors.darkRed),
-                  padding: paddingOnlyL,
+                  icon: const Icon(Icons.close, color: AppColors.neonPink),
+                  padding: paddingOnlyL40,
                   constraints: const BoxConstraints(),
                 ),
               ],
             ),
             content: emailSent
                 ? Padding(
-                    padding: paddingOnlyBs,
+                    padding: paddingOnlyB10,
                     child: Text(
                       AppStrings.checkEmail,
                       style: AppTextStyles.geist16LG,
@@ -90,6 +92,7 @@ Future<void> showResetPasswordDialog(BuildContext context) async {
                           ? AppStrings.sendingLoad
                           : AppStrings.sendLink),
                 color: AppColors.turquise,
+                // Validates input, triggers reset email then show sent/error state
                 onPressed: isLoading
                     ? null
                     : () async {
@@ -132,4 +135,6 @@ Future<void> showResetPasswordDialog(BuildContext context) async {
       );
     },
   );
+
+  resetEmailController.dispose();
 }
