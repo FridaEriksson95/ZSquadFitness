@@ -3,6 +3,7 @@ import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/features/profile/helpers/profile_stats_helper.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
+/// Monthly bar chart used for admin profile statistics
 class ProfileMonthlyCharts extends StatelessWidget {
   final List<int> counts;
   final List<DateTime> buckets;
@@ -24,7 +25,7 @@ class ProfileMonthlyCharts extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: List.generate(counts.length, (i) {
-        final h = (counts[i] / maxY * chartHeight);
+        final h = (counts[i] / maxY) * chartHeight;
 
         return Expanded(
           child: Column(
@@ -34,7 +35,7 @@ class ProfileMonthlyCharts extends StatelessWidget {
                 duration: duration350,
                 height: h.clamp(4.0, chartHeight),
                 margin: marginHorizon6,
-                decoration: boxStatisticCharts,
+                decoration: boxStatisticChartsT,
               ),
               gapH10,
               Text(

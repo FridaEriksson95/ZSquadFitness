@@ -12,6 +12,7 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   bool showLogin = true;
 
+/// Toggle between sign in and register
   void toggleView() {
     setState(() {
       showLogin = !showLogin;

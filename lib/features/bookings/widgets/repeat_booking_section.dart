@@ -6,6 +6,8 @@ import 'package:zsquadfitness/shared/ui/components/custom_dropdownfield.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
+/// Booking dialog section for confirmation toggle and repeat booking options
+/// Using Resend to send confirmation emails
 class RepeatBookingSection extends StatelessWidget {
   final bool sendConfirmation;
   final ValueChanged<bool> onSendConfirmationChanged;
@@ -54,6 +56,8 @@ class RepeatBookingSection extends StatelessWidget {
               ),
             ],
           ),
+
+          // Show day/week selectors only when repeatbooking is enabled and options exists
           gapH5,
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -115,6 +119,8 @@ class RepeatBookingSection extends StatelessWidget {
               ],
             ),
           ],
+
+          // Inform user when repeat booking is enabled but no valid weekdays are available
           if (repeatBooking && availableRepeatWeekdays.isEmpty) ...[
             gapH10,
             Text(

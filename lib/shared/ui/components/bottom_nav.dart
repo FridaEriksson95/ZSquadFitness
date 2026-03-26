@@ -9,6 +9,8 @@ import 'package:zsquadfitness/features/profile/views/profile.dart';
 import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 
+/// Main bottom navigation bar
+/// Swaps first tab by role (admin/user)
 class BottomNav extends StatefulWidget {
   static final GlobalKey<BottomNavState> globalKey = GlobalKey();
 
@@ -21,6 +23,7 @@ class BottomNav extends StatefulWidget {
 class BottomNavState extends State<BottomNav> {
   int currentTabIndex = 1;
 
+  // Funtion used to jump directly to bookings/admin tab
   void switchToBookings() {
     setState(() {
       currentTabIndex = 0;
@@ -32,6 +35,7 @@ class BottomNavState extends State<BottomNav> {
     final user = FirebaseAuth.instance.currentUser;
 
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      // Listen ifs user role changes to isAdmin for other content
       stream: user != null
           ? FirebaseFirestore.instance
                 .collection('users')

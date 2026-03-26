@@ -1,47 +1,42 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/features/bookings/views/booking_dialog.dart';
 import 'package:zsquadfitness/shared/ui/components/border_card.dart';
 import 'package:zsquadfitness/shared/ui/components/primary_button.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
 import 'package:zsquadfitness/core/constants/gaps_styles.dart';
-import 'package:zsquadfitness/shared/ui/components/stream_builder_view.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
-class ClassCard extends StatefulWidget {
+class ClassCard extends StatelessWidget {
   final Map<String, dynamic> classData;
   final String classId;
+  final bool isBooked;
 
-  const ClassCard({super.key, required this.classData, required this.classId});
-
-  @override
-  State<ClassCard> createState() => _ClassCardState();
-}
-
-class _ClassCardState extends State<ClassCard> {
-  final user = FirebaseAuth.instance.currentUser;
+  const ClassCard({
+    super.key,
+    required this.classData,
+    required this.classId,
+    required this.isBooked,
+  });
 
   @override
   Widget build(BuildContext context) {
     final spotsLeft =
-        (widget.classData['spotsTotal'] ?? 0) -
-        (widget.classData['spotsBooked'] ?? 0);
+        (classData['spotsTotal'] ?? 0) - (classData['spotsBooked'] ?? 0);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          (widget.classData['date'] ?? AppStrings.noDate).toUpperCase(),
-          style: AppTextStyles.vidaLoka20LG,
+          (classData['date'] ?? AppStrings.noDate).toUpperCase(),
+          style: AppTextStyles.vidaLoka22T,
         ),
-        gapH10,
+        gapH5,
 
         BorderCard(
-          padding: paddingAll8,
+          padding: paddingAll10,
           alpha: 0.07,
-          boxShadow: [textFieldShadow],
+          boxShadow: [shadowGreenish],
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -53,15 +48,14 @@ class _ClassCardState extends State<ClassCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.classData['title'] ?? AppStrings.zumba,
-                      style: AppTextStyles.vidaLoka18T,
+                      classData['title'] ?? AppStrings.zumba,
+                      style: AppTextStyles.vidaLoka20G,
                     ),
-                    gapH5,
                     Text(
-                      widget.classData['time'] ?? AppStrings.noTime,
-                      style: AppTextStyles.vidaLoka14W,
+                      classData['time'] ?? AppStrings.noTime,
+                      style: AppTextStyles.vidaLoka16W,
                     ),
-                    gapH5,
+                    gapH10,
                     Row(
                       children: [
                         Text(
@@ -81,23 +75,7 @@ class _ClassCardState extends State<ClassCard> {
               ),
               gapW12,
 
-              if (user == null)
-                _buildBookButton(context, booked: false)
-              else
-                SimpleStreamView<QuerySnapshot<Map<String, dynamic>>>(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(user?.uid)
-                      .collection('bookings')
-                      .where('classId', isEqualTo: widget.classId)
-                      .limit(1)
-                      .snapshots(),
-                  loading: _buildBookButton(context, booked: false),
-                  empty: _buildBookButton(context, booked: false),
-                  isEmpty: (qs) => qs.docs.isEmpty,
-
-                  builder: (_) => _buildBookButton(context, booked: true),
-                ),
+              _buildBookButton(context, booked: isBooked),
             ],
           ),
         ),
@@ -106,6 +84,7 @@ class _ClassCardState extends State<ClassCard> {
     );
   }
 
+  // Widget to show "boka" or "bokad" depending on state
   Widget _buildBookButton(BuildContext context, {required bool booked}) {
     return SizedBox(
       width: 100,
@@ -120,8 +99,8 @@ class _ClassCardState extends State<ClassCard> {
                     context: context,
                     builder: (context) => BookingDialog(
                       parentContext: context,
-                      classId: widget.classId,
-                      classData: widget.classData,
+                      classId: classId,
+                      classData: classData,
                     ),
                   );
                 },

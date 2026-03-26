@@ -30,6 +30,7 @@ class BookingDialog extends StatefulWidget {
   State<BookingDialog> createState() => _BookingDialogState();
 }
 
+// Dialog local booking options and loading state
 class _BookingDialogState extends State<BookingDialog> {
   final _bookingService = BookingService();
   bool _sendConfirmation = false;
@@ -53,6 +54,7 @@ class _BookingDialogState extends State<BookingDialog> {
     return 0;
   }
 
+  /// Loads weekdays with available classes and keeps selected repeat day valid
   Future<void> _loadAvailableRepeatDays() async {
     final weekdays = await ClassScheduleHelper.getAvailableWeekdays();
 
@@ -80,6 +82,7 @@ class _BookingDialogState extends State<BookingDialog> {
     _loadAvailableRepeatDays();
   }
 
+  /// Returns current user or shows login error snackbar if signed out
   User? _requireUserOrShowError() {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -89,6 +92,7 @@ class _BookingDialogState extends State<BookingDialog> {
     return user;
   }
 
+  /// Shows success confirmation and routes user to bookings tab
   void _showSuccessDialog() {
     showDialog(
       context: widget.parentContext,
@@ -103,12 +107,14 @@ class _BookingDialogState extends State<BookingDialog> {
     );
   }
 
+  /// Bookes current class and optionally books repeating classes for chosen weekday
   Future<void> _bookClass() async {
+    if(!mounted) return; 
     setState(() => _isBooking = true);
 
     final user = _requireUserOrShowError();
     if (user == null) {
-      setState(() => _isBooking = false);
+      if (mounted) setState(() => _isBooking = false);
       return;
     }
 
@@ -132,17 +138,18 @@ class _BookingDialogState extends State<BookingDialog> {
         );
       }
 
-      if (!context.mounted) return;
+      if (!mounted) return;
       Navigator.pop(context);
       _showSuccessDialog();
     } catch (e) {
-      if (context.mounted) {
+      if (!mounted) return; 
         Navigator.pop(context);
+
+        if(!widget.parentContext.mounted) return;
         showAppSnackBar(
           widget.parentContext,
           message: '${AppStrings.bookingFailed} $e',
         );
-      }
     } finally {
       if (mounted) setState(() => _isBooking = false);
     }
@@ -158,7 +165,7 @@ class _BookingDialogState extends State<BookingDialog> {
         padding: paddingZero,
         margin: marginZero,
         alpha: 0.62,
-        boxShadow: [shadowGlass1, shadowGlass2, shadowGlass3],
+        boxShadow: [shadowGlass1B, shadowGlass2B, shadowGlass3W],
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -175,11 +182,14 @@ class _BookingDialogState extends State<BookingDialog> {
 
                   Align(
                     alignment: Alignment.centerRight,
-                    child: IconButton(
-                      icon: Icon(Icons.close, color: AppColors.neonPink),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                    child: Padding(
+                      padding: paddingH10,
+                      child: IconButton(
+                        icon: Icon(Icons.close, color: AppColors.neonPink),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
                     ),
                   ),
                 ],

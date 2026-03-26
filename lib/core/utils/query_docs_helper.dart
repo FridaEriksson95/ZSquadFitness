@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zsquadfitness/core/utils/date_utils.dart';
 
+/// Shared filtering utils for Firestore class documents
 class QueryDocsHelper {
+  /// Sorts by ascending oldest -> newest
   static int compareByDateRaw(
     QueryDocumentSnapshot<Map<String, dynamic>> a,
     QueryDocumentSnapshot<Map<String, dynamic>> b,

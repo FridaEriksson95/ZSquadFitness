@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Streambuilder helper for reuse purpose with loading/empty states
 class SimpleStreamView<T> extends StatelessWidget {
   final Stream<T> stream;
   final Widget Function(T data) builder;
@@ -24,10 +25,11 @@ class SimpleStreamView<T> extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return loading;
         }
-        if (!snapshot.hasData || isEmpty(snapshot.data as T)) {
+        final data = snapshot.data;
+        if (data == null || isEmpty(data)) {
           return empty;
         }
-        return builder(snapshot.data as T);
+        return builder(data);
       },
     );
   }

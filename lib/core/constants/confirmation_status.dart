@@ -1,3 +1,5 @@
+//Confirmemail status
+
 class ConfirmationStatus {
   static const pending = 'pending';
   static const skipped = 'skipped';

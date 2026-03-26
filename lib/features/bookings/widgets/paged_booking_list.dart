@@ -9,10 +9,12 @@ import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
 const int _bookingItemsPerPage = 3;
+
+/// Callback used by each booking card to trigger cancel flow in parent view
 typedef BookingCancelCallback =
     Future<void> Function(
       BuildContext context, {
-      required DocumentReference bookingRef,
+      required DocumentReference<Map<String, dynamic>> bookingRef,
       required String classId,
     });
 
@@ -33,6 +35,7 @@ class PagedBookingList extends StatefulWidget {
 class __PagedBookingListState extends State<PagedBookingList> {
   late PageController _pageController;
   int _currentPage = 0;
+  final now = DateTime.now();
 
   @override
   void initState() {
@@ -63,6 +66,7 @@ class __PagedBookingListState extends State<PagedBookingList> {
       );
     }
 
+    // Group bookings info fixed-sized pages for dot flow and swipe
     final grouped = <List<QueryDocumentSnapshot<Map<String, dynamic>>>>[];
     for (int i = 0; i < widget.docs.length; i += _bookingItemsPerPage) {
       grouped.add(
@@ -86,7 +90,7 @@ class __PagedBookingListState extends State<PagedBookingList> {
               return GestureDetector(
                 onTap: () => _pageController.animateToPage(
                   index,
-                  duration: const Duration(milliseconds: 300),
+                  duration: duration300,
                   curve: Curves.easeInOut,
                 ),
                 child: Container(
@@ -118,6 +122,7 @@ class __PagedBookingListState extends State<PagedBookingList> {
                     context,
                     bookingDoc: bookingDoc,
                     onCancel: widget.onCancel,
+                    now: now,
                   );
                 },
               );
@@ -129,110 +134,94 @@ class __PagedBookingListState extends State<PagedBookingList> {
   }
 }
 
+/// Renders a single booking card from booking data
 Widget _buildBookingCard(
   BuildContext context, {
   required QueryDocumentSnapshot<Map<String, dynamic>> bookingDoc,
   required BookingCancelCallback onCancel,
+  required DateTime now,
 }) {
   final bookingData = bookingDoc.data();
 
   final classId = bookingData['classId'] as String?;
 
-  if (classId == null) {
+  if (classId == null || classId.isEmpty) {
     return const ListTile(title: Text(AppStrings.errorBooking));
   }
 
-  return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-    future: FirebaseFirestore.instance.collection('classes').doc(classId).get(),
-    builder: (context, classSnapshot) {
-      if (classSnapshot.connectionState == ConnectionState.waiting) {
-        return const ListTile(title: CircularProgressIndicator());
-      }
+  final ts = bookingData['dateRaw'] as Timestamp?;
+  final isPast = ts != null && ts.toDate().isBefore(now);
 
-      if (!classSnapshot.hasData || !classSnapshot.data!.exists) {
-        return const ListTile(title: Text(AppStrings.removedBooking));
-      }
+  final title = bookingData['title'] as String? ?? AppStrings.zumba;
+  final date = bookingData['date'] as String? ?? AppStrings.noDate;
+  final time = bookingData['time'] as String? ?? AppStrings.noTime;
+  final locationName =
+      bookingData['locationName'] as String? ?? AppStrings.noPlace;
 
-      final classData = classSnapshot.data!.data() as Map<String, dynamic>;
-      final ts = classData['dateRaw'] as Timestamp?;
-      final isPast = ts != null && ts.toDate().isBefore(DateTime.now());
+  return Padding(
+    padding: paddingOnlyTB,
+    child: BorderCard(
+      padding: paddingAll8,
+      margin: marginZero,
+      alpha: 0.07,
+      color: AppColors.backgroundGradient1.withValues(alpha: 0.8),
+      boxShadow: [shadowGlass1B, shadowGlass2B, shadowGlass3W],
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          logoBlack82,
+          gapW12,
 
-      return Padding(
-        padding: paddingOnlyTB,
-        child: BorderCard(
-          padding: paddingAll8,
-          margin: marginZero,
-          alpha: 0.07,
-          boxShadow: [textFieldShadow],
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              logoBlack82,
-              gapW12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: AppTextStyles.vidaLoka24G),
 
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      classData['title'] ?? AppStrings.zumba,
-                      style: AppTextStyles.vidaLoka18T,
-                    ),
-                    gapH5,
-                    Text(
-                      classData['date'] ?? AppStrings.noDate,
-                      style: AppTextStyles.vidaLoka14W,
-                    ),
-                    gapH5,
-                    Text(
-                      classData['time'] ?? AppStrings.noTime,
-                      style: AppTextStyles.vidaLoka14W,
-                    ),
-                    gapH5,
-                    Text(
-                      classData['locationName'] ?? AppStrings.noPlace,
-                      style: AppTextStyles.vidaLoka11G,
-                    ),
-                    gapH5,
-                  ],
-                ),
-              ),
-              gapW12,
+                Text(date, style: AppTextStyles.vidaLoka16W),
 
-              SizedBox(
-                width: 110,
-                child: Padding(
-                  padding: paddingOnlyT,
-                  child: IntrinsicWidth(
-                    child: PrimaryButton(
-                      text: isPast
-                          ? AppStrings.accomplished
-                          : AppStrings.cancelBooking,
-                      color: isPast ? AppColors.lightGrey : AppColors.neonPink,
-                      onPressed: isPast
-                          ? null
-                          : () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => ConfirmationDialog(
-                                  type: ConfirmationType.cancelBooking,
-                                  onConfirm: () => onCancel(
-                                    context,
-                                    bookingRef: bookingDoc.reference,
-                                    classId: classId,
-                                  ),
-                                  onCancel: () => Navigator.pop(context),
-                                ),
-                              );
-                            },
-                    ),
-                  ),
-                ),
-              ),
-            ],
+                Text(time, style: AppTextStyles.vidaLoka16W),
+                gapH5,
+                Text(locationName, style: AppTextStyles.vidaLoka11NG),
+                gapH5,
+              ],
+            ),
           ),
-        ),
-      );
-    },
+          gapW12,
+
+          // Past classes are read-only, marked as 'utförd', upcoming classes can be cancelled
+          SizedBox(
+            width: 110,
+            child: Padding(
+              padding: paddingOnlyT30,
+              child: IntrinsicWidth(
+                child: PrimaryButton(
+                  text: isPast
+                      ? AppStrings.accomplished
+                      : AppStrings.cancelBooking,
+                  color: isPast ? AppColors.lightGrey : AppColors.neonPink,
+                  onPressed: isPast
+                      ? null
+                      : () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => ConfirmationDialog(
+                              type: ConfirmationType.cancelBooking,
+                              onConfirm: () => onCancel(
+                                context,
+                                bookingRef: bookingDoc.reference,
+                                classId: classId,
+                              ),
+                              onCancel: () => Navigator.pop(context),
+                            ),
+                          );
+                        },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
   );
 }

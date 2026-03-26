@@ -1,6 +1,8 @@
 import 'package:intl/intl.dart';
+import 'package:zsquadfitness/core/constants/app_strings.dart';
 
 class UploadClassHelper {
+  /// Swedish month names mapped to month numbers
   static const Map<String, int> _monthMap = {
     'jan': 1,
     'januari': 1,
@@ -27,13 +29,16 @@ class UploadClassHelper {
     'december': 12,
   };
 
+  /// Converts repeat labels as '4 veckor framåt' to integer weeks
   static int repeatWeeksToInt(String value) {
-    if (value.startsWith('4')) return 4;
-    if (value.startsWith('6')) return 6;
-    if (value.startsWith('8')) return 8;
+    if (value == AppStrings.weeksAhead4) return 4;
+    if (value == AppStrings.weeksAhead6) return 6;
+    if (value == AppStrings.weeksAhead8) return 8;
     return 0;
   }
 
+  /// Swedish date/time text from the form inte a DateTime
+  /// Scrolls over to next year if selected date has already past
   static DateTime? parseClassDateTime({
     required String dateTextRaw,
     required String timeTextRaw,
@@ -79,6 +84,7 @@ class UploadClassHelper {
     return parsed;
   }
 
+  /// Formats the date like 'Söndag 15 mars'
   static String formatSwedishDisplayDate(DateTime date) {
     final formatted = DateFormat('EEEE d MMMM', 'sv_SE').format(date);
     return formatted[0].toUpperCase() + formatted.substring(1);

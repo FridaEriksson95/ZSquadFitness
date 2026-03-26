@@ -3,6 +3,7 @@ import 'package:zsquadfitness/core/constants/app_strings.dart';
 import 'package:zsquadfitness/core/services/auth.dart';
 import 'package:zsquadfitness/shared/ui/components/snackbar_utils.dart';
 
+/// Wraps email/password sign in and surfaces errors via snackbar
 Future<bool> performEmailSignin(
   BuildContext context, {
   required String email,
@@ -22,6 +23,7 @@ Future<bool> performEmailSignin(
   }
 }
 
+/// Wraps Google sign in flow and returns success status or error Snackbar
 Future<bool> performGoogleSignIn(BuildContext context) async {
   try {
     final user = await AuthService().signInWithGoogle(context);
@@ -34,6 +36,7 @@ Future<bool> performGoogleSignIn(BuildContext context) async {
   }
 }
 
+/// Wraps registration flow and shows user error snackbar on failure
 Future<bool> performRegister(
   BuildContext context, {
   required String email,

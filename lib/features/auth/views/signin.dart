@@ -24,6 +24,14 @@ class _SignInPageState extends State<SignInPage> {
   bool _isLoading = false;
 
   @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  // Sign in layout with email/password form or Google sign in action
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -49,7 +57,7 @@ class _SignInPageState extends State<SignInPage> {
                             constraints: const BoxConstraints(maxWidth: 380),
                             margin: marginHorizon,
                             padding: paddingAll15,
-                            decoration: boxBGLoginPage,
+                            decoration: boxBGTransparent,
                             child: Form(
                               key: _formKey,
                               child: Column(
@@ -90,7 +98,6 @@ class _SignInPageState extends State<SignInPage> {
                                         : () {
                                             if (_formKey.currentState!
                                                 .validate()) {
-                                              setState(() => _isLoading = true);
                                               _signin();
                                             }
                                           },
@@ -103,7 +110,7 @@ class _SignInPageState extends State<SignInPage> {
                                       onPressed: () =>
                                           showResetPasswordDialog(context),
                                       style: TextButton.styleFrom(
-                                        padding: paddingOnlyLxsmall,
+                                        padding: paddingOnlyL8,
                                       ),
                                       child: Text(
                                         AppStrings.forgotPW,
@@ -199,6 +206,7 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
+  /// Attempts email/password sign in and resets loading state when done
   Future<void> _signin() async {
     setState(() => _isLoading = true);
     final success = await performEmailSignin(
@@ -210,6 +218,7 @@ class _SignInPageState extends State<SignInPage> {
     if (success) widget.onToggle();
   }
 
+  // Attempts google sign in flow and prevents duplicate taps while loading
   Future<void> _googleSignin() async {
     if (_isLoading) return;
     setState(() => _isLoading = true);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
+/// Weekly bar chart used for user completed class statistics
 class ProfileWeeklyCharts extends StatelessWidget {
   final List<int> counts;
 
@@ -29,7 +30,7 @@ class ProfileWeeklyCharts extends StatelessWidget {
                 duration: duration350,
                 height: h.clamp(4.0, chartHeight),
                 margin: marginHorizon6,
-                decoration: boxStatisticCharts,
+                decoration: boxStatisticChartsT,
               ),
               gapH5,
               Text('v${i + 1}', style: AppTextStyles.geist14W),

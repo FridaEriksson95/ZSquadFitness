@@ -21,6 +21,7 @@ class PhoneRequiredPage extends StatefulWidget {
 
 class _PhoneRequiredPageState extends State<PhoneRequiredPage> {
   final _controller = TextEditingController();
+  // Bool to disable commit button while data is being saved
   bool _saving = false;
 
   @override
@@ -29,6 +30,7 @@ class _PhoneRequiredPageState extends State<PhoneRequiredPage> {
     super.dispose();
   }
 
+  /// Validates and save req phonenr for current user
   Future<void> _submit() async {
     final phone = _controller.text.trim();
     final error = validatePhone(phone);
@@ -41,11 +43,13 @@ class _PhoneRequiredPageState extends State<PhoneRequiredPage> {
         .collection('users')
         .doc(widget.userId)
         .update({'Phone': phone});
+    if (!mounted) return;
     setState(() => _saving = false);
   }
 
   @override
   Widget build(BuildContext context) {
+    // Prevents leaving page until phonenr is saved
     return PopScope(
       canPop: false,
       child: Scaffold(

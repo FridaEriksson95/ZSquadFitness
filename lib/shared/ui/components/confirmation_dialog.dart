@@ -6,6 +6,7 @@ import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
+/// Confirmation Dialog popup for both succeded booking or cancel booking
 enum ConfirmationType { cancelBooking, bookingSuccess }
 
 class ConfirmationDialog extends StatelessWidget {
@@ -45,7 +46,7 @@ class ConfirmationDialog extends StatelessWidget {
       child: BorderCard(
         margin: marginZero,
         alpha: 0.55,
-        boxShadow: [shadowGlass1, shadowGlass2, shadowGlass3],
+        boxShadow: [shadowGlass1B, shadowGlass2B, shadowGlass3W],
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -70,7 +71,7 @@ class ConfirmationDialog extends StatelessWidget {
             ),
 
             Padding(
-              padding: paddingOnlyR,
+              padding: paddingOnlyR25,
               child: Text(
                 message,
                 style: AppTextStyles.geist22W.copyWith(

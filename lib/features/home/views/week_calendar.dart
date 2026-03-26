@@ -8,6 +8,7 @@ import 'package:zsquadfitness/core/constants/gaps_styles.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_colors.dart';
 import 'package:zsquadfitness/shared/ui/theme/app_textstyles.dart';
 
+/// Weekly calendar strip for quick day-based class booking
 class WeekCalendar extends StatefulWidget {
   final List<QueryDocumentSnapshot<Map<String, dynamic>>> classes;
 
@@ -19,14 +20,10 @@ class WeekCalendar extends StatefulWidget {
 
 class _WeekCalendarState extends State<WeekCalendar> {
   late PageController _pageController;
-  DateTime _currentWeekStart = WeekCalendarHelper.mondayOf(DateTime.now());
 
   final DateFormat _dayShort = DateFormat('E', 'sv_SE');
   final DateFormat _dayNum = DateFormat('d');
   final DateFormat _monthShort = DateFormat('MMM', 'sv_SE');
-
-  Set<DateTime> get _daysWithClasses =>
-      WeekCalendarHelper.daysWithClasses(widget.classes);
 
   @override
   void initState() {
@@ -40,13 +37,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
     super.dispose();
   }
 
-  void _onPageChanged(int page) {
-    setState(() {
-      final todayMonday = WeekCalendarHelper.mondayOf(DateTime.now());
-      _currentWeekStart = todayMonday.add(Duration(days: (page - 1000) * 7));
-    });
-  }
-
+  /// Opens a bottom sheet when multiple classes exists for the selected day
   Future<void> _openClassPicker(
     BuildContext context, {
     required List<QueryDocumentSnapshot<Map<String, dynamic>>> dayClasses,
@@ -62,7 +53,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
           child: ListView.separated(
             shrinkWrap: true,
             itemCount: dayClasses.length,
-            separatorBuilder: (_, __) => Divider(
+            separatorBuilder: (_, _) => Divider(
               color: AppColors.lightGrey.withValues(alpha: 0.15),
               height: 1,
             ),
@@ -77,7 +68,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
               return ListTile(
                 title: Text(
                   title,
-                  style: AppTextStyles.vidaLoka18T.copyWith(
+                  style: AppTextStyles.vidaLoka18G.copyWith(
                     color: AppColors.turquise,
                   ),
                 ),
@@ -108,15 +99,20 @@ class _WeekCalendarState extends State<WeekCalendar> {
     );
   }
 
+  /// Highlights days that contains classes
   @override
   Widget build(BuildContext context) {
+    final daysWithClasses = WeekCalendarHelper.daysWithClasses(widget.classes);
+    final today = DateTime.now();
+    final todayMonday = WeekCalendarHelper.mondayOf(today);
+
     return Padding(
       padding: paddingOnlyLR,
       child: BorderCard(
         padding: paddingZero,
         margin: marginZero,
         alpha: 1.5,
-        boxShadow: [shadowGlass3],
+        boxShadow: [shadowGlass3W],
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -139,10 +135,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
                 height: 60,
                 child: PageView.builder(
                   controller: _pageController,
-                  onPageChanged: _onPageChanged,
                   itemBuilder: (context, index) {
-                    final today = DateTime.now();
-                    final todayMonday = WeekCalendarHelper.mondayOf(today);
                     final weekStart = todayMonday.add(
                       Duration(days: (index - 1000) * 7),
                     );
@@ -160,10 +153,9 @@ class _WeekCalendarState extends State<WeekCalendar> {
                           final normalizedDay = WeekCalendarHelper.normalize(
                             day,
                           );
-                          final hasClass = _daysWithClasses.contains(
+                          final hasClass = daysWithClasses.contains(
                             normalizedDay,
                           );
-
                           final isToday = WeekCalendarHelper.isSameDay(
                             day,
                             today,
@@ -173,6 +165,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
                               ? FontWeight.bold
                               : FontWeight.normal;
 
+                          // Open dialog directly when only one class exists on that day
                           return GestureDetector(
                             onTap: () async {
                               if (!hasClass) return;
@@ -211,10 +204,14 @@ class _WeekCalendarState extends State<WeekCalendar> {
                                     ? AppColors.turquise.withValues(alpha: 0.20)
                                     : null,
                                 boxShadow: isToday
-                                    ? [shadowGlass1, shadowGlass2, shadowGlass3]
+                                    ? [
+                                        shadowGlass1B,
+                                        shadowGlass2B,
+                                        shadowGlass3W,
+                                      ]
                                     : null,
                                 borderRadius: borderRadius12,
-                                border: isToday ? borderCard : null,
+                                border: isToday ? borderCardNG : null,
                               ),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -223,16 +220,18 @@ class _WeekCalendarState extends State<WeekCalendar> {
                                     _dayShort.format(day).toUpperCase(),
                                     style: AppTextStyles.vidaLoka14LG.copyWith(
                                       color: hasClass
-                                          ? AppColors.neonGreen
+                                          ? AppColors.gold.withValues(
+                                              alpha: 0.65,
+                                            )
                                           : AppColors.turquise,
                                       fontWeight: fontWeight,
                                       shadows: isToday
                                           ? [
-                                              shadowGlass1,
-                                              shadowGlass2,
-                                              shadowGlass3,
+                                              shadowGlass1B,
+                                              shadowGlass2B,
+                                              shadowGlass3W,
                                             ]
-                                          : [shadow],
+                                          : [shadowLB],
                                     ),
                                   ),
 
@@ -240,7 +239,9 @@ class _WeekCalendarState extends State<WeekCalendar> {
                                     _dayNum.format(day).toUpperCase(),
                                     style: AppTextStyles.vidaLoka14LG.copyWith(
                                       color: hasClass
-                                          ? AppColors.neonGreen
+                                          ? AppColors.gold.withValues(
+                                              alpha: 0.65,
+                                            )
                                           : AppColors.white,
                                       fontWeight: fontWeight,
                                     ),
@@ -249,7 +250,9 @@ class _WeekCalendarState extends State<WeekCalendar> {
                                     _monthShort.format(day).toUpperCase(),
                                     style: AppTextStyles.vidaLoka14LG.copyWith(
                                       color: hasClass
-                                          ? AppColors.neonGreen
+                                          ? AppColors.gold.withValues(
+                                              alpha: 0.65,
+                                            )
                                           : AppColors.white,
                                       fontSize: 8,
                                     ),

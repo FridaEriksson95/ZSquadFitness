@@ -19,10 +19,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final user = FirebaseAuth.instance.currentUser;
-
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final firestore = FirebaseFirestore.instance;
     final uid = user?.uid;
 
     return Scaffold(
@@ -43,6 +43,7 @@ class _HomePageState extends State<HomePage> {
                       style: AppTextStyles.cinzel24LG,
                     )
                   else
+                    // Welcome text with user profilename
                     SimpleStreamView<DocumentSnapshot>(
                       stream: DatabaseService().getUserData(uid),
                       loading: const Text(
@@ -67,17 +68,15 @@ class _HomePageState extends State<HomePage> {
                     ),
 
                   gapH5,
-                  Text(
-                    AppStrings.bookClassText,
-                    style: AppTextStyles.vidaLoka24T,
-                  ),
+                  Text(AppStrings.bookClassText, style: AppTextStyles.geist18T),
                 ],
               ),
             ),
             gapH20,
 
+            // Load classes once and split into upcoming/past
             SimpleStreamView<QuerySnapshot<Map<String, dynamic>>>(
-              stream: FirebaseFirestore.instance
+              stream: firestore
                   .collection('classes')
                   .orderBy('dateRaw')
                   .snapshots(),
@@ -94,16 +93,68 @@ class _HomePageState extends State<HomePage> {
               isEmpty: (qs) => qs.docs.isEmpty,
               builder: (qs) {
                 final upcoming = QueryDocsHelper.upcomingOnly(qs.docs);
+                //Not signed in: schedule loades with no booked state
+                if (uid == null) {
+                  return Column(
+                    children: [
+                      WeekCalendar(
+                        key: const PageStorageKey('week_calendar'),
+                        classes: upcoming,
+                      ),
+                      gapH10,
+                      HomeCard(classes: upcoming, bookedClassIds: const {}),
+                    ],
+                  );
+                }
 
-                return Column(
-                  children: [
-                    WeekCalendar(
-                      key: const PageStorageKey('week_calendar'),
-                      classes: upcoming,
-                    ),
-                    gapH10,
-                    HomeCard(classes: upcoming),
-                  ],
+                //Signed in: loading all user bookings once
+                return SimpleStreamView<QuerySnapshot<Map<String, dynamic>>>(
+                  stream: firestore
+                      .collection('users')
+                      .doc(uid)
+                      .collection('bookings')
+                      .snapshots(),
+                  loading: Column(
+                    children: [
+                      WeekCalendar(
+                        key: const PageStorageKey('week_calendar'),
+                        classes: upcoming,
+                      ),
+                      gapH10,
+                      HomeCard(classes: upcoming, bookedClassIds: const {}),
+                    ],
+                  ),
+                  empty: Column(
+                    children: [
+                      WeekCalendar(
+                        key: const PageStorageKey('week_calendar'),
+                        classes: upcoming,
+                      ),
+                      gapH10,
+                      HomeCard(classes: upcoming, bookedClassIds: const {}),
+                    ],
+                  ),
+                  isEmpty: (bookingQs) => bookingQs.docs.isEmpty,
+                  builder: (bookingQs) {
+                    final bookedClassIds = bookingQs.docs
+                        .map((d) => d.data()['classId'] as String?)
+                        .whereType<String>()
+                        .toSet();
+
+                    return Column(
+                      children: [
+                        WeekCalendar(
+                          key: const PageStorageKey('week_calendar'),
+                          classes: upcoming,
+                        ),
+                        gapH10,
+                        HomeCard(
+                          classes: upcoming,
+                          bookedClassIds: bookedClassIds,
+                        ),
+                      ],
+                    );
+                  },
                 );
               },
             ),

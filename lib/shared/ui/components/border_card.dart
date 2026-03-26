@@ -30,8 +30,8 @@ class BorderCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color ?? AppColors.dark.withValues(alpha: alpha),
         borderRadius: borderRadius24,
-        border: border ?? borderCard,
-        boxShadow: boxShadow ?? [shadow],
+        border: border ?? borderCardNG,
+        boxShadow: boxShadow ?? [shadowLB],
       ),
       child: child,
     );

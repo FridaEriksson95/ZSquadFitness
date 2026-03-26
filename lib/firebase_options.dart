@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -54,8 +51,7 @@ class DefaultFirebaseOptions {
     appId: '1:20849895416:android:491b70bf811b0f3b9a580d',
     messagingSenderId: '20849895416',
     projectId: 'zsquadfitness',
-    databaseURL:
-        'https://zsquadfitness-default-rtdb.europe-west1.firebasedatabase.app',
+    databaseURL: 'https://zsquadfitness-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'zsquadfitness.firebasestorage.app',
   );
 
@@ -64,13 +60,21 @@ class DefaultFirebaseOptions {
     appId: '1:20849895416:ios:203b6e63682eb3d19a580d',
     messagingSenderId: '20849895416',
     projectId: 'zsquadfitness',
-    databaseURL:
-        'https://zsquadfitness-default-rtdb.europe-west1.firebasedatabase.app',
+    databaseURL: 'https://zsquadfitness-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'zsquadfitness.firebasestorage.app',
-    androidClientId:
-        '20849895416-difo5n3sg6tbd4rkkc32c8nqkk3q0i2c.apps.googleusercontent.com',
-    iosClientId:
-        '20849895416-691eivuhcljmicu3dave6kkmepu5lbp3.apps.googleusercontent.com',
+    androidClientId: '20849895416-3333a5tpftomj8l2kp2oerk9fg6srtrm.apps.googleusercontent.com',
+    iosClientId: '20849895416-691eivuhcljmicu3dave6kkmepu5lbp3.apps.googleusercontent.com',
     iosBundleId: 'com.example.zsquadfitness',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBY_jEoDlB4s0gFs_u0ScznsGrp6DeXyx4',
+    appId: '1:20849895416:web:d45011becbd33f549a580d',
+    messagingSenderId: '20849895416',
+    projectId: 'zsquadfitness',
+    authDomain: 'zsquadfitness.firebaseapp.com',
+    databaseURL: 'https://zsquadfitness-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'zsquadfitness.firebasestorage.app',
+  );
+
 }

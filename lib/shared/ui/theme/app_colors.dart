@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
+/// Colors used for app
 class AppColors {
   static const Color background = Color(0xFF01110F);
+  static const Color backgroundGradient1 = Color(0xFF031816);
+  static const Color backgroundGradient2 = Color(0xFF000B0C);
   static const Color lightBg = Color(0xFF04281F);
   static const Color surface = Color(0xFF0F0F0F);
   static const Color dark = Color(0xFF000B0C);

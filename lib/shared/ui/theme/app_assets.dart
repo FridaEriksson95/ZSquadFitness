@@ -1,3 +1,4 @@
+/// Images used for app
 class AppAssets {
   static const logoBlack = 'assets/images/LogoBlack.PNG';
   static const logoText = 'assets/images/LogoText.png';

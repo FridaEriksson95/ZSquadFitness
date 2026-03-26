@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// Helpers for Firestore timestamps used in date filtering
 extension TimestampX on Timestamp? {
   DateTime? toDateOrNull() => this?.toDate();
 

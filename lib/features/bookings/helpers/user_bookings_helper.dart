@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:zsquadfitness/core/utils/query_docs_helper.dart';
 
+/// Splits booking lists used by the bookings tab view
 class UserBookingsView {
   final List<QueryDocumentSnapshot<Map<String, dynamic>>> upcoming;
   final List<QueryDocumentSnapshot<Map<String, dynamic>>> past;
@@ -13,6 +14,7 @@ class UserBookingsView {
 class UserBookingsHelper {
   static final _firestore = FirebaseFirestore.instance;
 
+  /// Stream user bookings and seperates then into upcoming/past lists
   static Stream<UserBookingsView> streamBookings(String? userId) {
     if (userId == null || userId.isEmpty) {
       return Stream.value(const UserBookingsView(upcoming: [], past: []));

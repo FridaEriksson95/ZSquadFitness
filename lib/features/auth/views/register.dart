@@ -37,9 +37,12 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _phoneController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
+  // Registration build with form validation and optional Google sign in
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +69,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                             constraints: const BoxConstraints(maxWidth: 380),
                             margin: marginHorizon,
                             padding: paddingAll15,
-                            decoration: boxBGRegisterPage,
+                            decoration: boxBGTransparent,
                             child: Form(
                               key: _formKey,
                               child: Column(
@@ -225,7 +228,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
                               ),
                             ],
                           ),
-                          divider250,
+                          dividerGreenish,
 
                           Text(
                             AppStrings.or,
@@ -270,6 +273,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
     );
   }
 
+  /// Validates phonenr, then register with email and password
   Future<void> _register() async {
     final phoneError = validatePhone(_phoneController.text.trim());
     if (phoneError != null) {
@@ -294,6 +298,7 @@ class _RegisterAccountPageState extends State<RegisterAccountPage> {
     }
   }
 
+  /// Starts Google sign in flow and is loading process
   Future<void> _googleSignin() async {
     if (_isLoading) return;
     setState(() => _isLoading = true);

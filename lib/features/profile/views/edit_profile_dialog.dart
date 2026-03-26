@@ -54,6 +54,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     super.dispose();
   }
 
+/// Validates email and phone inputs before saving profile changes
   String? _validateInputs({required String email, required String phone}) {
     if (email.isEmpty) return AppStrings.submitEmail;
     if (phone.isEmpty) return AppStrings.phoneReq;
@@ -63,6 +64,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     return validatePhone(phone);
   }
 
+/// Saves profile updates and closes dialog on success
   Future<void> _save() async {
     setState(() {
       _isSaving = true;
@@ -110,6 +112,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     }
   }
 
+/// Opens delete account confirmation and returns delete action to parent page
   Future<void> _confirmDeleteAccount() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -137,17 +140,20 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
           children: [
             CustomTextfield(
               labelText: AppStrings.name,
+              labelStyle: AppTextStyles.geist18T,
               controller: _nameController,
             ),
             gapH10,
             CustomTextfield(
               labelText: AppStrings.email,
+              labelStyle: AppTextStyles.geist18T,
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
             ),
             gapH10,
             CustomTextfield(
               labelText: AppStrings.phone,
+              labelStyle: AppTextStyles.geist18T,
               controller: _phoneController,
               keyboardType: TextInputType.phone,
             ),
@@ -166,7 +172,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
               child: TextButton(
                 onPressed: _isSaving ? null : _confirmDeleteAccount,
                 style: TextButton.styleFrom(
-                  padding: paddingOnlyLxsmall,
+                  padding: paddingOnlyL8,
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
@@ -192,7 +198,6 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
             style: AppTextStyles.geist14W.copyWith(color: AppColors.neonPink),
           ),
         ),
-
         TextButton(
           onPressed: _isSaving ? null : _save,
           child: Text(

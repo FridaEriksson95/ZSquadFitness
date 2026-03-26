@@ -32,6 +32,7 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
   String get bookedText =>
       '${widget.classData['spotsBooked'] ?? 0}/${widget.classData['spotsTotal'] ?? 25}';
 
+  /// Subject used for email all and single client email actions
   String get _emailSubject =>
       '${widget.classData['title'] ?? ''} - ${widget.classData['date'] ?? ''}'
           .replaceAll(' ', '');
@@ -39,22 +40,23 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: AppColors.background),
+      appBar: AppBar(
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Text(AppStrings.classInfoTitle, style: AppTextStyles.cinzel24LG),
-            SizedBox(
-              width: 330,
-              child: Divider(color: AppColors.neonGreen.withValues(alpha: 0.4)),
-            ),
+            divider330,
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 gapH10,
                 Text(
                   widget.classData['title'] ?? AppStrings.zumba,
-                  style: AppTextStyles.vidaLoka24T,
+                  style: AppTextStyles.vidaLoka24G,
                 ),
                 gapH5,
                 Text(widget.classData['date'] ?? AppStrings.noDate),
@@ -69,13 +71,9 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
                 ),
                 gapH15,
                 Text(AppStrings.bookedInClass, style: AppTextStyles.cinzel24LG),
-                SizedBox(
-                  width: 200,
-                  child: Divider(
-                    color: AppColors.neonGreen.withValues(alpha: 0.4),
-                  ),
-                ),
+                divider250,
 
+                // Stream all bookings for this class, and display each row with user data
                 SimpleStreamView<QuerySnapshot<Map<String, dynamic>>>(
                   stream: FirebaseFirestore.instance
                       .collectionGroup('bookings')
@@ -128,10 +126,7 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
                                   color: AppColors.neonGreen,
                                 ),
                                 label: Text(AppStrings.emailAllBooked),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: AppColors.neonGreen,
-                                  side: BorderSide(color: AppColors.neonGreen),
-                                ),
+                                style: outlinedButtonNG,
                               ),
                             ),
 
@@ -166,6 +161,7 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
     );
   }
 
+  /// Remove a booking and decrement class spotsBooked
   Future<void> _removeClient(
     BuildContext context, {
     required DocumentReference bookingRef,
@@ -192,6 +188,7 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
     }
   }
 
+  /// Build client row with client info and email all
   Widget _buildClientRow(
     BuildContext context, {
     required String name,
@@ -213,10 +210,10 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
                 color: AppColors.turquise,
               ),
               gapW5,
-              Text(name, style: AppTextStyles.vidaLoka18T),
+              Text(name, style: AppTextStyles.vidaLoka22T),
             ],
           ),
-
+          gapH5,
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -297,7 +294,7 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
                     ),
                   );
                 },
-                padding: paddingOnlyR,
+                padding: paddingOnlyR25,
                 constraints: BoxConstraints(minWidth: 36, minHeight: 36),
                 style: IconButton.styleFrom(
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -305,7 +302,7 @@ class _ClassInfoPageState extends State<ClassInfoPage> {
               ),
             ],
           ),
-          divider360,
+          Center(child: divider360Greenish),
         ],
       ),
     );

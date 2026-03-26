@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:zsquadfitness/core/constants/app_strings.dart';
 import 'package:zsquadfitness/shared/ui/components/snackbar_utils.dart';
 
+/// Open email app to send email from app
 Future<void> openEmail(BuildContext context) async {
   final Uri emailUri = Uri(
     scheme: AppStrings.mailTo,
@@ -26,6 +27,7 @@ Future<void> openEmail(BuildContext context) async {
   }
 }
 
+/// For Admin to open all emails to clients
 Future<void> openEmailToClients(
   BuildContext context, {
   required List<String> emails,

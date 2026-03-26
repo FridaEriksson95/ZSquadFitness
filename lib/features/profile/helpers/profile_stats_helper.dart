@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// Helper for profile statistics charts (admin and user)
 class ProfileStatsHelper {
   static int rangeToMonths(String range, String latest2, String latest3) {
     if (range == latest2) return 2;
@@ -40,6 +41,7 @@ class ProfileStatsHelper {
     return names[d.month - 1];
   }
 
+  /// Sums booked spots per month for completed classes only
   static List<int> monthlyClientCounts(
     List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
     List<DateTime> buckets,
@@ -68,6 +70,7 @@ class ProfileStatsHelper {
     return counts;
   }
 
+  /// Counts completed bookings per week within selected range
   static List<int> weeklyCompletedCounts(
     List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
     int weeks,

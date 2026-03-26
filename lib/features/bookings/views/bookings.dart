@@ -25,7 +25,7 @@ class _BookingsPageState extends State<BookingsPage> {
 
   Future<void> _cancelBooking(
     BuildContext context, {
-    required DocumentReference bookingRef,
+    required DocumentReference<Map<String, dynamic>> bookingRef,
     required String classId,
   }) async {
     await _bookingService.cancelBooking(
@@ -58,10 +58,10 @@ class _BookingsPageState extends State<BookingsPage> {
             divider300,
             gapH15,
             TabBar(
-              labelColor: AppColors.neonGreen,
+              labelColor: AppColors.gold.withValues(alpha: 0.75),
               unselectedLabelColor: AppColors.lightGrey,
               labelStyle: AppTextStyles.vidaLoka16LG,
-              indicatorColor: AppColors.turquise,
+              indicatorColor: AppColors.neonGreen,
               indicatorWeight: 3,
               dividerColor: Colors.transparent,
               tabs: const [
