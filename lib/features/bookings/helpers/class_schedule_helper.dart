@@ -51,4 +51,14 @@ class ClassScheduleHelper {
     }
     return match.first.key;
   }
+
+  static int? weekdayFromDateRaw(dynamic dateRaw) {
+    if (dateRaw is Timestamp) return dateRaw.toDate().weekday;
+    if (dateRaw is DateTime) return dateRaw.weekday;
+    return null;
+  }
+
+  static int? currentClassWeekdayFromData(Map<String, dynamic> classData) {
+    return weekdayFromDateRaw(classData['dateRaw']);
+  }
 }
