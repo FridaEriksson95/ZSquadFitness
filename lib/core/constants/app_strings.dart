@@ -41,9 +41,9 @@ class AppStrings {
   static const String repeatClass = 'Upprepa pass';
   static const String roomNr = 'Sal ';
   static const String room = '2';
-  static const String weeksAhead4 = '4';
-  static const String weeksAhead6 = '6';
-  static const String weeksAhead8 = '6';
+  static const String weeksAhead4 = '4 veckor fram';
+  static const String weeksAhead6 = '6 veckor fram';
+  static const String weeksAhead8 = '8 veckor fram';
 
   //Bookingspage
   static const String loginRequired = 'Du måste vara inloggad';
