@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:zsquadfitness/core/services/booking_service.dart';
@@ -57,21 +58,33 @@ class _BookingDialogState extends State<BookingDialog> {
   /// Loads weekdays with available classes and keeps selected repeat day valid
   Future<void> _loadAvailableRepeatDays() async {
     final weekdays = await ClassScheduleHelper.getAvailableWeekdays();
-
     if (!mounted) return;
 
-    setState(() {
-      _availableRepeatWeekdays = weekdays;
+    final classWeekday = ClassScheduleHelper.currentClassWeekdayFromData(
+      widget.classData,
+    );
+    final ordered = List<int>.from(weekdays);
 
-      if (_availableRepeatWeekdays.isNotEmpty) {
-        final firstLabel = ClassScheduleHelper.weekdayLabel(
-          _availableRepeatWeekdays.first,
-        );
-        if (!_availableRepeatWeekdays
-            .map(ClassScheduleHelper.weekdayLabel)
-            .contains(_repeatDay)) {
-          _repeatDay = firstLabel;
-        }
+    if (classWeekday != null && ordered.remove(classWeekday)) {
+      ordered.insert(0, classWeekday);
+    }
+
+    setState(() {
+      _availableRepeatWeekdays = ordered;
+
+      if (_availableRepeatWeekdays.isEmpty) return;
+
+      if (classWeekday != null &&
+          _availableRepeatWeekdays.contains(classWeekday)) {
+        _repeatDay = ClassScheduleHelper.weekdayLabel(classWeekday);
+        return;
+      }
+
+      final labels = _availableRepeatWeekdays
+          .map(ClassScheduleHelper.weekdayLabel)
+          .toList();
+      if (!labels.contains(_repeatDay)) {
+        _repeatDay = labels.first;
       }
     });
   }
@@ -109,7 +122,7 @@ class _BookingDialogState extends State<BookingDialog> {
 
   /// Bookes current class and optionally books repeating classes for chosen weekday
   Future<void> _bookClass() async {
-    if(!mounted) return; 
+    if (!mounted) return;
     setState(() => _isBooking = true);
 
     final user = _requireUserOrShowError();
@@ -142,14 +155,14 @@ class _BookingDialogState extends State<BookingDialog> {
       Navigator.pop(context);
       _showSuccessDialog();
     } catch (e) {
-      if (!mounted) return; 
-        Navigator.pop(context);
+      if (!mounted) return;
+      Navigator.pop(context);
 
-        if(!widget.parentContext.mounted) return;
-        showAppSnackBar(
-          widget.parentContext,
-          message: '${AppStrings.bookingFailed} $e',
-        );
+      if (!widget.parentContext.mounted) return;
+      showAppSnackBar(
+        widget.parentContext,
+        message: '${AppStrings.bookingFailed} $e',
+      );
     } finally {
       if (mounted) setState(() => _isBooking = false);
     }
